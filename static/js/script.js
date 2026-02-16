@@ -194,4 +194,114 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sermonNext) sermonNext.style.display = 'none';
         }
     }
+
+    // Shorts Slider (5 cards per page on desktop, responsive on mobile)
+    const shortsGrid = document.querySelector('.shorts-grid');
+    const shortsCards = shortsGrid ? shortsGrid.querySelectorAll('.shorts-card') : [];
+    const shortsPrev = document.querySelector('.shorts-prev');
+    const shortsNext = document.querySelector('.shorts-next');
+    let shortsPage = 0;
+
+    // Calculate cards per page based on screen size
+    function getShortsPerPage() {
+        const width = window.innerWidth;
+        if (width <= 768) return 2;      // Mobile: 2 cards
+        if (width <= 1024) return 3;     // Tablet: 3 cards
+        if (width <= 1200) return 4;     // Small desktop: 4 cards
+        return 5;                         // Large desktop: 5 cards
+    }
+
+    function showShortsPage(page) {
+        const cardsPerPage = getShortsPerPage();
+        const totalPages = Math.ceil(shortsCards.length / cardsPerPage);
+        shortsPage = (page + totalPages) % totalPages;
+
+        shortsCards.forEach((card, i) => {
+            const pageIndex = Math.floor(i / cardsPerPage);
+            if (pageIndex === shortsPage) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    if (shortsCards.length > 0) {
+        showShortsPage(0);
+
+        if (shortsPrev) {
+            shortsPrev.addEventListener('click', () => {
+                showShortsPage(shortsPage - 1);
+            });
+        }
+
+        if (shortsNext) {
+            shortsNext.addEventListener('click', () => {
+                showShortsPage(shortsPage + 1);
+            });
+        }
+
+        // Update on window resize
+        window.addEventListener('resize', () => {
+            showShortsPage(shortsPage);
+        });
+
+        // Hide buttons if cards fit in one page
+        const cardsPerPage = getShortsPerPage();
+        if (shortsCards.length <= cardsPerPage) {
+            if (shortsPrev) shortsPrev.style.display = 'none';
+            if (shortsNext) shortsNext.style.display = 'none';
+        }
+    }
+
+    // Add touch swipe support for all sliders
+    function addSwipeSupport(element, onSwipeLeft, onSwipeRight) {
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        element.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        element.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const swipeThreshold = 50; // minimum distance for swipe
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe left - next
+                onSwipeLeft();
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe right - previous
+                onSwipeRight();
+            }
+        }
+    }
+
+    // Apply swipe to vision slider
+    if (visionSlider) {
+        addSwipeSupport(visionSlider,
+            () => { visionIndex = (visionIndex + 1) % visionCards.length; showVisionCard(visionIndex); },
+            () => { visionIndex = (visionIndex - 1 + visionCards.length) % visionCards.length; showVisionCard(visionIndex); }
+        );
+    }
+
+    // Apply swipe to sermon slider
+    if (sermonSlider) {
+        addSwipeSupport(sermonSlider,
+            () => showSermonPage(sermonPage + 1),
+            () => showSermonPage(sermonPage - 1)
+        );
+    }
+
+    // Apply swipe to shorts grid
+    if (shortsGrid) {
+        addSwipeSupport(shortsGrid,
+            () => showShortsPage(shortsPage + 1),
+            () => showShortsPage(shortsPage - 1)
+        );
+    }
 });

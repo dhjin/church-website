@@ -457,6 +457,7 @@ section {
     box-shadow: var(--shadow-md);
     border-radius: 16px;
     overflow: hidden;
+    table-layout: fixed;
 }
 
 .board-table thead {
