@@ -48,8 +48,8 @@
             <p class="hero-subtitle">더하는 교회에 오신 것을 환영합니다</p>
             <p class="hero-info">기독교 한국침례회 · 교회 대표 김한기 목사</p>
             <div class="hero-buttons">
-                <a href="#events" class="btn btn-primary">예배 안내</a>
-                <a href="#about" class="btn btn-secondary">교회 소개</a>
+                <a href="#schedule-news" class="btn btn-primary">예배 안내</a>
+                <a href="/about" class="btn btn-secondary">교회 소개</a>
             </div>
         </div>
     </section>
@@ -231,10 +231,10 @@
                             <tbody>
                                 {% for news in news_list %}
                                 <tr class="board-row" onclick="window.location='/news/{{ news.id }}'" style="cursor: pointer;">
-                                    <td>{{ news.id }}</td>
+                                    <td class="col-num">{{ news.id }}</td>
                                     <td class="col-title">{{ news.title }}</td>
-                                    <td>{{ news.date }}</td>
-                                    <td>{{ news.views }}</td>
+                                    <td class="col-date">{{ news.date }}</td>
+                                    <td class="col-views">{{ news.views }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
