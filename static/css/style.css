@@ -450,75 +450,75 @@ section {
     margin: 0 auto;
 }
 
-.board-table {
-    width: 100%;
-    border-collapse: collapse;
+/* News Board - DIV Grid Layout */
+.news-container {
     background-color: var(--bg-white);
     box-shadow: var(--shadow-md);
     border-radius: 16px;
     overflow: hidden;
 }
 
-.board-table thead {
+.news-header,
+.news-item {
+    display: grid;
+    grid-template-columns: 60px 1fr 100px 60px;
+    gap: 0;
+    align-items: center;
+}
+
+.news-header {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
     color: white;
-}
-
-.board-table th {
-    padding: 1rem;
-    text-align: center;
     font-weight: 600;
+    font-size: 0.9rem;
 }
 
-.board-table td {
-    padding: 1rem;
+.news-cell {
+    padding: 0.75rem 0.5rem;
     text-align: center;
-    border-bottom: 1px solid var(--border-color);
 }
 
-.board-row {
+.news-header .news-subject,
+.news-item .news-subject {
+    text-align: left;
+    padding-left: 1rem;
+}
+
+.news-item {
+    border-bottom: 1px solid var(--border-color);
     cursor: pointer;
     position: relative;
     transition: background-color var(--transition-base);
 }
 
-.board-row::before {
+.news-item:last-child {
+    border-bottom: none;
+}
+
+.news-item .news-subject {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.news-item::before {
     content: '';
     position: absolute;
     left: 0;
-    inset-block: 0;
+    top: 0;
+    bottom: 0;
     width: 4px;
     background: var(--accent-color);
     transform: scaleY(0);
     transition: transform var(--transition-base);
 }
 
-.board-row:hover {
+.news-item:hover {
     background-color: var(--bg-light);
 }
 
-.board-row:hover::before {
+.news-item:hover::before {
     transform: scaleY(1);
-}
-
-.col-num {
-    width: 80px;
-}
-
-.col-title {
-    text-align: left !important;
-    max-width: 400px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.col-date {
-    width: 120px;
-}
-
-.col-views {
-    width: 80px;
 }
 
 .login-link {

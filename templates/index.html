@@ -156,21 +156,25 @@
                 <h2>더하는교회 숏츠</h2>
                 <div class="divider"></div>
             </div>
-            <div class="shorts-grid">
-                {% for short in shorts %}
-                <div class="shorts-card" onclick="window.open('{{ short.youtube_url }}', '_blank')" style="cursor: pointer;">
-                    {% if short.youtube_id %}
-                    <div class="shorts-thumbnail">
-                        <img src="{{ short.thumbnail }}" alt="{{ short.title }}" onerror="this.src='https://img.youtube.com/vi/{{ short.youtube_id }}/hqdefault.jpg'">
-                        <div class="shorts-play-button">▶</div>
-                        <div class="shorts-badge">Shorts</div>
+            <div class="slider-container">
+                <button class="slider-btn slider-prev shorts-prev" aria-label="이전">❮</button>
+                <div class="shorts-grid">
+                    {% for short in shorts %}
+                    <div class="shorts-card" onclick="window.open('{{ short.youtube_url }}', '_blank')" style="cursor: pointer;">
+                        {% if short.youtube_id %}
+                        <div class="shorts-thumbnail">
+                            <img src="{{ short.thumbnail }}" alt="{{ short.title }}" onerror="this.src='https://img.youtube.com/vi/{{ short.youtube_id }}/hqdefault.jpg'">
+                            <div class="shorts-play-button">▶</div>
+                            <div class="shorts-badge">Shorts</div>
+                        </div>
+                        {% endif %}
+                        <div class="shorts-title">
+                            <h4>{{ short.title }}</h4>
+                        </div>
                     </div>
-                    {% endif %}
-                    <div class="shorts-title">
-                        <h4>{{ short.title }}</h4>
-                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+                <button class="slider-btn slider-next shorts-next" aria-label="다음">❯</button>
             </div>
         </div>
     </section>
@@ -218,26 +222,26 @@
                         <div class="divider"></div>
                     </div>
                     <div class="news-board">
-                        <table class="board-table">
-                            <thead>
-                                <tr>
-                                    <th class="col-num">번호</th>
-                                    <th class="col-title">제목</th>
-                                    <th class="col-date">작성일</th>
-                                    <th class="col-views">조회</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div class="news-container">
+                            <!-- Header -->
+                            <div class="news-header">
+                                <div class="news-cell news-num">번호</div>
+                                <div class="news-cell news-subject">제목</div>
+                                <div class="news-cell news-date">작성일</div>
+                                <div class="news-cell news-views">조회</div>
+                            </div>
+                            <!-- Body -->
+                            <div class="news-body">
                                 {% for news in news_list %}
-                                <tr class="board-row" onclick="window.location='/news/{{ news.id }}'" style="cursor: pointer;">
-                                    <td class="col-num">{{ news.id }}</td>
-                                    <td class="col-title">{{ news.title }}</td>
-                                    <td class="col-date">{{ news.date }}</td>
-                                    <td class="col-views">{{ news.views }}</td>
-                                </tr>
+                                <div class="news-item" onclick="window.location='/news/{{ news.id }}'" style="cursor: pointer;">
+                                    <div class="news-cell news-num">{{ news.id }}</div>
+                                    <div class="news-cell news-subject">{{ news.title }}</div>
+                                    <div class="news-cell news-date">{{ news.date }}</div>
+                                    <div class="news-cell news-views">{{ news.views }}</div>
+                                </div>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
