@@ -504,11 +504,13 @@ section {
 
 .col-num {
     width: 80px;
+    min-width: 80px;
+    max-width: 80px;
 }
 
 .col-title {
     text-align: left !important;
-    max-width: 400px;
+    width: auto;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -516,10 +518,14 @@ section {
 
 .col-date {
     width: 120px;
+    min-width: 120px;
+    max-width: 120px;
 }
 
 .col-views {
     width: 80px;
+    min-width: 80px;
+    max-width: 80px;
 }
 
 .login-link {
