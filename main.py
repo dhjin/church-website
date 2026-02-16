@@ -190,11 +190,10 @@ def init_db():
     cursor.execute("SELECT COUNT(*) FROM sermons")
     if cursor.fetchone()[0] == 0:
         cursor.execute("""
-            INSERT INTO sermons (title, pastor, date, description)
+            INSERT INTO sermons (title, pastor, date, description, youtube_url)
             VALUES
-            ('하나님의 사랑', '김한기 목사', '2026-02-16', '요한복음 3:16을 중심으로 하나님의 무한한 사랑에 대해 나눕니다.'),
-            ('믿음의 여정', '김한기 목사', '2026-02-09', '히브리서 11장을 통해 믿음의 선진들의 삶을 배웁니다.'),
-            ('평안의 근원', '김한기 목사', '2026-02-02', '빌립보서 4:6-7을 통해 진정한 평안을 찾는 법을 나눕니다.')
+            ('머리 잃은 세상에 머리로 오신 예수님', '김한기 목사', '2026-02-16', '머리 잃은 세상에 머리로 오신 예수님', 'https://www.youtube.com/live/2yjRBwmC28I?si=HVsv8BXBVOyy9XIJ'),
+            ('숨지 않는 사람을 찾으시는 하나님', '김한기 목사', '2026-02-16', '숨지 않는 사람을 찾으시는 하나님', 'https://www.youtube.com/live/I8WezzbVDi4?si=0qsVyq3byvm-4f7P')
         """)
 
         cursor.execute("""
@@ -208,7 +207,13 @@ def init_db():
         cursor.execute("""
             INSERT INTO visions (title, youtube_url, date, author)
             VALUES
-            ('2026년 교회 비전', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', '2026-01-15', '관리자')
+            ('더하는 교회 비전', 'https://youtu.be/p1H6GPhqE-U?si=YzYgySlrIRbgCFDz', '2026-02-16', 'admin')
+        """)
+
+        cursor.execute("""
+            INSERT INTO shorts (title, youtube_url, date, author)
+            VALUES
+            ('요엘', 'https://youtube.com/shorts/pwBEmlFKc2g?si=dVuAYcN2oMgGlXVH', '2026-02-16', 'admin')
         """)
 
     conn.commit()
