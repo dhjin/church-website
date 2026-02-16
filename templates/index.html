@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>더하는 교회 - 기독교 한국침례회</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <!-- Naver Map API -->
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=YOUR_CLIENT_ID"></script>
+    <!-- Map removed - using static image instead -->
 </head>
 <body>
     <!-- Header -->
@@ -253,11 +252,18 @@
                 <div class="divider"></div>
             </div>
 
-            <!-- Naver Map -->
+            <!-- Location Map -->
             <div class="map-section">
-                <h3 class="map-title">오시는 길</h3>
                 <div class="map-container">
-                    <div id="map" style="width:100%;height:400px;"></div>
+                    <!-- Static map image with location info -->
+                    <div class="static-map" style="width:100%;height:400px;background-color:#e8eaed;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+                        <div style="text-align:center;padding:2rem;z-index:1;">
+                            <div style="font-size:3rem;margin-bottom:1rem;">📍</div>
+                            <h4 style="margin:0 0 1rem 0;color:var(--primary-color);font-size:1.5rem;">더하는 교회</h4>
+                            <p style="margin:0;color:var(--text-dark);font-size:1.1rem;">대전시 유성구 학하동 755-6 1층</p>
+                            <p style="margin:0.5rem 0 0 0;color:var(--text-light);">기독교 한국침례회</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="map-buttons">
                     <a href="https://map.naver.com/p/search/대전시%20유성구%20학하동%20755-6" target="_blank" class="btn btn-naver">

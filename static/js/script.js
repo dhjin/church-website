@@ -105,68 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Naver Map Integration
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Naver Map if the map container exists
-    const mapContainer = document.getElementById('map');
-
-    if (mapContainer) {
-        try {
-            // Church location coordinates (대전시 유성구 학하동 755-6)
-            // Note: These coordinates are approximate. You should get exact coordinates from Naver Maps
-            const churchLocation = new naver.maps.LatLng(36.3614, 127.3445);
-
-            const mapOptions = {
-                center: churchLocation,
-                zoom: 17,
-                zoomControl: true,
-                zoomControlOptions: {
-                    position: naver.maps.Position.TOP_RIGHT
-                }
-            };
-
-            const map = new naver.maps.Map('map', mapOptions);
-
-            // Add marker
-            const marker = new naver.maps.Marker({
-                position: churchLocation,
-                map: map,
-                title: '더하는 교회'
-            });
-
-            // Add info window
-            const infoWindow = new naver.maps.InfoWindow({
-                content: '<div style="padding:10px;min-width:200px;line-height:1.5;">' +
-                        '<h4 style="margin:0 0 5px 0;color:#2c5f8d;">더하는 교회</h4>' +
-                        '<p style="margin:0;font-size:13px;">기독교 한국침례회</p>' +
-                        '<p style="margin:5px 0 0 0;font-size:12px;">대전시 유성구 학하동 755-6 1층</p>' +
-                        '</div>'
-            });
-
-            // Show info window on marker click
-            naver.maps.Event.addListener(marker, 'click', () => {
-                if (infoWindow.getMap()) {
-                    infoWindow.close();
-                } else {
-                    infoWindow.open(map, marker);
-                }
-            });
-
-            // Show info window by default
-            infoWindow.open(map, marker);
-
-            console.log('Naver Map loaded successfully!');
-        } catch (error) {
-            // If Naver Maps API is not loaded, show a static message
-            console.log('Naver Maps API not loaded. Displaying fallback.');
-            mapContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#f0f0f0;color:#666;text-align:center;padding:20px;">' +
-                '<div>' +
-                '<p style="font-size:16px;margin-bottom:10px;">📍 대전시 유성구 학하동 755-6 1층</p>' +
-                '<p style="font-size:14px;">아래 버튼을 클릭하여 지도에서 확인하세요.</p>' +
-                '</div>' +
-                '</div>';
-        }
-    }
-});
+// Map functionality removed - using static display instead
 
 console.log('Church website loaded successfully!');
 
