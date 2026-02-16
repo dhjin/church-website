@@ -222,32 +222,26 @@
                         <div class="divider"></div>
                     </div>
                     <div class="news-board">
-                        <table class="news-table">
-                            <colgroup>
-                                <col style="width: 60px;">
-                                <col style="width: auto;">
-                                <col style="width: 100px;">
-                                <col style="width: 60px;">
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th>번호</th>
-                                    <th>제목</th>
-                                    <th>작성일</th>
-                                    <th>조회</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div class="news-container">
+                            <!-- Header -->
+                            <div class="news-header">
+                                <div class="news-cell news-num">번호</div>
+                                <div class="news-cell news-subject">제목</div>
+                                <div class="news-cell news-date">작성일</div>
+                                <div class="news-cell news-views">조회</div>
+                            </div>
+                            <!-- Body -->
+                            <div class="news-body">
                                 {% for news in news_list %}
-                                <tr class="news-row" onclick="window.location='/news/{{ news.id }}'" style="cursor: pointer;">
-                                    <td>{{ news.id }}</td>
-                                    <td class="news-title">{{ news.title }}</td>
-                                    <td>{{ news.date }}</td>
-                                    <td>{{ news.views }}</td>
-                                </tr>
+                                <div class="news-item" onclick="window.location='/news/{{ news.id }}'" style="cursor: pointer;">
+                                    <div class="news-cell news-num">{{ news.id }}</div>
+                                    <div class="news-cell news-subject">{{ news.title }}</div>
+                                    <div class="news-cell news-date">{{ news.date }}</div>
+                                    <div class="news-cell news-views">{{ news.views }}</div>
+                                </div>
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
