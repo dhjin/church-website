@@ -1627,10 +1627,6 @@ html {
 }
 
 .vision-section {
-    background-color: var(--bg-white);
-    padding: 3rem;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
     margin-bottom: 3rem;
 }
 
