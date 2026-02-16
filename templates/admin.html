@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - 더하는 교회</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-nav">
+                    <h1>✟ 더하는 교회 관리자</h1>
+                    <div class="admin-user-info">
+                        <span>👤 {{ user.username }}</span>
+                        <a href="/logout" class="btn-logout">로그아웃</a>
+                        <a href="/" class="btn-home">홈페이지</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-container">
+            <div class="container">
+                <!-- Church Info Section -->
+                <section class="admin-section">
+                    <h2 class="section-title">교회 소개 관리</h2>
+                    <div class="admin-card">
+                        <form method="POST" action="/admin/church-info/update">
+                            <div class="form-group">
+                                <label for="church-intro">교회 소개 내용</label>
+                                <textarea id="church-intro" name="content" rows="5" required>{{ church_intro }}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">저장</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Vision Management Section -->
+                <section class="admin-section">
+                    <h2 class="section-title">교회비전 관리</h2>
+
+                    <!-- Create Vision Form -->
+                    <div class="admin-card">
+                        <h3>새 비전 영상 등록</h3>
+                        <form method="POST" action="/admin/vision/create">
+                            <div class="form-group">
+                                <label for="vision-title">영상 제목</label>
+                                <input type="text" id="vision-title" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="youtube-url">YouTube 링크</label>
+                                <input type="url" id="youtube-url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=..." required>
+                                <small class="form-hint">YouTube 영상 URL을 입력하세요. 썸네일이 자동으로 추출됩니다.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">비전 등록</button>
+                        </form>
+                    </div>
+
+                    <!-- Vision List -->
+                    <div class="admin-card">
+                        <h3>등록된 비전 목록</h3>
+                        <div class="vision-list-admin">
+                            {% if visions %}
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>제목</th>
+                                        <th>작성자</th>
+                                        <th>작성일</th>
+                                        <th>YouTube ID</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vision in visions %}
+                                    <tr>
+                                        <td>{{ vision.id }}</td>
+                                        <td>{{ vision.title }}</td>
+                                        <td>{{ vision.author }}</td>
+                                        <td>{{ vision.date }}</td>
+                                        <td><code>{{ vision.youtube_id }}</code></td>
+                                        <td>
+                                            <form method="POST" action="/admin/vision/delete/{{ vision.id }}" style="display: inline;">
+                                                <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <p class="empty-message">등록된 비전이 없습니다.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sermon Management Section -->
+                <section class="admin-section">
+                    <h2 class="section-title">설교 관리</h2>
+
+                    <!-- Create Sermon Form -->
+                    <div class="admin-card">
+                        <h3>새 설교 등록</h3>
+                        <form method="POST" action="/admin/sermon/create">
+                            <div class="form-group">
+                                <label for="sermon-title">설교 제목</label>
+                                <input type="text" id="sermon-title" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pastor">설교자</label>
+                                <input type="text" id="pastor" name="pastor" value="김한기 목사" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sermon-youtube-url">YouTube 링크 (선택)</label>
+                                <input type="url" id="sermon-youtube-url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=...">
+                                <small class="form-hint">YouTube 영상 URL을 입력하면 썸네일이 자동으로 표시됩니다. (선택사항)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="sermon-description">설교 요약</label>
+                                <textarea id="sermon-description" name="description" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">설교 등록</button>
+                        </form>
+                    </div>
+
+                    <!-- Sermon List -->
+                    <div class="admin-card">
+                        <h3>등록된 설교 목록</h3>
+                        <div class="sermon-list-admin">
+                            {% if sermons %}
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>제목</th>
+                                        <th>설교자</th>
+                                        <th>설교일</th>
+                                        <th>YouTube ID</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sermon in sermons %}
+                                    <tr>
+                                        <td>{{ sermon.id }}</td>
+                                        <td>{{ sermon.title }}</td>
+                                        <td>{{ sermon.pastor }}</td>
+                                        <td>{{ sermon.date }}</td>
+                                        <td>
+                                            {% if sermon.youtube_id %}
+                                            <code>{{ sermon.youtube_id }}</code>
+                                            {% else %}
+                                            <span style="color: #999;">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <form method="POST" action="/admin/sermon/delete/{{ sermon.id }}" style="display: inline;">
+                                                <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <p class="empty-message">등록된 설교가 없습니다.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+
+                <!-- YouTube Shorts Management Section -->
+                <section class="admin-section">
+                    <h2 class="section-title">더하는교회 숏츠 관리</h2>
+
+                    <!-- Create Shorts Form -->
+                    <div class="admin-card">
+                        <h3>새 숏츠 등록</h3>
+                        <form method="POST" action="/admin/shorts/create">
+                            <div class="form-group">
+                                <label for="shorts-title">숏츠 제목</label>
+                                <input type="text" id="shorts-title" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="shorts-youtube-url">YouTube Shorts 링크</label>
+                                <input type="url" id="shorts-youtube-url" name="youtube_url" placeholder="https://www.youtube.com/shorts/..." required>
+                                <small class="form-hint">YouTube Shorts URL을 입력하세요. 썸네일이 자동으로 추출됩니다.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">숏츠 등록</button>
+                        </form>
+                    </div>
+
+                    <!-- Shorts List -->
+                    <div class="admin-card">
+                        <h3>숏츠 목록</h3>
+                        {% if shorts %}
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>제목</th>
+                                    <th>등록일</th>
+                                    <th>YouTube ID</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for short in shorts %}
+                                <tr>
+                                    <td>{{ short.id }}</td>
+                                    <td>{{ short.title }}</td>
+                                    <td>{{ short.date }}</td>
+                                    <td>
+                                        {% if short.youtube_id %}
+                                        <code>{{ short.youtube_id }}</code>
+                                        {% else %}
+                                        <span style="color: #999;">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <form method="POST" action="/admin/shorts/delete/{{ short.id }}" style="display: inline;">
+                                            <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p class="empty-message">등록된 숏츠가 없습니다.</p>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <!-- News Management Section -->
+                <section class="admin-section">
+                    <h2 class="section-title">교회소식 관리</h2>
+
+                    <!-- Create News Form -->
+                    <div class="admin-card">
+                        <h3>새 소식 작성</h3>
+                        <form method="POST" action="/admin/news/create" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="title">제목</label>
+                                <input type="text" id="title" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="content">내용</label>
+                                <textarea id="content" name="content" rows="6" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="image">이미지 첨부 (선택)</label>
+                                <input type="file" id="image" name="image" accept="image/*">
+                                <small class="form-hint">JPG, PNG 등의 이미지 파일을 첨부할 수 있습니다.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">소식 등록</button>
+                        </form>
+                    </div>
+
+                    <!-- News List -->
+                    <div class="admin-card">
+                        <h3>등록된 소식 목록</h3>
+                        <div class="news-list-admin">
+                            {% if news_list %}
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>제목</th>
+                                        <th>작성자</th>
+                                        <th>작성일</th>
+                                        <th>조회수</th>
+                                        <th>이미지</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for news in news_list %}
+                                    <tr>
+                                        <td>{{ news.id }}</td>
+                                        <td>{{ news.title }}</td>
+                                        <td>{{ news.author }}</td>
+                                        <td>{{ news.date }}</td>
+                                        <td>{{ news.views }}</td>
+                                        <td>
+                                            {% if news.image_path %}
+                                            <span class="badge badge-success">있음</span>
+                                            {% else %}
+                                            <span class="badge badge-secondary">없음</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <form method="POST" action="/admin/news/delete/{{ news.id }}" style="display: inline;">
+                                                <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <p class="empty-message">등록된 소식이 없습니다.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

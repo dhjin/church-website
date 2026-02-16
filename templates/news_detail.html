@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ news.title }} - 더하는 교회</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .news-detail-container {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 20px;
+        }
+
+        .news-detail-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .news-detail-title {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .news-detail-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            flex-wrap: wrap;
+        }
+
+        .news-detail-content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+        }
+
+        .news-detail-image {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .news-detail-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .news-detail-title {
+                font-size: 1.5rem;
+            }
+
+            .news-detail-content {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <h1>✟ 더하는 교회</h1>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="메뉴">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="/#home">홈</a></li>
+                    <li><a href="/#about">교회소개</a></li>
+                    <li><a href="/#sermons">설교</a></li>
+                    <li><a href="/#news" class="active">교회소식</a></li>
+                    <li><a href="/#contact">찾아오시는 길</a></li>
+                    {% if user %}
+                    <li><a href="/logout">로그아웃</a></li>
+                    {% else %}
+                    <li><a href="/login" class="login-link">로그인</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="news-detail-container">
+        <div class="news-detail-header">
+            <h1 class="news-detail-title">{{ news.title }}</h1>
+            <div class="news-detail-meta">
+                <span>📝 작성자: {{ news.author or '관리자' }}</span>
+                <span>📅 작성일: {{ news.date }}</span>
+                <span>👁️ 조회수: {{ news.views }}</span>
+            </div>
+        </div>
+
+        {% if news.image_path %}
+        <div class="news-detail-image">
+            <img src="{{ news.image_path }}" alt="{{ news.title }}">
+        </div>
+        {% endif %}
+
+        <div class="news-detail-content">
+            {{ news.content | replace('\n', '<br>') | safe }}
+        </div>
+
+        <div>
+            <a href="/#news" class="back-button">← 목록으로 돌아가기</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>더하는 교회</h4>
+                    <p>기독교 한국침례회</p>
+                    <p>담임목사: 김한기</p>
+                </div>
+                <div class="footer-section">
+                    <h4>주소</h4>
+                    <p>대전시 유성구 학하동 755-6 1층</p>
+                    <p>Tel: 042-XXX-XXXX</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 더하는 교회. All rights reserved.</p>
+                <p>하나님의 사랑과 은혜가 함께 하시기를 기도합니다.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>

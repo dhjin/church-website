@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>더하는 교회 - 기독교 한국침례회</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Naver Map API -->
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <h1>✟ 더하는 교회</h1>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="메뉴">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="#home" class="active">홈</a></li>
+                    <li><a href="#about">교회소개</a></li>
+                    <li><a href="#sermons">설교</a></li>
+                    <li><a href="#news">교회소식</a></li>
+                    <li><a href="#contact">찾아오시는 길</a></li>
+                    {% if user %}
+                        {% if user.role == 'admin' %}
+                        <li><a href="/admin" class="admin-link">관리자</a></li>
+                        {% endif %}
+                        <li><a href="/logout">로그아웃</a></li>
+                    {% else %}
+                        <li><a href="/login" class="login-link">로그인</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h2 class="hero-title">하나님 나라와 의를 구하는 교회</h2>
+            <p class="hero-subtitle">더하는 교회에 오신 것을 환영합니다</p>
+            <p class="hero-info">기독교 한국침례회 · 교회 대표 김한기 목사</p>
+            <div class="hero-buttons">
+                <a href="#events" class="btn btn-primary">예배 안내</a>
+                <a href="#about" class="btn btn-secondary">교회 소개</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Welcome Section -->
+    <section class="welcome">
+        <div class="container">
+            <div class="section-header">
+                <h2>환영합니다</h2>
+                <div class="divider"></div>
+            </div>
+            <p class="welcome-text">
+                {{ church_intro }}
+            </p>
+            <div class="church-info-banner">
+                <div class="info-item">
+                    <strong>소속:</strong> 기독교 한국침례회
+                </div>
+                <div class="info-item">
+                    <strong>담임목사:</strong> 김한기 목사
+                </div>
+                <div class="info-item">
+                    <strong>위치:</strong> 대전시 유성구 학하동
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision and Sermons Section -->
+    <section id="sermons" class="vision-sermons-section">
+        <div class="container">
+            <div class="dual-section">
+                <!-- Vision Section (Left) -->
+                <div class="section-half vision-section">
+                    <div class="section-header">
+                        <h2>교회비전</h2>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="slider-container">
+                        <button class="slider-btn slider-prev vision-prev" aria-label="이전">❮</button>
+                        <div class="card-slider vision-slider">
+                            {% for vision in visions %}
+                            <div class="card vision-card">
+                                {% if vision.youtube_id %}
+                                <div class="video-thumbnail" onclick="window.open('{{ vision.youtube_url }}', '_blank')">
+                                    <img src="{{ vision.thumbnail }}" alt="{{ vision.title }}" onerror="this.src='https://img.youtube.com/vi/{{ vision.youtube_id }}/hqdefault.jpg'">
+                                    <div class="play-button">▶</div>
+                                </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h3 class="card-title">{{ vision.title }}</h3>
+                                    <p class="meta">
+                                        <span class="date">📅 {{ vision.date }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="slider-btn slider-next vision-next" aria-label="다음">❯</button>
+                    </div>
+                </div>
+
+                <!-- Sermons Section (Right) -->
+                <div class="section-half sermons-section">
+                    <div class="section-header">
+                        <h2>최근 설교</h2>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="slider-container">
+                        <button class="slider-btn slider-prev sermon-prev" aria-label="이전">❮</button>
+                        <div class="card-slider sermon-slider">
+                            {% for sermon in sermons %}
+                            <div class="card sermon-card {% if sermon.youtube_id %}clickable-card{% endif %}"
+                                 {% if sermon.youtube_id %}onclick="window.open('{{ sermon.youtube_url }}', '_blank')" style="cursor: pointer;"{% endif %}>
+                                {% if sermon.youtube_id %}
+                                <div class="video-thumbnail">
+                                    <img src="{{ sermon.thumbnail }}" alt="{{ sermon.title }}" onerror="this.src='https://img.youtube.com/vi/{{ sermon.youtube_id }}/hqdefault.jpg'">
+                                    <div class="play-button">▶</div>
+                                </div>
+                                {% endif %}
+                                <div class="card-header">
+                                    <h3>{{ sermon.title }}</h3>
+                                </div>
+                                <div class="card-body">
+                                    <p class="meta">
+                                        <span class="pastor">👤 {{ sermon.pastor }}</span>
+                                        <span class="date">📅 {{ sermon.date }}</span>
+                                    </p>
+                                    <p class="description">{{ sermon.description }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="slider-btn slider-next sermon-next" aria-label="다음">❯</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- YouTube Shorts Section -->
+    <section id="shorts" class="shorts-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>더하는교회 숏츠</h2>
+                <div class="divider"></div>
+            </div>
+            <div class="shorts-grid">
+                {% for short in shorts %}
+                <div class="shorts-card" onclick="window.open('{{ short.youtube_url }}', '_blank')" style="cursor: pointer;">
+                    {% if short.youtube_id %}
+                    <div class="shorts-thumbnail">
+                        <img src="{{ short.thumbnail }}" alt="{{ short.title }}" onerror="this.src='https://img.youtube.com/vi/{{ short.youtube_id }}/hqdefault.jpg'">
+                        <div class="shorts-play-button">▶</div>
+                        <div class="shorts-badge">Shorts</div>
+                    </div>
+                    {% endif %}
+                    <div class="shorts-title">
+                        <h4>{{ short.title }}</h4>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Worship Schedule and News Section -->
+    <section id="schedule-news" class="schedule-news-section">
+        <div class="container">
+            <div class="schedule-news-grid">
+                <!-- Left: Consolidated Worship Schedule -->
+                <div class="schedule-column">
+                    <div class="section-header">
+                        <h2>예배 시간 안내</h2>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="consolidated-schedule">
+                        <div class="schedule-list">
+                            <div class="schedule-row">
+                                <span class="schedule-name">주일 예배</span>
+                                <span class="schedule-time">일요일 오전 10:40</span>
+                            </div>
+                            <div class="schedule-row">
+                                <span class="schedule-name">주일 성경공부 및 목장 모임</span>
+                                <span class="schedule-time">일요일 오후 1:00</span>
+                            </div>
+                            <div class="schedule-row">
+                                <span class="schedule-name">수요 예배</span>
+                                <span class="schedule-time">수요일 오후 7:30 (Zoom)</span>
+                            </div>
+                            <div class="schedule-row">
+                                <span class="schedule-name">금요 기도회</span>
+                                <span class="schedule-time">금요일 오후 7:30</span>
+                            </div>
+                            <div class="schedule-row">
+                                <span class="schedule-name">아침 예배</span>
+                                <span class="schedule-time">오전 7:00 (Zoom)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Church News -->
+                <div class="news-column">
+                    <div class="section-header">
+                        <h2>교회소식</h2>
+                        <div class="divider"></div>
+                    </div>
+                    <div class="news-board">
+                        <table class="board-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-num">번호</th>
+                                    <th class="col-title">제목</th>
+                                    <th class="col-date">작성일</th>
+                                    <th class="col-views">조회</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for news in news_list %}
+                                <tr class="board-row" onclick="window.location='/news/{{ news.id }}'" style="cursor: pointer;">
+                                    <td>{{ news.id }}</td>
+                                    <td class="col-title">{{ news.title }}</td>
+                                    <td>{{ news.date }}</td>
+                                    <td>{{ news.views }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>찾아오시는 길</h2>
+                <div class="divider"></div>
+            </div>
+
+            <!-- Naver Map -->
+            <div class="map-section">
+                <h3 class="map-title">오시는 길</h3>
+                <div class="map-container">
+                    <div id="map" style="width:100%;height:400px;"></div>
+                </div>
+                <div class="map-buttons">
+                    <a href="https://map.naver.com/p/search/대전시%20유성구%20학하동%20755-6" target="_blank" class="btn btn-naver">
+                        네이버 지도로 길찾기
+                    </a>
+                    <a href="https://map.kakao.com/link/search/대전시%20유성구%20학하동%20755-6" target="_blank" class="btn btn-kakao">
+                        카카오맵으로 길찾기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>더하는 교회</h4>
+                    <p>기독교 한국침례회</p>
+                    <p>교회 대표: 김한기 목사</p>
+                </div>
+                <div class="footer-section">
+                    <h4>주소</h4>
+                    <p>대전시 유성구 학하동 755-6 1층</p>
+                    <p>Tel: 042-XXX-XXXX</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 더하는 교회. All rights reserved.</p>
+                <p>하나님의 사랑과 은혜가 함께 하시기를 기도합니다.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
