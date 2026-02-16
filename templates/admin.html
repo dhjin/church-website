@@ -137,31 +137,50 @@
                             <table class="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>번호</th>
-                                        <th>제목</th>
-                                        <th>설교자</th>
-                                        <th>설교일</th>
-                                        <th>YouTube ID</th>
+                                        <th>설교 정보</th>
                                         <th>관리</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="sermon-list">
                                     {% for sermon in sermons %}
-                                    <tr>
-                                        <td>{{ sermon.id }}</td>
-                                        <td>{{ sermon.title }}</td>
-                                        <td>{{ sermon.pastor }}</td>
-                                        <td>{{ sermon.date }}</td>
-                                        <td>
-                                            {% if sermon.youtube_id %}
-                                            <code>{{ sermon.youtube_id }}</code>
-                                            {% else %}
-                                            <span style="color: #999;">-</span>
-                                            {% endif %}
+                                    <tr class="sermon-row" data-sermon-id="{{ sermon.id }}">
+                                        <td class="sermon-display">
+                                            <div class="sermon-info">
+                                                <strong>{{ sermon.title }}</strong>
+                                                <span>{{ sermon.pastor }} | {{ sermon.date }}</span>
+                                            </div>
+                                            <div class="sermon-description">{{ sermon.description[:100] }}...</div>
                                         </td>
                                         <td>
-                                            <form method="POST" action="/admin/sermon/delete/{{ sermon.id }}" style="display: inline;">
-                                                <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                            <button class="btn-edit" onclick="editSermon({{ sermon.id }})">수정</button>
+                                            <form method="POST" action="/admin/sermon/delete/{{ sermon.id }}"
+                                                  style="display: inline;">
+                                                <button type="submit" class="btn-delete"
+                                                        onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <tr class="sermon-edit-row" id="edit-{{ sermon.id }}" style="display: none;">
+                                        <td colspan="2">
+                                            <form method="POST" action="/admin/sermon/update/{{ sermon.id }}"
+                                                  class="inline-edit-form">
+                                                <div class="form-row">
+                                                    <input type="text" name="title" value="{{ sermon.title }}"
+                                                           placeholder="설교 제목" required>
+                                                    <input type="text" name="pastor" value="{{ sermon.pastor }}"
+                                                           placeholder="설교자" required>
+                                                    <input type="date" name="date" value="{{ sermon.date }}" required>
+                                                </div>
+                                                <input type="url" name="youtube_url"
+                                                       value="{{ sermon.youtube_url or '' }}"
+                                                       placeholder="YouTube 링크 (선택)">
+                                                <textarea name="description" rows="4" required
+                                                          placeholder="설교 요약">{{ sermon.description }}</textarea>
+                                                <div class="form-actions">
+                                                    <button type="submit" class="btn btn-primary">저장</button>
+                                                    <button type="button" class="btn btn-secondary"
+                                                            onclick="cancelEdit({{ sermon.id }})">취소</button>
+                                                </div>
                                             </form>
                                         </td>
                                     </tr>
@@ -310,8 +329,37 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- Church About Management Section -->
+                <section class="admin-section">
+                    <h2 class="section-title">교회소개 관리</h2>
+                    <div class="admin-card">
+                        <form method="POST" action="/admin/about/update">
+                            <div class="form-group">
+                                <label for="vision-title">비전 제목</label>
+                                <input type="text" id="vision-title" name="vision_title"
+                                       value="{{ about.vision_title }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vision-content">비전 내용</label>
+                                <textarea id="vision-content" name="vision_content"
+                                          rows="12" required>{{ about.vision_content }}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mission-content">5대 사명 내용</label>
+                                <textarea id="mission-content" name="mission_content"
+                                          rows="6" required>{{ about.mission_content }}</textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">저장</button>
+                        </form>
+                    </div>
+                </section>
             </div>
         </div>
     </div>
+    <script src="/static/js/admin.js"></script>
 </body>
 </html>

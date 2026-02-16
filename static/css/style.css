@@ -1393,3 +1393,71 @@ html {
         font-size: 1.1rem;
     }
 }
+
+/* About Page Styles */
+.about-page {
+    padding: 100px 20px 80px;
+    background-color: var(--bg-light);
+    min-height: 60vh;
+}
+
+.about-content-main {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.vision-section {
+    background-color: var(--bg-white);
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 3rem;
+}
+
+.vision-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+    white-space: pre-line;
+}
+
+.mission-section {
+    background-color: var(--bg-white);
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.mission-section h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.mission-text {
+    font-size: 1.1rem;
+    line-height: 2;
+    color: var(--text-dark);
+    white-space: pre-line;
+}
+
+@media (max-width: 768px) {
+    .about-page {
+        padding: 80px 15px 60px;
+    }
+
+    .vision-section,
+    .mission-section {
+        padding: 2rem 1.5rem;
+    }
+
+    .vision-text,
+    .mission-text {
+        font-size: 1rem;
+    }
+
+    .mission-section h2 {
+        font-size: 1.5rem;
+    }
+}

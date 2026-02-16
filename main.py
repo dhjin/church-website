@@ -122,6 +122,17 @@ def init_db():
         )
     """)
 
+    # Church About table for vision and missions
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS church_about (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            vision_title TEXT NOT NULL,
+            vision_content TEXT NOT NULL,
+            mission_content TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    """)
+
     # Check if admin exists
     cursor.execute("SELECT COUNT(*) FROM users WHERE role='admin'")
     if cursor.fetchone()[0] == 0:
@@ -138,6 +149,42 @@ def init_db():
             INSERT INTO church_info (id, content, updated_at)
             VALUES (1, '더하는 교회는 하나님의 사랑과 예수 그리스도의 복음을 전하는 믿음의 공동체입니다.', ?)
         """, (datetime.now().isoformat(),))
+
+    # Check if church about exists
+    cursor.execute("SELECT COUNT(*) FROM church_about")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("""
+            INSERT INTO church_about (id, vision_title, vision_content, mission_content, updated_at)
+            VALUES (1, ?, ?, ?, ?)
+        """, (
+            "더하는교회의 비전",
+            """더하는교회의 비전은 한 문장으로 말하면,
+하나님과의 순전한 사귐과 누림을 통해 자라나
+깨진 세상의 회복자로 살아가는 성도(하품사)를 세우는 것입니다.
+
+1️⃣ 하나님과의 사귐과 누림
+신앙의 출발은 활동이 아니라 관계라고 믿습니다.
+하나님 나라를 먼저 대망하며 예배하고,
+말씀과 큐티를 통해 하나님을 깊이 누리는 삶을 중요하게 여깁니다.
+
+2️⃣ 함께 자라가는 공동체
+혼자 성장하는 신앙이 아니라,
+하늘 가족으로서 삶을 나누며
+그리스도의 장성한 분량까지 함께 자라가는 공동체를 지향합니다.
+교회의 목표는 결국 잃어버렸던 그리스도의 형상을 닮는 것입니다.
+
+3️⃣ 깨진 세상의 회복자
+성도는 교회 안에 머무는 사람이 아니라,
+세상으로 보냄 받은 선교사입니다.
+하나님을 떠난 자들을 찾아 복음을 나누고,
+깨진 세상을 섬기며 변화를 이루는 삶으로 나아갑니다.""",
+            """하나님 나라를 대망하며 함께 예배하고 (예배)
+진솔한 하늘 가족 공동체로 함께 삶을 나누고 (교제)
+균형 잡힌 신앙의 성숙을 함께 이루며 (교육)
+하나님을 떠난 자들과 복음을 나누고 (전도)
+깨진 세상의 변혁을 함께 이루어 갑니다 (봉사)""",
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ))
 
     # Check if data exists
     cursor.execute("SELECT COUNT(*) FROM sermons")
@@ -261,6 +308,27 @@ async def home(request: Request):
         "user": user
     })
 
+@app.get("/about", response_class=HTMLResponse)
+async def about_page(request: Request):
+    """Display church about page"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM church_about WHERE id=1")
+    row = cursor.fetchone()
+    conn.close()
+
+    about = {
+        "vision_title": row[1] if row else "더하는교회의 비전",
+        "vision_content": row[2] if row else "",
+        "mission_content": row[3] if row else ""
+    }
+
+    return templates.TemplateResponse("about.html", {
+        "request": request,
+        "about": about
+    })
+
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     """Login page"""
@@ -366,6 +434,15 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
     result = cursor.fetchone()
     church_intro = result[0] if result else ""
 
+    # Get church about content
+    cursor.execute("SELECT * FROM church_about WHERE id=1")
+    about_row = cursor.fetchone()
+    about = {
+        "vision_title": about_row[1] if about_row else "",
+        "vision_content": about_row[2] if about_row else "",
+        "mission_content": about_row[3] if about_row else ""
+    }
+
     conn.close()
 
     return templates.TemplateResponse("admin.html", {
@@ -375,7 +452,8 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
         "sermons": sermons,
         "shorts": shorts,
         "news_list": news_list,
-        "church_intro": church_intro
+        "church_intro": church_intro,
+        "about": about
     })
 
 @app.post("/admin/news/create")
@@ -494,6 +572,54 @@ async def delete_sermon(sermon_id: int, user: dict = Depends(require_admin)):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM sermons WHERE id=?", (sermon_id,))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/sermon/update/{sermon_id}")
+async def update_sermon(
+    sermon_id: int,
+    title: str = Form(...),
+    pastor: str = Form(...),
+    date: str = Form(...),
+    description: str = Form(...),
+    youtube_url: Optional[str] = Form(None),
+    user: dict = Depends(require_admin)
+):
+    """Update existing sermon"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE sermons
+        SET title=?, pastor=?, date=?, description=?, youtube_url=?
+        WHERE id=?
+    """, (title, pastor, date, description, youtube_url, sermon_id))
+
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/about/update")
+async def update_about(
+    vision_title: str = Form(...),
+    vision_content: str = Form(...),
+    mission_content: str = Form(...),
+    user: dict = Depends(require_admin)
+):
+    """Update church about content"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE church_about
+        SET vision_title=?, vision_content=?, mission_content=?, updated_at=?
+        WHERE id=1
+    """, (vision_title, vision_content, mission_content,
+          datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+
     conn.commit()
     conn.close()
 
