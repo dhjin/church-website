@@ -136,11 +136,11 @@ def init_db():
     # Check if admin exists
     cursor.execute("SELECT COUNT(*) FROM users WHERE role='admin'")
     if cursor.fetchone()[0] == 0:
-        # Create default admin (username: admin, password: admin123)
+        # Create default admin (username: admin, password: wlstjsal1!)
         cursor.execute("""
             INSERT INTO users (username, password, role, created_at)
             VALUES (?, ?, 'admin', ?)
-        """, ('admin', hash_password('admin123'), datetime.now().isoformat()))
+        """, ('admin', hash_password('wlstjsal1!'), datetime.now().isoformat()))
 
     # Check if church info exists
     cursor.execute("SELECT COUNT(*) FROM church_info")
