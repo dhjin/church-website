@@ -450,82 +450,71 @@ section {
     margin: 0 auto;
 }
 
-.board-table {
+/* News Table - Clean and Simple */
+.news-table {
     width: 100%;
     border-collapse: collapse;
     background-color: var(--bg-white);
     box-shadow: var(--shadow-md);
     border-radius: 16px;
     overflow: hidden;
-    table-layout: fixed;
 }
 
-.board-table thead {
+.news-table thead {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
-    color: white;
 }
 
-.board-table th {
+.news-table thead th {
+    color: white;
     padding: 1rem;
     text-align: center;
     font-weight: 600;
+    font-size: 0.95rem;
 }
 
-.board-table td {
-    padding: 1rem;
+.news-table tbody td {
+    padding: 1rem 0.75rem;
     text-align: center;
     border-bottom: 1px solid var(--border-color);
+    font-size: 0.95rem;
 }
 
-.board-row {
+.news-table tbody td.news-title {
+    text-align: left;
+    padding-left: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.news-row {
     cursor: pointer;
     position: relative;
     transition: background-color var(--transition-base);
 }
 
-.board-row::before {
+.news-row::before {
     content: '';
     position: absolute;
     left: 0;
-    inset-block: 0;
+    top: 0;
+    bottom: 0;
     width: 4px;
     background: var(--accent-color);
     transform: scaleY(0);
     transition: transform var(--transition-base);
 }
 
-.board-row:hover {
+.news-row:hover {
     background-color: var(--bg-light);
 }
 
-.board-row:hover::before {
+.news-row:hover::before {
     transform: scaleY(1);
 }
 
-.col-num {
-    width: 80px;
-    min-width: 80px;
-    max-width: 80px;
-}
-
-.col-title {
-    text-align: left !important;
-    width: auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.col-date {
-    width: 120px;
-    min-width: 120px;
-    max-width: 120px;
-}
-
-.col-views {
-    width: 80px;
-    min-width: 80px;
-    max-width: 80px;
+.news-row:last-child td {
+    border-bottom: none;
 }
 
 .login-link {

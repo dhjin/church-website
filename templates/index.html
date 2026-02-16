@@ -222,22 +222,28 @@
                         <div class="divider"></div>
                     </div>
                     <div class="news-board">
-                        <table class="board-table">
+                        <table class="news-table">
+                            <colgroup>
+                                <col style="width: 60px;">
+                                <col style="width: auto;">
+                                <col style="width: 100px;">
+                                <col style="width: 60px;">
+                            </colgroup>
                             <thead>
                                 <tr>
-                                    <th class="col-num">번호</th>
-                                    <th class="col-title">제목</th>
-                                    <th class="col-date">작성일</th>
-                                    <th class="col-views">조회</th>
+                                    <th>번호</th>
+                                    <th>제목</th>
+                                    <th>작성일</th>
+                                    <th>조회</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for news in news_list %}
-                                <tr class="board-row" onclick="window.location='/news/{{ news.id }}'" style="cursor: pointer;">
-                                    <td class="col-num">{{ news.id }}</td>
-                                    <td class="col-title">{{ news.title }}</td>
-                                    <td class="col-date">{{ news.date }}</td>
-                                    <td class="col-views">{{ news.views }}</td>
+                                <tr class="news-row" onclick="window.location='/news/{{ news.id }}'" style="cursor: pointer;">
+                                    <td>{{ news.id }}</td>
+                                    <td class="news-title">{{ news.title }}</td>
+                                    <td>{{ news.date }}</td>
+                                    <td>{{ news.views }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
