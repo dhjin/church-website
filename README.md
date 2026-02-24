@@ -218,3 +218,6 @@ SQLite 클라이언트를 사용하여 `church.db` 파일을 직접 편집하세
 ## 문의
 
 궁금한 사항이 있으시면 연락주세요.
+# GitOps CI/CD Pipeline
+
+This repository uses GitHub Actions and ArgoCD for automated deployments.
