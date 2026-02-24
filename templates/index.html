@@ -93,7 +93,7 @@
                             {% for vision in visions %}
                             <div class="card vision-card">
                                 {% if vision.youtube_id %}
-                                <div class="video-thumbnail" onclick="window.open('{{ vision.youtube_url }}', '_blank')">
+                                <div class="video-thumbnail" onclick="openVideoModal('{{ vision.youtube_id }}')">
                                     <img src="{{ vision.thumbnail }}" alt="{{ vision.title }}" onerror="this.src='https://img.youtube.com/vi/{{ vision.youtube_id }}/hqdefault.jpg'">
                                     <div class="play-button">▶</div>
                                 </div>
@@ -122,7 +122,7 @@
                         <div class="card-slider sermon-slider">
                             {% for sermon in sermons %}
                             <div class="card sermon-card {% if sermon.youtube_id %}clickable-card{% endif %}"
-                                 {% if sermon.youtube_id %}onclick="window.open('{{ sermon.youtube_url }}', '_blank')" style="cursor: pointer;"{% endif %}>
+                                 {% if sermon.youtube_id %}onclick="openVideoModal('{{ sermon.youtube_id }}')" style="cursor: pointer;"{% endif %}>
                                 {% if sermon.youtube_id %}
                                 <div class="video-thumbnail">
                                     <img src="{{ sermon.thumbnail }}" alt="{{ sermon.title }}" onerror="this.src='https://img.youtube.com/vi/{{ sermon.youtube_id }}/hqdefault.jpg'">
@@ -160,7 +160,7 @@
                 <button class="slider-btn slider-prev shorts-prev" aria-label="이전">❮</button>
                 <div class="shorts-grid">
                     {% for short in shorts %}
-                    <div class="shorts-card" onclick="window.open('{{ short.youtube_url }}', '_blank')" style="cursor: pointer;">
+                    <div class="shorts-card" onclick="openVideoModal('{{ short.youtube_id }}')" style="cursor: pointer;">
                         {% if short.youtube_id %}
                         <div class="shorts-thumbnail">
                             <img src="{{ short.thumbnail }}" alt="{{ short.title }}" onerror="this.src='https://img.youtube.com/vi/{{ short.youtube_id }}/hqdefault.jpg'">
@@ -302,6 +302,16 @@
             </div>
         </div>
     </footer>
+
+    <!-- YouTube Video Modal -->
+    <div id="videoModal" class="video-modal" onclick="closeVideoModal(event)">
+        <div class="video-modal-content">
+            <span class="video-modal-close" onclick="closeVideoModal(event)">&times;</span>
+            <div class="video-container">
+                <iframe id="videoIframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
 
     <script src="/static/js/script.js"></script>
 </body>

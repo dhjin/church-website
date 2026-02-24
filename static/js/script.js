@@ -297,11 +297,43 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
-    // Apply swipe to shorts grid
-    if (shortsGrid) {
-        addSwipeSupport(shortsGrid,
-            () => showShortsPage(shortsPage + 1),
-            () => showShortsPage(shortsPage - 1)
-        );
+     // Apply swipe to shorts grid
+     if (shortsGrid) {
+         addSwipeSupport(shortsGrid,
+             () => showShortsPage(shortsPage + 1),
+             () => showShortsPage(shortsPage - 1)
+         );
+     }
+});
+
+// YouTube Video Modal
+function openVideoModal(videoId) {
+    const modal = document.getElementById('videoModal');
+    const iframe = document.getElementById('videoIframe');
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeVideoModal(event) {
+    if (event.target.classList.contains('video-modal') || 
+        event.target.classList.contains('video-modal-close')) {
+        const modal = document.getElementById('videoModal');
+        const iframe = document.getElementById('videoIframe');
+        iframe.src = '';
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('videoModal');
+        if (modal.classList.contains('active')) {
+            const iframe = document.getElementById('videoIframe');
+            iframe.src = '';
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
     }
 });
