@@ -17,7 +17,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 templates = Jinja2Templates(directory="templates")
 
-DB_PATH = "church.db"
+import os
+DB_PATH = os.getenv("DB_PATH", "church.db")
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
@@ -136,11 +137,11 @@ def init_db():
     # Check if admin exists
     cursor.execute("SELECT COUNT(*) FROM users WHERE role='admin'")
     if cursor.fetchone()[0] == 0:
-        # Create default admin (username: admin, password: wlstjsal1!)
+        # Create default admin (username: admin, password: CHANGE_THIS_PASSWORD)
         cursor.execute("""
             INSERT INTO users (username, password, role, created_at)
             VALUES (?, ?, 'admin', ?)
-        """, ('admin', hash_password('wlstjsal1!'), datetime.now().isoformat()))
+        """, ('admin', hash_password(os.getenv('ADMIN_PASSWORD', 'changeme')), datetime.now().isoformat()))
 
     # Check if church info exists
     cursor.execute("SELECT COUNT(*) FROM church_info")

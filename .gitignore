@@ -1,3 +1,10 @@
+# Database
+*.db
+church.db
+
+# Uploads
+uploads/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -7,12 +14,6 @@ __pycache__/
 venv/
 ENV/
 env/
-.venv
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
 
 # IDE
 .vscode/
@@ -25,9 +26,13 @@ env/
 .DS_Store
 Thumbs.db
 
+# Backups
+*.backup
+
 # Logs
 *.log
+nohup.out
 
-# Environment variables
+# Environment
 .env
 .env.local
