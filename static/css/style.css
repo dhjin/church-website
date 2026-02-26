@@ -1446,9 +1446,52 @@ html {
 }
 
 /* YouTube Shorts Section */
+/* Tab Navigation */
+.content-tabs {
+    background-color: var(--primary-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.tabs-menu {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+}
+
+.tab-item {
+    display: inline-block;
+    padding: 16px 40px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+    letter-spacing: 0.03em;
+}
+
+.tab-item:hover {
+    color: #fff;
+    border-bottom-color: rgba(255,255,255,0.6);
+    background-color: rgba(255,255,255,0.08);
+}
+
 .shorts-section {
     background-color: var(--bg-white);
     padding: 80px 20px;
+}
+
+/* QT Section */
+.qty-section {
+    background-color: var(--bg-light);
+    padding: 80px 20px;
+}
+
+.qty-badge {
+    background-color: #4CAF50 !important;
 }
 
 .shorts-grid {

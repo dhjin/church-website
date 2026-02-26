@@ -222,29 +222,35 @@
                         <table class="admin-table">
                             <thead>
                                 <tr>
-                                    <th>번호</th>
                                     <th>제목</th>
                                     <th>등록일</th>
-                                    <th>YouTube ID</th>
                                     <th>관리</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for short in shorts %}
-                                <tr>
-                                    <td>{{ short.id }}</td>
+                                <tr class="shorts-row" data-shorts-id="{{ short.id }}">
                                     <td>{{ short.title }}</td>
                                     <td>{{ short.date }}</td>
                                     <td>
-                                        {% if short.youtube_id %}
-                                        <code>{{ short.youtube_id }}</code>
-                                        {% else %}
-                                        <span style="color: #999;">-</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
+                                        <button class="btn-edit" onclick="editShorts({{ short.id }})">수정</button>
                                         <form method="POST" action="/admin/shorts/delete/{{ short.id }}" style="display: inline;">
                                             <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr class="shorts-edit-row" id="shorts-edit-{{ short.id }}" style="display: none;">
+                                    <td colspan="3">
+                                        <form method="POST" action="/admin/shorts/update/{{ short.id }}" class="inline-edit-form">
+                                            <div class="form-row">
+                                                <input type="text" name="title" value="{{ short.title }}" placeholder="제목" required>
+                                                <input type="date" name="date" value="{{ short.date }}" required>
+                                            </div>
+                                            <input type="url" name="youtube_url" value="{{ short.youtube_url }}" placeholder="YouTube URL" required style="width:100%;margin-bottom:10px;">
+                                            <div class="form-actions">
+                                                <button type="submit" class="btn btn-primary">저장</button>
+                                                <button type="button" class="btn btn-secondary" onclick="cancelEditShorts({{ short.id }})">취소</button>
+                                            </div>
                                         </form>
                                     </td>
                                 </tr>
@@ -253,6 +259,75 @@
                         </table>
                         {% else %}
                         <p class="empty-message">등록된 숏츠가 없습니다.</p>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <!-- 오늘의 QT Management Section -->
+                <section class="admin-section">
+                    <h2 class="section-title">오늘의 QT 관리</h2>
+
+                    <!-- Create QT Form -->
+                    <div class="admin-card">
+                        <h3>새 QT 등록</h3>
+                        <form method="POST" action="/admin/qty/create">
+                            <div class="form-group">
+                                <label for="qty-title">QT 제목</label>
+                                <input type="text" id="qty-title" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="qty-youtube-url">YouTube 링크</label>
+                                <input type="url" id="qty-youtube-url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=..." required>
+                                <small class="form-hint">YouTube URL을 입력하세요. 썸네일이 자동으로 추출됩니다.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">QT 등록</button>
+                        </form>
+                    </div>
+
+                    <!-- QT List -->
+                    <div class="admin-card">
+                        <h3>QT 목록</h3>
+                        {% if qtys %}
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>제목</th>
+                                    <th>등록일</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for qty in qtys %}
+                                <tr class="qty-row" data-qty-id="{{ qty.id }}">
+                                    <td>{{ qty.title }}</td>
+                                    <td>{{ qty.date }}</td>
+                                    <td>
+                                        <button class="btn-edit" onclick="editQty({{ qty.id }})">수정</button>
+                                        <form method="POST" action="/admin/qty/delete/{{ qty.id }}" style="display: inline;">
+                                            <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr class="qty-edit-row" id="qty-edit-{{ qty.id }}" style="display: none;">
+                                    <td colspan="3">
+                                        <form method="POST" action="/admin/qty/update/{{ qty.id }}" class="inline-edit-form">
+                                            <div class="form-row">
+                                                <input type="text" name="title" value="{{ qty.title }}" placeholder="제목" required>
+                                                <input type="date" name="date" value="{{ qty.date }}" required>
+                                            </div>
+                                            <input type="url" name="youtube_url" value="{{ qty.youtube_url }}" placeholder="YouTube URL" required style="width:100%;margin-bottom:10px;">
+                                            <div class="form-actions">
+                                                <button type="submit" class="btn btn-primary">저장</button>
+                                                <button type="button" class="btn btn-secondary" onclick="cancelEditQty({{ qty.id }})">취소</button>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p class="empty-message">등록된 QT가 없습니다.</p>
                         {% endif %}
                     </div>
                 </section>

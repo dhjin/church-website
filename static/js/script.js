@@ -254,6 +254,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // QT Slider (same logic as Shorts)
+    const qtyGrid = document.querySelector('.qty-grid');
+    const qtyCards = qtyGrid ? qtyGrid.querySelectorAll('.qty-card') : [];
+    const qtyPrev = document.querySelector('.qty-prev');
+    const qtyNext = document.querySelector('.qty-next');
+    let qtyPage = 0;
+
+    function showQtyPage(page) {
+        const cardsPerPage = getShortsPerPage();
+        const totalPages = Math.ceil(qtyCards.length / cardsPerPage);
+        qtyPage = (page + totalPages) % totalPages;
+
+        qtyCards.forEach((card, i) => {
+            const pageIndex = Math.floor(i / cardsPerPage);
+            card.style.display = (pageIndex === qtyPage) ? 'block' : 'none';
+        });
+    }
+
+    if (qtyCards.length > 0) {
+        showQtyPage(0);
+
+        if (qtyPrev) qtyPrev.addEventListener('click', () => showQtyPage(qtyPage - 1));
+        if (qtyNext) qtyNext.addEventListener('click', () => showQtyPage(qtyPage + 1));
+
+        window.addEventListener('resize', () => showQtyPage(qtyPage));
+
+        const cardsPerPage = getShortsPerPage();
+        if (qtyCards.length <= cardsPerPage) {
+            if (qtyPrev) qtyPrev.style.display = 'none';
+            if (qtyNext) qtyNext.style.display = 'none';
+        }
+    }
+
     // Add touch swipe support for all sliders
     function addSwipeSupport(element, onSwipeLeft, onSwipeRight) {
         let touchStartX = 0;

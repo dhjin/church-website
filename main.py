@@ -123,6 +123,17 @@ def init_db():
         )
     """)
 
+    # QTY (오늘의 큐티) table for YouTube videos
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS qtys (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            youtube_url TEXT NOT NULL,
+            date TEXT NOT NULL,
+            author TEXT
+        )
+    """)
+
     # Church About table for vision and missions
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS church_about (
@@ -295,6 +306,21 @@ async def home(request: Request):
             "author": row[4] if len(row) > 4 else None
         })
 
+    # Get latest QTY (오늘의 큐티)
+    cursor.execute("SELECT * FROM qtys ORDER BY date DESC LIMIT 10")
+    qtys = []
+    for row in cursor.fetchall():
+        video_id = extract_youtube_id(row[2])
+        qtys.append({
+            "id": row[0],
+            "title": row[1],
+            "youtube_url": row[2],
+            "youtube_id": video_id,
+            "thumbnail": f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg" if video_id else None,
+            "date": row[3],
+            "author": row[4] if len(row) > 4 else None
+        })
+
     # Get latest news
     cursor.execute("SELECT * FROM news ORDER BY date DESC LIMIT 5")
     news_list = [{"id": row[0], "title": row[1], "content": row[2], "date": row[3], "views": row[4], "author": row[5], "image_path": row[6]}
@@ -309,6 +335,7 @@ async def home(request: Request):
         "visions": visions,
         "sermons": sermons,
         "shorts": shorts,
+        "qtys": qtys,
         "news_list": news_list,
         "church_intro": church_intro,
         "user": user
@@ -430,6 +457,20 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
             "author": row[4] if len(row) > 4 else None
         })
 
+    # Get all QTY (오늘의 큐티)
+    cursor.execute("SELECT * FROM qtys ORDER BY date DESC")
+    qtys = []
+    for row in cursor.fetchall():
+        video_id = extract_youtube_id(row[2])
+        qtys.append({
+            "id": row[0],
+            "title": row[1],
+            "youtube_url": row[2],
+            "youtube_id": video_id,
+            "date": row[3],
+            "author": row[4] if len(row) > 4 else None
+        })
+
     # Get all news
     cursor.execute("SELECT * FROM news ORDER BY date DESC")
     news_list = [{"id": row[0], "title": row[1], "content": row[2], "date": row[3], "views": row[4], "author": row[5], "image_path": row[6]}
@@ -457,6 +498,7 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
         "visions": visions,
         "sermons": sermons,
         "shorts": shorts,
+        "qtys": qtys,
         "news_list": news_list,
         "church_intro": church_intro,
         "about": about
@@ -655,6 +697,73 @@ async def delete_shorts(shorts_id: int, user: dict = Depends(require_admin)):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM shorts WHERE id = ?", (shorts_id,))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/shorts/update/{shorts_id}")
+async def update_shorts(
+    shorts_id: int,
+    title: str = Form(...),
+    youtube_url: str = Form(...),
+    date: str = Form(...),
+    user: dict = Depends(require_admin)
+):
+    """Update existing YouTube short"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE shorts SET title=?, youtube_url=?, date=? WHERE id=?
+    """, (title, youtube_url, date, shorts_id))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/qty/create")
+async def create_qty(
+    title: str = Form(...),
+    youtube_url: str = Form(...),
+    user: dict = Depends(require_admin)
+):
+    """Create new QTY (오늘의 큐티)"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO qtys (title, youtube_url, date, author)
+        VALUES (?, ?, ?, ?)
+    """, (title, youtube_url, datetime.now().strftime("%Y-%m-%d"), user['username']))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/qty/delete/{qty_id}")
+async def delete_qty(qty_id: int, user: dict = Depends(require_admin)):
+    """Delete a QTY"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM qtys WHERE id = ?", (qty_id,))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/qty/update/{qty_id}")
+async def update_qty(
+    qty_id: int,
+    title: str = Form(...),
+    youtube_url: str = Form(...),
+    date: str = Form(...),
+    user: dict = Depends(require_admin)
+):
+    """Update existing QTY"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE qtys SET title=?, youtube_url=?, date=? WHERE id=?
+    """, (title, youtube_url, date, qty_id))
     conn.commit()
     conn.close()
 

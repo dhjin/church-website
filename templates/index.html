@@ -149,6 +149,17 @@
         </div>
     </section>
 
+    <!-- Tab Navigation -->
+    <nav class="content-tabs">
+        <div class="container">
+            <div class="tabs-menu">
+                <a href="#sermons" class="tab-item">최근설교</a>
+                <a href="#shorts" class="tab-item">숏츠</a>
+                <a href="#qty" class="tab-item">오늘의 QT</a>
+            </div>
+        </div>
+    </nav>
+
     <!-- YouTube Shorts Section -->
     <section id="shorts" class="shorts-section">
         <div class="container">
@@ -175,6 +186,36 @@
                     {% endfor %}
                 </div>
                 <button class="slider-btn slider-next shorts-next" aria-label="다음">❯</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 오늘의 QT Section -->
+    <section id="qty" class="qty-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>오늘의 QT</h2>
+                <div class="divider"></div>
+            </div>
+            <div class="slider-container">
+                <button class="slider-btn slider-prev qty-prev" aria-label="이전">❮</button>
+                <div class="shorts-grid qty-grid">
+                    {% for qty in qtys %}
+                    <div class="shorts-card qty-card" onclick="window.open('{{ qty.youtube_url }}', '_blank')" style="cursor: pointer;">
+                        {% if qty.youtube_id %}
+                        <div class="shorts-thumbnail">
+                            <img src="{{ qty.thumbnail }}" alt="{{ qty.title }}" onerror="this.src='https://img.youtube.com/vi/{{ qty.youtube_id }}/hqdefault.jpg'">
+                            <div class="shorts-play-button">▶</div>
+                            <div class="shorts-badge qty-badge">QT</div>
+                        </div>
+                        {% endif %}
+                        <div class="shorts-title">
+                            <h4>{{ qty.title }}</h4>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="slider-btn slider-next qty-next" aria-label="다음">❯</button>
             </div>
         </div>
     </section>
