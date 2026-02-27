@@ -204,7 +204,7 @@ h3 {
     top: 100%;
     left: 50%;
     transform: translateX(-50%);
-    background-color: var(--card-bg);
+    background-color: #ffffff;
     min-width: 160px;
     box-shadow: var(--shadow-md);
     border-radius: 8px;
