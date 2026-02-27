@@ -340,21 +340,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // YouTube Video Modal
-function openVideoModal(videoId) {
+function openVideoModal(videoId, isShorts) {
     const modal = document.getElementById('videoModal');
     const iframe = document.getElementById('videoIframe');
+    const content = document.getElementById('videoModalContent');
+    const container = document.getElementById('videoContainer');
+
+    // 숏츠 모드: 세로 비율 (9:16)
+    if (isShorts) {
+        modal.classList.add('shorts-mode');
+    } else {
+        modal.classList.remove('shorts-mode');
+    }
+
     iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
 function closeVideoModal(event) {
-    if (event.target.classList.contains('video-modal') || 
+    if (event.target.classList.contains('video-modal') ||
         event.target.classList.contains('video-modal-close')) {
         const modal = document.getElementById('videoModal');
         const iframe = document.getElementById('videoIframe');
         iframe.src = '';
         modal.classList.remove('active');
+        modal.classList.remove('shorts-mode');
         document.body.style.overflow = '';
     }
 }
@@ -366,6 +377,7 @@ document.addEventListener('keydown', function(e) {
             const iframe = document.getElementById('videoIframe');
             iframe.src = '';
             modal.classList.remove('active');
+            modal.classList.remove('shorts-mode');
             document.body.style.overflow = '';
         }
     }

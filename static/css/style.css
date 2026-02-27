@@ -1754,15 +1754,16 @@ html {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.9);
+    align-items: center;
+    justify-content: center;
 }
 
 .video-modal.active {
-    display: block;
+    display: flex;
 }
 
 .video-modal-content {
     position: relative;
-    margin: 5% auto;
     width: 90%;
     max-width: 900px;
 }
@@ -1787,6 +1788,7 @@ html {
     padding-bottom: 56.25%;
     height: 0;
     overflow: hidden;
+    border-radius: 8px;
 }
 
 .video-container iframe {
@@ -1797,9 +1799,33 @@ html {
     height: 100%;
 }
 
+/* 숏츠 모드 - 세로 비율 (9:16) */
+.video-modal.shorts-mode .video-modal-content {
+    width: auto;
+    max-width: none;
+    height: 85vh;
+    aspect-ratio: 9 / 16;
+}
+
+.video-modal.shorts-mode .video-container {
+    padding-bottom: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* 모바일 일반 영상 */
 @media (max-width: 768px) {
     .video-modal-content {
-        margin: 10% auto;
         width: 95%;
+    }
+
+    /* 모바일 숏츠: 화면 꽉 채움 */
+    .video-modal.shorts-mode .video-modal-content {
+        height: 90vh;
+    }
+
+    .video-modal.shorts-mode .video-modal-close {
+        top: -35px;
+        right: 5px;
     }
 }
