@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>더하는 교회 - 기독교 한국침례회</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <!-- Map removed - using static image instead -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=04a9be7cc4a029e900041f8a88463d27&libraries=services"></script>
 </head>
 <body>
     <!-- Header -->
@@ -291,15 +291,7 @@
             <!-- Location Map -->
             <div class="map-section">
                 <div class="map-container">
-                    <!-- Static map image with location info -->
-                    <div class="static-map" style="width:100%;height:400px;background-color:#e8eaed;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
-                        <div style="text-align:center;padding:2rem;z-index:1;">
-                            <div style="font-size:3rem;margin-bottom:1rem;">📍</div>
-                            <h4 style="margin:0 0 1rem 0;color:var(--primary-color);font-size:1.5rem;">더하는 교회</h4>
-                            <p style="margin:0;color:var(--text-dark);font-size:1.1rem;">대전시 유성구 학하동 755-6 1층</p>
-                            <p style="margin:0.5rem 0 0 0;color:var(--text-light);">기독교 한국침례회</p>
-                        </div>
-                    </div>
+                    <div id="kakaoMap" style="width:100%;height:420px;border-radius:12px;overflow:hidden;"></div>
                 </div>
                 <div class="map-buttons">
                     <a href="https://map.naver.com/p/search/대전시%20유성구%20학하동%20755-6" target="_blank" class="btn btn-naver">
@@ -346,5 +338,48 @@
     </div>
 
     <script src="/static/js/script.js"></script>
+    <script>
+        // 카카오 지도 초기화
+        kakao.maps.load(function() {
+            var container = document.getElementById('kakaoMap');
+            var options = {
+                center: new kakao.maps.LatLng(36.3204, 127.3397),
+                level: 4
+            };
+            var map = new kakao.maps.Map(container, options);
+
+            // 주소로 좌표 검색
+            var geocoder = new kakao.maps.services.Geocoder();
+            geocoder.addressSearch('대전 유성구 학하동 755-6', function(result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+                    // 마커 생성
+                    var marker = new kakao.maps.Marker({
+                        map: map,
+                        position: coords
+                    });
+
+                    // 인포윈도우 생성
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: '<div style="padding:8px 12px;font-size:13px;font-weight:600;color:#1a3a5c;white-space:nowrap;">📍 더하는 교회<br><span style="font-weight:400;font-size:12px;color:#666;">대전시 유성구 학하동 755-6 1층</span></div>'
+                    });
+                    infowindow.open(map, marker);
+
+                    // 지도 중심 이동
+                    map.setCenter(coords);
+                } else {
+                    // geocoding 실패 시 기본 좌표(대전 유성구 중심) 사용
+                    var fallback = new kakao.maps.LatLng(36.3620, 127.3560);
+                    var marker = new kakao.maps.Marker({ map: map, position: fallback });
+                    var infowindow = new kakao.maps.InfoWindow({
+                        content: '<div style="padding:8px 12px;font-size:13px;font-weight:600;color:#1a3a5c;">📍 더하는 교회<br><span style="font-weight:400;font-size:12px;color:#666;">대전시 유성구 학하동 755-6 1층</span></div>'
+                    });
+                    infowindow.open(map, marker);
+                    map.setCenter(fallback);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
