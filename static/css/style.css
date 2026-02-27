@@ -794,30 +794,66 @@ section {
 
     /* --- Mobile Video Carousel Overrides --- */
     .carousel-track {
-        /* Standard 16:9 videos: 2 cards stacked vertically, sliding horizontally */
-        grid-template-rows: repeat(2, 1fr);
+        /* Standard 16:9 videos: 2 cards per visible row, scroll horizontally */
+        grid-template-rows: 1fr;
         grid-template-columns: none;
         grid-auto-flow: column;
-        grid-auto-columns: 82%;
+        grid-auto-columns: 85%;
         gap: 12px;
     }
 
     .shorts-track {
-        /* Shorts 9:16 videos: 2 cards side-by-side single row, sliding horizontally */
+        /* Shorts 9:16: 2 small cards side by side per scroll unit */
+        display: grid !important;
         grid-template-rows: 1fr !important;
         grid-template-columns: none !important;
         grid-auto-flow: column !important;
-        grid-auto-columns: 48% !important;
-        gap: 10px !important;
+        grid-auto-columns: 42% !important;
+        gap: 8px !important;
     }
 
+    .shorts-track .shorts-card {
+        /* 세로 영상 축소 */
+        max-width: 100%;
+    }
+
+    .shorts-track .shorts-thumbnail {
+        aspect-ratio: 9 / 14;
+        /* 약간 줄여서 더 많이 보이게 */
+    }
+
+    /* 모바일에서도 화살표 표시 (작게) */
     .carousel-nav {
-        display: none;
-        /* Hidden on mobile - rely on touch swipe */
+        display: flex;
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+        z-index: 10;
+    }
+
+    .carousel-nav.prev {
+        left: 2px;
+    }
+
+    .carousel-nav.next {
+        right: 2px;
     }
 
     .carousel-container {
         padding: 0 4px;
+    }
+
+    /* 모바일 탭 버튼 2x2 */
+    .tab-buttons {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tab-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        min-width: calc(50% - 8px);
+        flex: 1 1 calc(50% - 8px);
     }
 }
 

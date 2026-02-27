@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>더하는 교회 - 기독교 한국침례회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=3">
+    <link rel="stylesheet" href="/static/css/style.css?v=5">
     <script type="text/javascript"
         src="//dapi.kakao.com/v2/maps/sdk.js?appkey=04a9be7cc4a029e900041f8a88463d27&autoload=false&libraries=services"></script>
 </head>
@@ -16,48 +16,47 @@
         <nav class="navbar">
             <div class="container">
                 <div class="logo">
-                    <ul class="nav-menu">
-                        <li><a href="#home" class="active">홈</a></li>
-                        <li class="nav-item dropdown">
-                            <a href="/about" class="dropbtn">교회소개</a>
-                            <ul class="dropdown-menu">
-                                <li><a href="/direction">목회방향</a></li>
-                                <li><a href="/about">비전</a></li>
-                                <li><a href="#schedule-news">예배시간 안내</a></li>
-                                <li><a href="#contact">찾아오시는 길</a></li>
-                                <li><a href="/people">섬기는 분들</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a href="#videos" class="dropbtn">영상</a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#videos"
-                                        onclick="event.preventDefault(); switchVideoTab('vision'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">교회
-                                        비전</a></li>
-                                <li><a href="#videos"
-                                        onclick="event.preventDefault(); switchVideoTab('sermons'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">최근설교</a>
-                                </li>
-                                <li><a href="#videos"
-                                        onclick="event.preventDefault(); switchVideoTab('shorts'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">숏츠</a>
-                                </li>
-                                <li><a href="#videos"
-                                        onclick="event.preventDefault(); switchVideoTab('qty'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">오늘의
-                                        QT</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#schedule-news">예배안내</a></li>
-                        <li><a href="#schedule-news">교회소식</a></li>
-                        <li><a href="#contact">찾아오시는 길</a></li>
-                        {% if user %}
-                        {% if user.role == 'admin' %}
-                        <li><a href="/admin" class="admin-link">관리자</a></li>
-                        {% endif %}
-                        <li><a href="/logout">로그아웃</a></li>
-                        {% else %}
-                        <li><a href="/login" class="login-link">로그인</a></li>
-                        {% endif %}
-                    </ul>
+                    <h1><a href="#home" style="color: inherit; text-decoration: none;">✟ 더하는 교회</a></h1>
                 </div>
+                <button class="mobile-menu-toggle" aria-label="메뉴">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="#home" class="active">홈</a></li>
+                    <li class="nav-item dropdown">
+                        <a href="/about" class="dropbtn">교회소개</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/direction">목회방향</a></li>
+                            <li><a href="/about">비전</a></li>
+                            <li><a href="#schedule-news">예배시간 안내</a></li>
+                            <li><a href="#contact">찾아오시는 길</a></li>
+                            <li><a href="/people">섬기는 분들</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#videos" class="dropbtn">영상</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('vision'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">교회 비전</a></li>
+                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('sermons'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">최근설교</a></li>
+                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('shorts'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">숏츠</a></li>
+                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('qty'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">오늘의 QT</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#schedule-news">예배안내</a></li>
+                    <li><a href="#schedule-news">교회소식</a></li>
+                    <li><a href="#contact">찾아오시는 길</a></li>
+                    {% if user %}
+                    {% if user.role == 'admin' %}
+                    <li><a href="/admin" class="admin-link">관리자</a></li>
+                    {% endif %}
+                    <li><a href="/logout">로그아웃</a></li>
+                    {% else %}
+                    <li><a href="/login" class="login-link">로그인</a></li>
+                    {% endif %}
+                </ul>
+            </div>
         </nav>
     </header>
 
@@ -364,7 +363,7 @@
         </div>
     </div>
 
-    <script src="/static/js/script.js?v=2"></script>
+    <script src="/static/js/script.js?v=5"></script>
     <script>
         // 카카오 지도 초기화
         try {

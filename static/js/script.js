@@ -11,7 +11,7 @@ if (mobileMenuToggle) {
     // On mobile: dropdown parents toggle submenu; leaf links close nav
     document.querySelectorAll('.nav-menu a').forEach(link => {
         link.addEventListener('click', (e) => {
-            const isMobile = window.innerWidth <= 768;
+            const isMobile = window.innerWidth <= 1024;
             if (!isMobile) return; // Desktop uses CSS :hover, no JS needed
 
             const parentLi = link.closest('li.dropdown');

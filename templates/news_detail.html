@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ news.title }} - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css?v=5">
     <style>
         .news-detail-container {
             max-width: 800px;
@@ -83,7 +83,7 @@
         <nav class="navbar">
             <div class="container">
                 <div class="logo">
-                    <h1>✟ 더하는 교회</h1>
+                    <h1><a href="/#home" style="color: inherit; text-decoration: none;">✟ 더하는 교회</a></h1>
                 </div>
                 <button class="mobile-menu-toggle" aria-label="메뉴">
                     <span></span>
@@ -92,9 +92,27 @@
                 </button>
                 <ul class="nav-menu">
                     <li><a href="/#home">홈</a></li>
-                    <li><a href="/#about">교회소개</a></li>
-                    <li><a href="/#sermons">설교</a></li>
-                    <li><a href="/#news" class="active">교회소식</a></li>
+                    <li class="nav-item dropdown">
+                        <a href="/about" class="dropbtn">교회소개</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/direction">목회방향</a></li>
+                            <li><a href="/about">비전</a></li>
+                            <li><a href="/#schedule-news">예배시간 안내</a></li>
+                            <li><a href="/#contact">찾아오시는 길</a></li>
+                            <li><a href="/people">섬기는 분들</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="/#videos" class="dropbtn">영상</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/#videos?tab=vision">교회 비전</a></li>
+                            <li><a href="/#videos?tab=sermons">최근설교</a></li>
+                            <li><a href="/#videos?tab=shorts">숏츠</a></li>
+                            <li><a href="/#videos?tab=qty">오늘의 QT</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/#schedule-news">예배안내</a></li>
+                    <li><a href="/#schedule-news" class="active">교회소식</a></li>
                     <li><a href="/#contact">찾아오시는 길</a></li>
                     {% if user %}
                     <li><a href="/logout">로그아웃</a></li>
@@ -152,6 +170,6 @@
         </div>
     </footer>
 
-    <script src="/static/js/script.js"></script>
+    <script src="/static/js/script.js?v=5"></script>
 </body>
 </html>
