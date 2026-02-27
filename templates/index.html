@@ -103,101 +103,121 @@
 
                 <!-- Vision Tab Content -->
                 <div id="tab-vision" class="tab-content active">
-                    <div class="video-grid">
-                        {% for vision in visions %}
-                        <div class="card sermon-card {% if vision.youtube_id %}clickable-card{% endif %}" {% if
-                            vision.youtube_id %}onclick="openVideoModal('{{ vision.youtube_id }}')"
-                            style="cursor: pointer;" {% endif %}>
-                            {% if vision.youtube_id %}
-                            <div class="video-thumbnail">
-                                <img src="{{ vision.thumbnail }}" alt="{{ vision.title }}"
-                                    onerror="this.src='https://img.youtube.com/vi/{{ vision.youtube_id }}/hqdefault.jpg'">
-                                <div class="play-button">▶</div>
+                    <div class="carousel-container">
+                        <button class="carousel-nav prev" aria-label="이전영상"
+                            onclick="scrollCarousel(this, -1)">❮</button>
+                        <div class="video-grid carousel-track">
+                            {% for vision in visions %}
+                            <div class="card sermon-card {% if vision.youtube_id %}clickable-card{% endif %}" {% if
+                                vision.youtube_id %}onclick="openVideoModal('{{ vision.youtube_id }}')"
+                                style="cursor: pointer;" {% endif %}>
+                                {% if vision.youtube_id %}
+                                <div class="video-thumbnail">
+                                    <img src="{{ vision.thumbnail }}" alt="{{ vision.title }}"
+                                        onerror="this.src='https://img.youtube.com/vi/{{ vision.youtube_id }}/hqdefault.jpg'">
+                                    <div class="play-button">▶</div>
+                                </div>
+                                {% endif %}
+                                <div class="card-header">
+                                    <h3>{{ vision.title }}</h3>
+                                </div>
+                                <div class="card-body">
+                                    <p class="meta">
+                                        <span class="date">📅 {{ vision.date }}</span>
+                                    </p>
+                                </div>
                             </div>
-                            {% endif %}
-                            <div class="card-header">
-                                <h3>{{ vision.title }}</h3>
-                            </div>
-                            <div class="card-body">
-                                <p class="meta">
-                                    <span class="date">📅 {{ vision.date }}</span>
-                                </p>
-                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <button class="carousel-nav next" aria-label="다음영상" onclick="scrollCarousel(this, 1)">❯</button>
                     </div>
                 </div>
 
                 <!-- Sermons Tab Content -->
                 <div id="tab-sermons" class="tab-content">
-                    <div class="video-grid">
-                        {% for sermon in sermons %}
-                        <div class="card sermon-card {% if sermon.youtube_id %}clickable-card{% endif %}" {% if
-                            sermon.youtube_id %}onclick="openVideoModal('{{ sermon.youtube_id }}')"
-                            style="cursor: pointer;" {% endif %}>
-                            {% if sermon.youtube_id %}
-                            <div class="video-thumbnail">
-                                <img src="{{ sermon.thumbnail }}" alt="{{ sermon.title }}"
-                                    onerror="this.src='https://img.youtube.com/vi/{{ sermon.youtube_id }}/hqdefault.jpg'">
-                                <div class="play-button">▶</div>
+                    <div class="carousel-container">
+                        <button class="carousel-nav prev" aria-label="이전영상"
+                            onclick="scrollCarousel(this, -1)">❮</button>
+                        <div class="video-grid carousel-track">
+                            {% for sermon in sermons %}
+                            <div class="card sermon-card {% if sermon.youtube_id %}clickable-card{% endif %}" {% if
+                                sermon.youtube_id %}onclick="openVideoModal('{{ sermon.youtube_id }}')"
+                                style="cursor: pointer;" {% endif %}>
+                                {% if sermon.youtube_id %}
+                                <div class="video-thumbnail">
+                                    <img src="{{ sermon.thumbnail }}" alt="{{ sermon.title }}"
+                                        onerror="this.src='https://img.youtube.com/vi/{{ sermon.youtube_id }}/hqdefault.jpg'">
+                                    <div class="play-button">▶</div>
+                                </div>
+                                {% endif %}
+                                <div class="card-header">
+                                    <h3>{{ sermon.title }}</h3>
+                                </div>
+                                <div class="card-body">
+                                    <p class="meta">
+                                        <span class="pastor">👤 {{ sermon.pastor }}</span>
+                                        <span class="date">📅 {{ sermon.date }}</span>
+                                    </p>
+                                    <p class="description">{{ sermon.description }}</p>
+                                </div>
                             </div>
-                            {% endif %}
-                            <div class="card-header">
-                                <h3>{{ sermon.title }}</h3>
-                            </div>
-                            <div class="card-body">
-                                <p class="meta">
-                                    <span class="pastor">👤 {{ sermon.pastor }}</span>
-                                    <span class="date">📅 {{ sermon.date }}</span>
-                                </p>
-                                <p class="description">{{ sermon.description }}</p>
-                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <button class="carousel-nav next" aria-label="다음영상" onclick="scrollCarousel(this, 1)">❯</button>
                     </div>
                 </div>
 
                 <!-- Shorts Tab Content -->
                 <div id="tab-shorts" class="tab-content">
-                    <div class="video-grid">
-                        {% for short in shorts %}
-                        <div class="shorts-card" onclick="openVideoModal('{{ short.youtube_id }}', true)"
-                            style="cursor: pointer;">
-                            {% if short.youtube_id %}
-                            <div class="shorts-thumbnail">
-                                <img src="{{ short.thumbnail }}" alt="{{ short.title }}"
-                                    onerror="this.src='https://img.youtube.com/vi/{{ short.youtube_id }}/hqdefault.jpg'">
-                                <div class="shorts-play-button">▶</div>
-                                <div class="shorts-badge">Shorts</div>
+                    <div class="carousel-container shorts-container">
+                        <button class="carousel-nav prev" aria-label="이전영상"
+                            onclick="scrollCarousel(this, -1)">❮</button>
+                        <div class="video-grid carousel-track shorts-track">
+                            {% for short in shorts %}
+                            <div class="shorts-card" onclick="openVideoModal('{{ short.youtube_id }}', true)"
+                                style="cursor: pointer;">
+                                {% if short.youtube_id %}
+                                <div class="shorts-thumbnail">
+                                    <img src="{{ short.thumbnail }}" alt="{{ short.title }}"
+                                        onerror="this.src='https://img.youtube.com/vi/{{ short.youtube_id }}/hqdefault.jpg'">
+                                    <div class="shorts-play-button">▶</div>
+                                    <div class="shorts-badge">Shorts</div>
+                                </div>
+                                {% endif %}
+                                <div class="shorts-title">
+                                    <h4>{{ short.title }}</h4>
+                                </div>
                             </div>
-                            {% endif %}
-                            <div class="shorts-title">
-                                <h4>{{ short.title }}</h4>
-                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <button class="carousel-nav next" aria-label="다음영상" onclick="scrollCarousel(this, 1)">❯</button>
                     </div>
                 </div>
 
                 <!-- QT Tab Content -->
                 <div id="tab-qty" class="tab-content">
-                    <div class="video-grid">
-                        {% for qty in qtys %}
-                        <div class="shorts-card qty-card" onclick="openVideoModal('{{ qty.youtube_id }}')"
-                            style="cursor: pointer;">
-                            {% if qty.youtube_id %}
-                            <div class="shorts-thumbnail">
-                                <img src="{{ qty.thumbnail }}" alt="{{ qty.title }}"
-                                    onerror="this.src='https://img.youtube.com/vi/{{ qty.youtube_id }}/hqdefault.jpg'">
-                                <div class="shorts-play-button">▶</div>
-                                <div class="shorts-badge qty-badge">QT</div>
+                    <div class="carousel-container shorts-container">
+                        <button class="carousel-nav prev" aria-label="이전영상"
+                            onclick="scrollCarousel(this, -1)">❮</button>
+                        <div class="video-grid carousel-track shorts-track">
+                            {% for qty in qtys %}
+                            <div class="shorts-card qty-card" onclick="openVideoModal('{{ qty.youtube_id }}')"
+                                style="cursor: pointer;">
+                                {% if qty.youtube_id %}
+                                <div class="shorts-thumbnail">
+                                    <img src="{{ qty.thumbnail }}" alt="{{ qty.title }}"
+                                        onerror="this.src='https://img.youtube.com/vi/{{ qty.youtube_id }}/hqdefault.jpg'">
+                                    <div class="shorts-play-button">▶</div>
+                                    <div class="shorts-badge qty-badge">QT</div>
+                                </div>
+                                {% endif %}
+                                <div class="shorts-title">
+                                    <h4>{{ qty.title }}</h4>
+                                </div>
                             </div>
-                            {% endif %}
-                            <div class="shorts-title">
-                                <h4>{{ qty.title }}</h4>
-                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
+                        <button class="carousel-nav next" aria-label="다음영상" onclick="scrollCarousel(this, 1)">❯</button>
                     </div>
                 </div>
 

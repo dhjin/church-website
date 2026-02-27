@@ -649,9 +649,97 @@ section {
 
 .video-grid {
     display: grid;
+    /* Web Layout: 4 columns */
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     width: 100%;
+}
+
+/* --- Carousel Container Styles --- */
+.carousel-container {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.carousel-track {
+    /* To support scrolling, we override grid a bit. We keep display: grid but allow horizontal scroll */
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+
+    /* Ensure padding for box-shadows inside the scroll area */
+    padding: 10px 5px;
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari and Opera */
+}
+
+/* In Desktop Web, .video-grid enforces repeat(4, 1fr). If we have > 4, it wraps.
+   If we want a strict single-row horizontally scrolling carousel on Desktop, we'd do auto-columns.
+   However, the user mentioned "웹 버전에서는 4개 노출로 통일하면 된다" (Web layout: 4 visible).
+   So we will enforce a strict column setup and horizontal sliding across *all* breakpoints. */
+
+.carousel-track {
+    grid-template-columns: repeat(auto-fill, minmax(calc(25% - 15px), 1fr));
+    /* Fallback */
+    grid-auto-flow: column;
+    /* Force single row */
+    grid-auto-columns: calc(25% - 15px);
+    /* On Web, 4 exact columns */
+}
+
+.shorts-track {
+    grid-auto-columns: calc(25% - 15px);
+    /* Keep 4 columns for shorts too on Desktop */
+}
+
+/* Base Thumbnail constraints to keep heights proportional */
+.video-thumbnail {
+    aspect-ratio: 16 / 9;
+    /* Standard landscape */
+}
+
+.shorts-thumbnail {
+    aspect-ratio: 9 / 16;
+    /* Standard shorts portrait */
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-nav:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-nav.prev {
+    left: -20px;
+}
+
+.carousel-nav.next {
+    right: -20px;
 }
 
 @media (max-width: 768px) {

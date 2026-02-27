@@ -189,3 +189,23 @@ document.addEventListener('keydown', function (e) {
         }
     }
 });
+
+// Horizontal Carousel Scroll Function
+function scrollCarousel(button, direction) {
+    // Find the closest carousel container
+    const container = button.closest('.carousel-container');
+    if (!container) return;
+
+    // Find the track inside this container
+    const track = container.querySelector('.carousel-track');
+    if (!track) return;
+
+    // Calculate how much to scroll based on the visible width of the track
+    const scrollAmount = track.clientWidth * 0.8; // Scroll 80% of the visible container width
+
+    // Apply the scroll
+    track.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
+    });
+}
