@@ -152,17 +152,53 @@ function switchVideoTab(tabId) {
 }
 
 // Handle URL parameters for direct tab linking
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if there's a specific tab in the hash or query params
-    const hash = window.location.hash;
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabParam = urlParams.get('tab');
-
+function applyVideoTabFromHash() {
+    const hash = window.location.hash; // e.g. "#videos?tab=sermons"
     if (hash && hash.includes('#videos')) {
+        // Parse tab from the hash string itself (not window.location.search)
+        const hashQuery = hash.split('?')[1] || '';
+        const hashParams = new URLSearchParams(hashQuery);
+        const tabParam = hashParams.get('tab');
         if (tabParam) {
             switchVideoTab(tabParam);
         }
+        // Scroll the videos section into view
+        const videosSection = document.getElementById('videos');
+        if (videosSection) {
+            setTimeout(() => {
+                videosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        }
     }
+}
+
+document.addEventListener('DOMContentLoaded', applyVideoTabFromHash);
+window.addEventListener('hashchange', applyVideoTabFromHash);
+
+// Intercept navbar dropdown video tab links on the same page (/#videos?tab=...)
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('a[href*="#videos?tab="], a[href*="/#videos?tab="]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            const tabMatch = href.match(/tab=([^&]+)/);
+            if (!tabMatch) return;
+            const tabId = tabMatch[1];
+
+            // If on the homepage, prevent default and handle in-page
+            if (window.location.pathname === '/' || window.location.pathname === '') {
+                e.preventDefault();
+                switchVideoTab(tabId);
+                const videosSection = document.getElementById('videos');
+                if (videosSection) {
+                    videosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                // Update hash without reload
+                history.pushState(null, '', `#videos?tab=${tabId}`);
+            }
+            // On other pages, let the default link navigate to /#videos?tab=... and
+            // applyVideoTabFromHash will run on load
+        });
+    });
 });
 
 // YouTube Video Modal
