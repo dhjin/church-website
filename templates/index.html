@@ -31,10 +31,18 @@
                         <li class="nav-item dropdown">
                             <a href="#videos" class="dropbtn">영상</a>
                             <ul class="dropdown-menu">
-                                <li><a href="#videos" onclick="switchTab('vision')">교회 비전</a></li>
-                                <li><a href="#videos" onclick="switchTab('sermons')">최근설교</a></li>
-                                <li><a href="#videos" onclick="switchTab('shorts')">숏츠</a></li>
-                                <li><a href="#videos" onclick="switchTab('qty')">오늘의 QT</a></li>
+                                <li><a href="#videos"
+                                        onclick="event.preventDefault(); switchVideoTab('vision'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">교회
+                                        비전</a></li>
+                                <li><a href="#videos"
+                                        onclick="event.preventDefault(); switchVideoTab('sermons'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">최근설교</a>
+                                </li>
+                                <li><a href="#videos"
+                                        onclick="event.preventDefault(); switchVideoTab('shorts'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">숏츠</a>
+                                </li>
+                                <li><a href="#videos"
+                                        onclick="event.preventDefault(); switchVideoTab('qty'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">오늘의
+                                        QT</a></li>
                             </ul>
                         </li>
                         <li><a href="#schedule-news">예배안내</a></li>

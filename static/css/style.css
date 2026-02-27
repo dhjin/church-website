@@ -707,12 +707,12 @@ section {
     grid-auto-flow: column;
     /* Force single row */
     grid-auto-columns: calc(25% - 15px);
-    /* On Web, 4 exact columns */
+    /* On Web, 4 exact landscape columns */
 }
 
 .shorts-track {
-    grid-auto-columns: calc(25% - 15px);
-    /* Keep 4 columns for shorts too on Desktop */
+    /* 2 shorts per landscape-card slot = 8 per view desktop */
+    grid-auto-columns: calc(12.5% - 10px);
 }
 
 /* Base Thumbnail constraints to keep heights proportional */
@@ -730,31 +730,39 @@ section {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.55);
     color: white;
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     font-size: 1.2rem;
     cursor: pointer;
-    z-index: 10;
+    z-index: 20;
     transition: background 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .carousel-nav:hover {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
 }
 
+/* Position buttons INSIDE the track area so parent overflow doesn't clip them */
 .carousel-nav.prev {
-    left: -20px;
+    left: 8px;
 }
 
 .carousel-nav.next {
-    right: -20px;
+    right: 8px;
+}
+
+/* Give the track some padding so first/last cards aren't fully hidden under buttons */
+.carousel-track {
+    padding-left: 52px;
+    padding-right: 52px;
 }
 
 @media (max-width: 768px) {
