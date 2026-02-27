@@ -109,234 +109,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
 console.log('Church website loaded successfully!');
 
-// Card Slider Functionality
+// Unified Video Tabs Functionality
+function switchVideoTab(tabId) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Find the button that was clicked and make it active
+    const clickedBtn = document.querySelector(`.tab-btn[onclick="switchVideoTab('${tabId}')"]`);
+    if (clickedBtn) {
+        clickedBtn.classList.add('active');
+    }
+
+    // Update tab content panels
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    const targetContent = document.getElementById(`tab-${tabId}`);
+    if (targetContent) {
+        targetContent.classList.add('active');
+    }
+}
+
+// Handle URL parameters for direct tab linking
 document.addEventListener('DOMContentLoaded', () => {
-    // Vision Slider (1 card at a time)
-    const visionSlider = document.querySelector('.vision-slider');
-    const visionCards = visionSlider ? visionSlider.querySelectorAll('.card') : [];
-    const visionPrev = document.querySelector('.vision-prev');
-    const visionNext = document.querySelector('.vision-next');
-    let visionIndex = 0;
+    // Check if there's a specific tab in the hash or query params
+    const hash = window.location.hash;
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
 
-    function showVisionCard(index) {
-        visionCards.forEach((card, i) => {
-            card.classList.remove('active');
-            if (i === index) {
-                card.classList.add('active');
-            }
-        });
-    }
-
-    if (visionCards.length > 0) {
-        showVisionCard(0);
-
-        if (visionPrev) {
-            visionPrev.addEventListener('click', () => {
-                visionIndex = (visionIndex - 1 + visionCards.length) % visionCards.length;
-                showVisionCard(visionIndex);
-            });
-        }
-
-        if (visionNext) {
-            visionNext.addEventListener('click', () => {
-                visionIndex = (visionIndex + 1) % visionCards.length;
-                showVisionCard(visionIndex);
-            });
-        }
-
-        // Hide buttons if only one card
-        if (visionCards.length === 1) {
-            if (visionPrev) visionPrev.style.display = 'none';
-            if (visionNext) visionNext.style.display = 'none';
+    if (hash && hash.includes('#videos')) {
+        if (tabParam) {
+            switchVideoTab(tabParam);
         }
     }
-
-    // Sermon Slider (2 columns at a time)
-    const sermonSlider = document.querySelector('.sermon-slider');
-    const sermonCards = sermonSlider ? sermonSlider.querySelectorAll('.card') : [];
-    const sermonPrev = document.querySelector('.sermon-prev');
-    const sermonNext = document.querySelector('.sermon-next');
-    let sermonPage = 0;
-    const cardsPerPage = 2;
-
-    function showSermonPage(page) {
-        const totalPages = Math.ceil(sermonCards.length / cardsPerPage);
-        sermonPage = (page + totalPages) % totalPages;
-
-        sermonCards.forEach((card, i) => {
-            const pageIndex = Math.floor(i / cardsPerPage);
-            if (pageIndex === sermonPage) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-
-    if (sermonCards.length > 0) {
-        showSermonPage(0);
-
-        if (sermonPrev) {
-            sermonPrev.addEventListener('click', () => {
-                showSermonPage(sermonPage - 1);
-            });
-        }
-
-        if (sermonNext) {
-            sermonNext.addEventListener('click', () => {
-                showSermonPage(sermonPage + 1);
-            });
-        }
-
-        // Hide buttons if 2 or fewer cards
-        if (sermonCards.length <= 2) {
-            if (sermonPrev) sermonPrev.style.display = 'none';
-            if (sermonNext) sermonNext.style.display = 'none';
-        }
-    }
-
-    // Shorts Slider (5 cards per page on desktop, responsive on mobile)
-    const shortsGrid = document.querySelector('.shorts-grid');
-    const shortsCards = shortsGrid ? shortsGrid.querySelectorAll('.shorts-card') : [];
-    const shortsPrev = document.querySelector('.shorts-prev');
-    const shortsNext = document.querySelector('.shorts-next');
-    let shortsPage = 0;
-
-    // Calculate cards per page based on screen size
-    function getShortsPerPage() {
-        const width = window.innerWidth;
-        if (width <= 768) return 2;      // Mobile: 2 cards
-        if (width <= 1024) return 3;     // Tablet: 3 cards
-        if (width <= 1200) return 4;     // Small desktop: 4 cards
-        return 5;                         // Large desktop: 5 cards
-    }
-
-    function showShortsPage(page) {
-        const cardsPerPage = getShortsPerPage();
-        const totalPages = Math.ceil(shortsCards.length / cardsPerPage);
-        shortsPage = (page + totalPages) % totalPages;
-
-        shortsCards.forEach((card, i) => {
-            const pageIndex = Math.floor(i / cardsPerPage);
-            if (pageIndex === shortsPage) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-
-    if (shortsCards.length > 0) {
-        showShortsPage(0);
-
-        if (shortsPrev) {
-            shortsPrev.addEventListener('click', () => {
-                showShortsPage(shortsPage - 1);
-            });
-        }
-
-        if (shortsNext) {
-            shortsNext.addEventListener('click', () => {
-                showShortsPage(shortsPage + 1);
-            });
-        }
-
-        // Update on window resize
-        window.addEventListener('resize', () => {
-            showShortsPage(shortsPage);
-        });
-
-        // Hide buttons if cards fit in one page
-        const cardsPerPage = getShortsPerPage();
-        if (shortsCards.length <= cardsPerPage) {
-            if (shortsPrev) shortsPrev.style.display = 'none';
-            if (shortsNext) shortsNext.style.display = 'none';
-        }
-    }
-
-    // QT Slider (same logic as Shorts)
-    const qtyGrid = document.querySelector('.qty-grid');
-    const qtyCards = qtyGrid ? qtyGrid.querySelectorAll('.qty-card') : [];
-    const qtyPrev = document.querySelector('.qty-prev');
-    const qtyNext = document.querySelector('.qty-next');
-    let qtyPage = 0;
-
-    function showQtyPage(page) {
-        const cardsPerPage = getShortsPerPage();
-        const totalPages = Math.ceil(qtyCards.length / cardsPerPage);
-        qtyPage = (page + totalPages) % totalPages;
-
-        qtyCards.forEach((card, i) => {
-            const pageIndex = Math.floor(i / cardsPerPage);
-            card.style.display = (pageIndex === qtyPage) ? 'block' : 'none';
-        });
-    }
-
-    if (qtyCards.length > 0) {
-        showQtyPage(0);
-
-        if (qtyPrev) qtyPrev.addEventListener('click', () => showQtyPage(qtyPage - 1));
-        if (qtyNext) qtyNext.addEventListener('click', () => showQtyPage(qtyPage + 1));
-
-        window.addEventListener('resize', () => showQtyPage(qtyPage));
-
-        const cardsPerPage = getShortsPerPage();
-        if (qtyCards.length <= cardsPerPage) {
-            if (qtyPrev) qtyPrev.style.display = 'none';
-            if (qtyNext) qtyNext.style.display = 'none';
-        }
-    }
-
-    // Add touch swipe support for all sliders
-    function addSwipeSupport(element, onSwipeLeft, onSwipeRight) {
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        element.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-
-        element.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, { passive: true });
-
-        function handleSwipe() {
-            const swipeThreshold = 50; // minimum distance for swipe
-            if (touchEndX < touchStartX - swipeThreshold) {
-                // Swipe left - next
-                onSwipeLeft();
-            }
-            if (touchEndX > touchStartX + swipeThreshold) {
-                // Swipe right - previous
-                onSwipeRight();
-            }
-        }
-    }
-
-    // Apply swipe to vision slider
-    if (visionSlider) {
-        addSwipeSupport(visionSlider,
-            () => { visionIndex = (visionIndex + 1) % visionCards.length; showVisionCard(visionIndex); },
-            () => { visionIndex = (visionIndex - 1 + visionCards.length) % visionCards.length; showVisionCard(visionIndex); }
-        );
-    }
-
-    // Apply swipe to sermon slider
-    if (sermonSlider) {
-        addSwipeSupport(sermonSlider,
-            () => showSermonPage(sermonPage + 1),
-            () => showSermonPage(sermonPage - 1)
-        );
-    }
-
-     // Apply swipe to shorts grid
-     if (shortsGrid) {
-         addSwipeSupport(shortsGrid,
-             () => showShortsPage(shortsPage + 1),
-             () => showShortsPage(shortsPage - 1)
-         );
-     }
 });
 
 // YouTube Video Modal
@@ -370,7 +177,7 @@ function closeVideoModal(event) {
     }
 }
 
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('videoModal');
         if (modal.classList.contains('active')) {

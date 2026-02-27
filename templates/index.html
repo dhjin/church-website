@@ -1,44 +1,55 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>더하는 교회 - 기독교 한국침례회</title>
     <link rel="stylesheet" href="/static/css/style.css?v=3">
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=04a9be7cc4a029e900041f8a88463d27&autoload=false&libraries=services"></script>
+    <script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=04a9be7cc4a029e900041f8a88463d27&autoload=false&libraries=services"></script>
 </head>
+
 <body>
     <!-- Header -->
     <header class="header">
         <nav class="navbar">
             <div class="container">
                 <div class="logo">
-                    <h1>✟ 더하는 교회</h1>
-                </div>
-                <button class="mobile-menu-toggle" aria-label="메뉴">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <ul class="nav-menu">
-                    <li><a href="#home" class="active">홈</a></li>
-                    <li><a href="/about">교회소개</a></li>
-                    <li><a href="#sermons">최근설교</a></li>
-                    <li><a href="#shorts">숏츠</a></li>
-                    <li><a href="#qty">오늘의 QT</a></li>
-                    <li><a href="#schedule-news">예배안내</a></li>
-                    <li><a href="#schedule-news">교회소식</a></li>
-                    <li><a href="#contact">찾아오시는 길</a></li>
-                    {% if user %}
+                    <ul class="nav-menu">
+                        <li><a href="#home" class="active">홈</a></li>
+                        <li class="nav-item dropdown">
+                            <a href="/about" class="dropbtn">교회소개</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/direction">목회방향</a></li>
+                                <li><a href="/about">비전</a></li>
+                                <li><a href="#schedule-news">예배시간 안내</a></li>
+                                <li><a href="#contact">찾아오시는 길</a></li>
+                                <li><a href="/people">섬기는 분들</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a href="#videos" class="dropbtn">영상</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#videos" onclick="switchTab('vision')">교회 비전</a></li>
+                                <li><a href="#videos" onclick="switchTab('sermons')">최근설교</a></li>
+                                <li><a href="#videos" onclick="switchTab('shorts')">숏츠</a></li>
+                                <li><a href="#videos" onclick="switchTab('qty')">오늘의 QT</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#schedule-news">예배안내</a></li>
+                        <li><a href="#schedule-news">교회소식</a></li>
+                        <li><a href="#contact">찾아오시는 길</a></li>
+                        {% if user %}
                         {% if user.role == 'admin' %}
                         <li><a href="/admin" class="admin-link">관리자</a></li>
                         {% endif %}
                         <li><a href="/logout">로그아웃</a></li>
-                    {% else %}
+                        {% else %}
                         <li><a href="/login" class="login-link">로그인</a></li>
-                    {% endif %}
-                </ul>
-            </div>
+                        {% endif %}
+                    </ul>
+                </div>
         </nav>
     </header>
 
@@ -79,134 +90,117 @@
         </div>
     </section>
 
-    <!-- Vision and Sermons Section -->
-    <section id="sermons" class="vision-sermons-section">
+    <!-- Unified Videos Section -->
+    <section id="videos" class="video-section">
         <div class="container">
-            <div class="dual-section">
-                <!-- Vision Section (Left) -->
-                <div class="section-half vision-section">
-                    <div class="section-header">
-                        <h2>교회비전</h2>
-                        <div class="divider"></div>
-                    </div>
-                    <div class="slider-container">
-                        <button class="slider-btn slider-prev vision-prev" aria-label="이전">❮</button>
-                        <div class="card-slider vision-slider">
-                            {% for vision in visions %}
-                            <div class="card vision-card">
-                                {% if vision.youtube_id %}
-                                <div class="video-thumbnail" onclick="openVideoModal('{{ vision.youtube_id }}')">
-                                    <img src="{{ vision.thumbnail }}" alt="{{ vision.title }}" onerror="this.src='https://img.youtube.com/vi/{{ vision.youtube_id }}/hqdefault.jpg'">
-                                    <div class="play-button">▶</div>
-                                </div>
-                                {% endif %}
-                                <div class="card-body">
-                                    <h3 class="card-title">{{ vision.title }}</h3>
-                                    <p class="meta">
-                                        <span class="date">📅 {{ vision.date }}</span>
-                                    </p>
-                                </div>
+            <div class="video-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchVideoTab('vision')">교회 비전</button>
+                    <button class="tab-btn" onclick="switchVideoTab('sermons')">최근설교</button>
+                    <button class="tab-btn" onclick="switchVideoTab('shorts')">숏츠</button>
+                    <button class="tab-btn" onclick="switchVideoTab('qty')">오늘의 QT</button>
+                </div>
+
+                <!-- Vision Tab Content -->
+                <div id="tab-vision" class="tab-content active">
+                    <div class="video-grid">
+                        {% for vision in visions %}
+                        <div class="card sermon-card {% if vision.youtube_id %}clickable-card{% endif %}" {% if
+                            vision.youtube_id %}onclick="openVideoModal('{{ vision.youtube_id }}')"
+                            style="cursor: pointer;" {% endif %}>
+                            {% if vision.youtube_id %}
+                            <div class="video-thumbnail">
+                                <img src="{{ vision.thumbnail }}" alt="{{ vision.title }}"
+                                    onerror="this.src='https://img.youtube.com/vi/{{ vision.youtube_id }}/hqdefault.jpg'">
+                                <div class="play-button">▶</div>
                             </div>
-                            {% endfor %}
-                        </div>
-                        <button class="slider-btn slider-next vision-next" aria-label="다음">❯</button>
-                    </div>
-                </div>
-
-                <!-- Sermons Section (Right) -->
-                <div class="section-half sermons-section">
-                    <div class="section-header">
-                        <h2>최근 설교</h2>
-                        <div class="divider"></div>
-                    </div>
-                    <div class="slider-container">
-                        <button class="slider-btn slider-prev sermon-prev" aria-label="이전">❮</button>
-                        <div class="card-slider sermon-slider">
-                            {% for sermon in sermons %}
-                            <div class="card sermon-card {% if sermon.youtube_id %}clickable-card{% endif %}"
-                                 {% if sermon.youtube_id %}onclick="openVideoModal('{{ sermon.youtube_id }}')" style="cursor: pointer;"{% endif %}>
-                                {% if sermon.youtube_id %}
-                                <div class="video-thumbnail">
-                                    <img src="{{ sermon.thumbnail }}" alt="{{ sermon.title }}" onerror="this.src='https://img.youtube.com/vi/{{ sermon.youtube_id }}/hqdefault.jpg'">
-                                    <div class="play-button">▶</div>
-                                </div>
-                                {% endif %}
-                                <div class="card-header">
-                                    <h3>{{ sermon.title }}</h3>
-                                </div>
-                                <div class="card-body">
-                                    <p class="meta">
-                                        <span class="pastor">👤 {{ sermon.pastor }}</span>
-                                        <span class="date">📅 {{ sermon.date }}</span>
-                                    </p>
-                                    <p class="description">{{ sermon.description }}</p>
-                                </div>
+                            {% endif %}
+                            <div class="card-header">
+                                <h3>{{ vision.title }}</h3>
                             </div>
-                            {% endfor %}
+                            <div class="card-body">
+                                <p class="meta">
+                                    <span class="date">📅 {{ vision.date }}</span>
+                                </p>
+                            </div>
                         </div>
-                        <button class="slider-btn slider-next sermon-next" aria-label="다음">❯</button>
+                        {% endfor %}
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- YouTube Shorts Section -->
-    <section id="shorts" class="shorts-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>더하는교회 숏츠</h2>
-                <div class="divider"></div>
-            </div>
-            <div class="slider-container">
-                <button class="slider-btn slider-prev shorts-prev" aria-label="이전">❮</button>
-                <div class="shorts-grid">
-                    {% for short in shorts %}
-                    <div class="shorts-card" onclick="openVideoModal('{{ short.youtube_id }}', true)" style="cursor: pointer;">
-                        {% if short.youtube_id %}
-                        <div class="shorts-thumbnail">
-                            <img src="{{ short.thumbnail }}" alt="{{ short.title }}" onerror="this.src='https://img.youtube.com/vi/{{ short.youtube_id }}/hqdefault.jpg'">
-                            <div class="shorts-play-button">▶</div>
-                            <div class="shorts-badge">Shorts</div>
+                <!-- Sermons Tab Content -->
+                <div id="tab-sermons" class="tab-content">
+                    <div class="video-grid">
+                        {% for sermon in sermons %}
+                        <div class="card sermon-card {% if sermon.youtube_id %}clickable-card{% endif %}" {% if
+                            sermon.youtube_id %}onclick="openVideoModal('{{ sermon.youtube_id }}')"
+                            style="cursor: pointer;" {% endif %}>
+                            {% if sermon.youtube_id %}
+                            <div class="video-thumbnail">
+                                <img src="{{ sermon.thumbnail }}" alt="{{ sermon.title }}"
+                                    onerror="this.src='https://img.youtube.com/vi/{{ sermon.youtube_id }}/hqdefault.jpg'">
+                                <div class="play-button">▶</div>
+                            </div>
+                            {% endif %}
+                            <div class="card-header">
+                                <h3>{{ sermon.title }}</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="meta">
+                                    <span class="pastor">👤 {{ sermon.pastor }}</span>
+                                    <span class="date">📅 {{ sermon.date }}</span>
+                                </p>
+                                <p class="description">{{ sermon.description }}</p>
+                            </div>
                         </div>
-                        {% endif %}
-                        <div class="shorts-title">
-                            <h4>{{ short.title }}</h4>
-                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
-                <button class="slider-btn slider-next shorts-next" aria-label="다음">❯</button>
-            </div>
-        </div>
-    </section>
 
-    <!-- 오늘의 QT Section -->
-    <section id="qty" class="qty-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>오늘의 QT</h2>
-                <div class="divider"></div>
-            </div>
-            <div class="slider-container">
-                <button class="slider-btn slider-prev qty-prev" aria-label="이전">❮</button>
-                <div class="shorts-grid qty-grid">
-                    {% for qty in qtys %}
-                    <div class="shorts-card qty-card" onclick="openVideoModal('{{ qty.youtube_id }}')" style="cursor: pointer;">
-                        {% if qty.youtube_id %}
-                        <div class="shorts-thumbnail">
-                            <img src="{{ qty.thumbnail }}" alt="{{ qty.title }}" onerror="this.src='https://img.youtube.com/vi/{{ qty.youtube_id }}/hqdefault.jpg'">
-                            <div class="shorts-play-button">▶</div>
-                            <div class="shorts-badge qty-badge">QT</div>
+                <!-- Shorts Tab Content -->
+                <div id="tab-shorts" class="tab-content">
+                    <div class="video-grid">
+                        {% for short in shorts %}
+                        <div class="shorts-card" onclick="openVideoModal('{{ short.youtube_id }}', true)"
+                            style="cursor: pointer;">
+                            {% if short.youtube_id %}
+                            <div class="shorts-thumbnail">
+                                <img src="{{ short.thumbnail }}" alt="{{ short.title }}"
+                                    onerror="this.src='https://img.youtube.com/vi/{{ short.youtube_id }}/hqdefault.jpg'">
+                                <div class="shorts-play-button">▶</div>
+                                <div class="shorts-badge">Shorts</div>
+                            </div>
+                            {% endif %}
+                            <div class="shorts-title">
+                                <h4>{{ short.title }}</h4>
+                            </div>
                         </div>
-                        {% endif %}
-                        <div class="shorts-title">
-                            <h4>{{ qty.title }}</h4>
-                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
-                <button class="slider-btn slider-next qty-next" aria-label="다음">❯</button>
+
+                <!-- QT Tab Content -->
+                <div id="tab-qty" class="tab-content">
+                    <div class="video-grid">
+                        {% for qty in qtys %}
+                        <div class="shorts-card qty-card" onclick="openVideoModal('{{ qty.youtube_id }}')"
+                            style="cursor: pointer;">
+                            {% if qty.youtube_id %}
+                            <div class="shorts-thumbnail">
+                                <img src="{{ qty.thumbnail }}" alt="{{ qty.title }}"
+                                    onerror="this.src='https://img.youtube.com/vi/{{ qty.youtube_id }}/hqdefault.jpg'">
+                                <div class="shorts-play-button">▶</div>
+                                <div class="shorts-badge qty-badge">QT</div>
+                            </div>
+                            {% endif %}
+                            <div class="shorts-title">
+                                <h4>{{ qty.title }}</h4>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
@@ -265,7 +259,8 @@
                             <!-- Body -->
                             <div class="news-body">
                                 {% for news in news_list %}
-                                <div class="news-item" onclick="window.location='/news/{{ news.id }}'" style="cursor: pointer;">
+                                <div class="news-item" onclick="window.location='/news/{{ news.id }}'"
+                                    style="cursor: pointer;">
                                     <div class="news-cell news-num">{{ news.id }}</div>
                                     <div class="news-cell news-subject">{{ news.title }}</div>
                                     <div class="news-cell news-date">{{ news.date }}</div>
@@ -294,10 +289,12 @@
                     <div id="kakaoMap" style="width:100%;height:420px;border-radius:12px;overflow:hidden;"></div>
                 </div>
                 <div class="map-buttons">
-                    <a href="https://map.naver.com/p/search/대전시%20유성구%20학하동%20755-6" target="_blank" class="btn btn-naver">
+                    <a href="https://map.naver.com/p/search/대전시%20유성구%20학하동%20755-6" target="_blank"
+                        class="btn btn-naver">
                         네이버 지도로 길찾기
                     </a>
-                    <a href="https://map.kakao.com/link/search/대전시%20유성구%20학하동%20755-6" target="_blank" class="btn btn-kakao">
+                    <a href="https://map.kakao.com/link/search/대전시%20유성구%20학하동%20755-6" target="_blank"
+                        class="btn btn-kakao">
                         카카오맵으로 길찾기
                     </a>
                 </div>
@@ -332,7 +329,9 @@
         <div class="video-modal-content" id="videoModalContent">
             <span class="video-modal-close" onclick="closeVideoModal(event)">&times;</span>
             <div class="video-container" id="videoContainer">
-                <iframe id="videoIframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe id="videoIframe" src="" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
             </div>
         </div>
     </div>
@@ -342,7 +341,7 @@
         // 카카오 지도 초기화
         try {
             if (typeof kakao !== 'undefined' && kakao.maps) {
-                kakao.maps.load(function() {
+                kakao.maps.load(function () {
                     var container = document.getElementById('kakaoMap');
                     if (!container) return;
                     var options = {
@@ -353,7 +352,7 @@
 
                     // 주소로 좌표 검색
                     var geocoder = new kakao.maps.services.Geocoder();
-                    geocoder.addressSearch('대전 유성구 학하동 755-6', function(result, status) {
+                    geocoder.addressSearch('대전 유성구 학하동 755-6', function (result, status) {
                         if (status === kakao.maps.services.Status.OK) {
                             var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
                             var marker = new kakao.maps.Marker({ map: map, position: coords });
@@ -376,9 +375,10 @@
             } else {
                 console.warn('카카오 지도 SDK 로드 실패 - 사이트 도메인 등록을 확인하세요.');
             }
-        } catch(e) {
+        } catch (e) {
             console.warn('카카오 지도 초기화 오류:', e);
         }
     </script>
 </body>
+
 </html>

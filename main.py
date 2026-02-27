@@ -141,9 +141,22 @@ def init_db():
             vision_title TEXT NOT NULL,
             vision_content TEXT NOT NULL,
             mission_content TEXT NOT NULL,
+            pastoral_direction TEXT NOT NULL DEFAULT '',
+            serving_people TEXT NOT NULL DEFAULT '',
             updated_at TEXT NOT NULL
         )
     """)
+    
+    # Add new columns if they don't exist
+    try:
+        cursor.execute("ALTER TABLE church_about ADD COLUMN pastoral_direction TEXT NOT NULL DEFAULT ''")
+    except sqlite3.OperationalError:
+        pass
+    
+    try:
+        cursor.execute("ALTER TABLE church_about ADD COLUMN serving_people TEXT NOT NULL DEFAULT ''")
+    except sqlite3.OperationalError:
+        pass
 
     # Check if admin exists
     cursor.execute("SELECT COUNT(*) FROM users WHERE role='admin'")
@@ -166,8 +179,8 @@ def init_db():
     cursor.execute("SELECT COUNT(*) FROM church_about")
     if cursor.fetchone()[0] == 0:
         cursor.execute("""
-            INSERT INTO church_about (id, vision_title, vision_content, mission_content, updated_at)
-            VALUES (1, ?, ?, ?, ?)
+            INSERT INTO church_about (id, vision_title, vision_content, mission_content, pastoral_direction, serving_people, updated_at)
+            VALUES (1, ?, ?, ?, ?, ?, ?)
         """, (
             "더하는교회의 비전",
             """더하는교회의 비전은 한 문장으로 말하면,
@@ -195,6 +208,8 @@ def init_db():
 균형 잡힌 신앙의 성숙을 함께 이루며 (교육)
 하나님을 떠난 자들과 복음을 나누고 (전도)
 깨진 세상의 변혁을 함께 이루어 갑니다 (봉사)""",
+            "",
+            "",
             datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         ))
 
@@ -354,12 +369,46 @@ async def about_page(request: Request):
     about = {
         "vision_title": row[1] if row else "더하는교회의 비전",
         "vision_content": row[2] if row else "",
-        "mission_content": row[3] if row else ""
+        "mission_content": row[3] if row else "",
+        "pastoral_direction": row[4] if len(row) > 4 else "",
+        "serving_people": row[5] if len(row) > 5 else ""
     }
 
     return templates.TemplateResponse("about.html", {
         "request": request,
         "about": about
+    })
+
+@app.get("/direction", response_class=HTMLResponse)
+async def direction_page(request: Request):
+    """Pastoral Direction page"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT pastoral_direction FROM church_about WHERE id=1")
+    row = cursor.fetchone()
+    conn.close()
+
+    content = row[0] if row and row[0] else "준비 중입니다."
+
+    return templates.TemplateResponse("direction.html", {
+        "request": request,
+        "content": content
+    })
+
+@app.get("/people", response_class=HTMLResponse)
+async def people_page(request: Request):
+    """Serving People page"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT serving_people FROM church_about WHERE id=1")
+    row = cursor.fetchone()
+    conn.close()
+
+    content = row[0] if row and row[0] else "준비 중입니다."
+
+    return templates.TemplateResponse("people.html", {
+        "request": request,
+        "content": content
     })
 
 @app.get("/login", response_class=HTMLResponse)
@@ -655,6 +704,8 @@ async def update_about(
     vision_title: str = Form(...),
     vision_content: str = Form(...),
     mission_content: str = Form(...),
+    pastoral_direction: str = Form(''),
+    serving_people: str = Form(''),
     user: dict = Depends(require_admin)
 ):
     """Update church about content"""
@@ -663,9 +714,9 @@ async def update_about(
 
     cursor.execute("""
         UPDATE church_about
-        SET vision_title=?, vision_content=?, mission_content=?, updated_at=?
+        SET vision_title=?, vision_content=?, mission_content=?, pastoral_direction=?, serving_people=?, updated_at=?
         WHERE id=1
-    """, (vision_title, vision_content, mission_content,
+    """, (vision_title, vision_content, mission_content, pastoral_direction, serving_people,
           datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     conn.commit()
