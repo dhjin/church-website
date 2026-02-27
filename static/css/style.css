@@ -219,6 +219,21 @@ h3 {
     animation: fadeIn 0.2s ease;
 }
 
+/* Show dropdown on mobile when .open class is toggled by JS */
+.nav-item.dropdown.open .dropdown-menu {
+    display: block;
+    position: static;
+    /* In mobile, inline flow */
+    box-shadow: none;
+    background: var(--bg-light);
+    border-radius: 4px;
+    padding: 0;
+    min-width: unset;
+    transform: none;
+    animation: none;
+    left: auto;
+}
+
 .dropdown-menu li {
     width: 100%;
     padding: 0;
@@ -767,6 +782,34 @@ section {
 
     .col-title {
         max-width: 200px;
+    }
+
+    /* --- Mobile Video Carousel Overrides --- */
+    .carousel-track {
+        /* Standard 16:9 videos: 2 cards stacked vertically, sliding horizontally */
+        grid-template-rows: repeat(2, 1fr);
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: 82%;
+        gap: 12px;
+    }
+
+    .shorts-track {
+        /* Shorts 9:16 videos: 2 cards side-by-side single row, sliding horizontally */
+        grid-template-rows: 1fr !important;
+        grid-template-columns: none !important;
+        grid-auto-flow: column !important;
+        grid-auto-columns: 48% !important;
+        gap: 10px !important;
+    }
+
+    .carousel-nav {
+        display: none;
+        /* Hidden on mobile - rely on touch swipe */
+    }
+
+    .carousel-container {
+        padding: 0 4px;
     }
 }
 

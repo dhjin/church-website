@@ -8,11 +8,29 @@ if (mobileMenuToggle) {
         navMenu.classList.toggle('active');
     });
 
-    // Close menu when clicking on a link
+    // On mobile: dropdown parents toggle submenu; leaf links close nav
     document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.addEventListener('click', () => {
+        link.addEventListener('click', (e) => {
+            const isMobile = window.innerWidth <= 768;
+            if (!isMobile) return; // Desktop uses CSS :hover, no JS needed
+
+            const parentLi = link.closest('li.dropdown');
+            if (parentLi && link.classList.contains('dropbtn')) {
+                // Toggle the dropdown on this item
+                e.preventDefault();
+                // Close other open dropdowns
+                document.querySelectorAll('.nav-item.dropdown.open').forEach(el => {
+                    if (el !== parentLi) el.classList.remove('open');
+                });
+                parentLi.classList.toggle('open');
+                return;
+            }
+
+            // It's a normal link (including sub-links) — close the nav
             mobileMenuToggle.classList.remove('active');
             navMenu.classList.remove('active');
+            // Also close any open dropdowns
+            document.querySelectorAll('.nav-item.dropdown.open').forEach(el => el.classList.remove('open'));
         });
     });
 
@@ -21,6 +39,7 @@ if (mobileMenuToggle) {
         if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
             mobileMenuToggle.classList.remove('active');
             navMenu.classList.remove('active');
+            document.querySelectorAll('.nav-item.dropdown.open').forEach(el => el.classList.remove('open'));
         }
     });
 }
