@@ -536,7 +536,9 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
     about = {
         "vision_title": about_row[1] if about_row else "",
         "vision_content": about_row[2] if about_row else "",
-        "mission_content": about_row[3] if about_row else ""
+        "mission_content": about_row[3] if about_row else "",
+        "pastoral_direction": about_row[4] if about_row else "",
+        "serving_people": about_row[5] if about_row else ""
     }
 
     conn.close()
