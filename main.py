@@ -1170,6 +1170,45 @@ async def create_pastoral(
 
     return RedirectResponse(url="/admin", status_code=303)
 
+@app.post("/admin/pastoral/update/{post_id}")
+async def update_pastoral(
+    request: Request,
+    post_id: int,
+    title: str = Form(...),
+    content: str = Form(...),
+    image: Optional[UploadFile] = File(None),
+    user: dict = Depends(require_admin)
+):
+    """Update existing pastoral post"""
+    image_path = None
+    if image and image.filename:
+        file_extension = Path(image.filename).suffix
+        filename = f"pastoral_{datetime.now().timestamp()}{file_extension}"
+        file_path = UPLOAD_DIR / filename
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+        image_path = f"/uploads/{filename}"
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    if image_path:
+        cursor.execute("UPDATE pastoral_posts SET title=?, content=?, image_path=? WHERE id=?",
+                        (title, content, image_path, post_id))
+    else:
+        # Auto-extract thumbnail from content
+        first_img = extract_first_image_from_content(content)
+        if first_img:
+            cursor.execute("UPDATE pastoral_posts SET title=?, content=?, image_path=? WHERE id=?",
+                            (title, content, first_img, post_id))
+        else:
+            cursor.execute("UPDATE pastoral_posts SET title=?, content=? WHERE id=?",
+                            (title, content, post_id))
+
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url="/admin", status_code=303)
+
 @app.post("/admin/pastoral/delete/{post_id}")
 async def delete_pastoral(post_id: int, user: dict = Depends(require_admin)):
     """Delete a pastoral post"""

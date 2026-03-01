@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지 - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=10">
-    <link rel="stylesheet" href="/static/css/admin.css?v=10">
+    <link rel="stylesheet" href="/static/css/style.css?v=11">
+    <link rel="stylesheet" href="/static/css/admin.css?v=11">
 </head>
 
 <body>
@@ -440,6 +440,53 @@
                         textarea.value = before + '\n<h3>' + (selected || '소제목') + '</h3>\n' + after;
                         textarea.focus();
                     }
+
+                    function editPastoral(id) {
+                        document.querySelector('.pastoral-row[data-pastoral-id="' + id + '"]').style.display = 'none';
+                        document.getElementById('pastoral-edit-' + id).style.display = 'table-row';
+                    }
+
+                    function cancelEditPastoral(id) {
+                        document.querySelector('.pastoral-row[data-pastoral-id="' + id + '"]').style.display = '';
+                        document.getElementById('pastoral-edit-' + id).style.display = 'none';
+                    }
+
+                    function insertInlineImageEdit(input, postId) {
+                        if (!input.files || !input.files[0]) return;
+                        const file = input.files[0];
+                        const formData = new FormData();
+                        formData.append('image', file);
+                        fetch('/admin/upload-image', { method: 'POST', body: formData })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.url) {
+                                const textarea = document.getElementById('pastoral-edit-content-' + postId);
+                                const pos = textarea.selectionStart;
+                                const before = textarea.value.substring(0, pos);
+                                const after = textarea.value.substring(pos);
+                                const imgTag = '\n<img src="' + data.url + '" alt="이미지" style="max-width:100%; border-radius:8px; margin:1rem 0;">\n';
+                                textarea.value = before + imgTag + after;
+                                textarea.focus();
+                            } else { alert('업로드 실패: ' + (data.error || '')); }
+                        }).catch(err => alert('오류: ' + err.message));
+                        input.value = '';
+                    }
+
+                    function insertBoldEdit(postId) {
+                        const textarea = document.getElementById('pastoral-edit-content-' + postId);
+                        const start = textarea.selectionStart, end = textarea.selectionEnd;
+                        const selected = textarea.value.substring(start, end);
+                        textarea.value = textarea.value.substring(0, start) + '<b>' + (selected || '텍스트') + '</b>' + textarea.value.substring(end);
+                        textarea.focus();
+                    }
+
+                    function insertHeadingEdit(postId) {
+                        const textarea = document.getElementById('pastoral-edit-content-' + postId);
+                        const start = textarea.selectionStart, end = textarea.selectionEnd;
+                        const selected = textarea.value.substring(start, end);
+                        textarea.value = textarea.value.substring(0, start) + '\n<h3>' + (selected || '소제목') + '</h3>\n' + textarea.value.substring(end);
+                        textarea.focus();
+                    }
                     </script>
 
                     <div class="admin-card">
@@ -459,7 +506,7 @@
                             </thead>
                             <tbody>
                                 {% for post in pastoral_posts %}
-                                <tr>
+                                <tr class="pastoral-row" data-pastoral-id="{{ post.id }}">
                                     <td>{{ post.id }}</td>
                                     <td><a href="/pastoral/{{ post.id }}" target="_blank">{{ post.title }}</a></td>
                                     <td>{{ post.author }}</td>
@@ -467,9 +514,41 @@
                                     <td>{{ post.views }}</td>
                                     <td>{{ '✅' if post.image_path else '❌' }}</td>
                                     <td>
+                                        <button class="btn-edit" onclick="editPastoral({{ post.id }})">수정</button>
                                         <form method="POST" action="/admin/pastoral/delete/{{ post.id }}" style="display: inline;">
                                             <button type="submit" class="btn btn-danger btn-sm"
                                                 onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr class="pastoral-edit-row" id="pastoral-edit-{{ post.id }}" style="display: none;">
+                                    <td colspan="7">
+                                        <form method="POST" action="/admin/pastoral/update/{{ post.id }}" enctype="multipart/form-data" class="inline-edit-form">
+                                            <div class="form-group">
+                                                <label>제목</label>
+                                                <input type="text" name="title" value="{{ post.title }}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>내용</label>
+                                                <div class="editor-toolbar" style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                                                    <button type="button" onclick="insertBoldEdit({{ post.id }})" class="btn btn-sm" style="padding: 4px 10px; font-size: 0.85rem; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;"><b>B</b></button>
+                                                    <button type="button" onclick="insertHeadingEdit({{ post.id }})" class="btn btn-sm" style="padding: 4px 10px; font-size: 0.85rem; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">H2</button>
+                                                    <label style="padding: 4px 10px; font-size: 0.85rem; background: #4CAF50; color: white; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                                        &#128247; 이미지
+                                                        <input type="file" accept="image/*" onchange="insertInlineImageEdit(this, {{ post.id }})" style="display: none;">
+                                                    </label>
+                                                </div>
+                                                <textarea id="pastoral-edit-content-{{ post.id }}" name="content" rows="12" required style="font-family: monospace; font-size: 0.95rem; width: 100%;">{{ post.content }}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>대표 이미지 변경 (선택)</label>
+                                                <input type="file" name="image" accept="image/*">
+                                                <small class="form-hint">변경하지 않으려면 비워두세요.</small>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button type="submit" class="btn btn-primary">저장</button>
+                                                <button type="button" class="btn btn-secondary" onclick="cancelEditPastoral({{ post.id }})">취소</button>
+                                            </div>
                                         </form>
                                     </td>
                                 </tr>
@@ -674,7 +753,7 @@
             </div>
         </div>
     </div>
-    <script src="/static/js/admin.js?v=10"></script>
+    <script src="/static/js/admin.js?v=11"></script>
 </body>
 
 </html>
