@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>목양의 窓 - 더하는 교회</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=7">
+    <style>
+        .pastoral-page {
+            padding: 100px 0 60px 0;
+            min-height: 70vh;
+        }
+
+        .pastoral-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pastoral-header h2 {
+            font-size: 2.2rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .pastoral-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .pastoral-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .pastoral-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .pastoral-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .pastoral-card-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background-color: var(--bg-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pastoral-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pastoral-card-image .no-image {
+            font-size: 3rem;
+            color: var(--text-light);
+            opacity: 0.3;
+        }
+
+        .pastoral-card-body {
+            padding: 1.2rem;
+        }
+
+        .pastoral-card-body h3 {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pastoral-card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .pastoral-empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+        }
+
+        .pastoral-empty p {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .pastoral-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .pastoral-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pastoral-header h2 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <h1><a href="/#home" style="color: inherit; text-decoration: none;">&#10015; 더하는 교회</a></h1>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="메뉴">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="/#home">홈</a></li>
+                    <li class="nav-item dropdown">
+                        <a href="/about" class="dropbtn">교회소개</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/direction">목회방향</a></li>
+                            <li><a href="/about">비전과 가치</a></li>
+                            <li><a href="/#schedule-news">예배시간 안내</a></li>
+                            <li><a href="/#contact">찾아오시는 길</a></li>
+                            <li><a href="/people">섬기는 분들</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="/#videos" class="dropbtn">영상</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/#videos?tab=vision">교회 비전</a></li>
+                            <li><a href="/#videos?tab=sermons">최근설교</a></li>
+                            <li><a href="/#videos?tab=shorts">숏츠</a></li>
+                            <li><a href="/#videos?tab=qty">오늘의 QT</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/pastoral" class="active">목양의 窓</a></li>
+                    <li><a href="/#schedule-news">예배안내</a></li>
+                    <li><a href="/#schedule-news">교회소식</a></li>
+                    <li><a href="/#contact">찾아오시는 길</a></li>
+                    {% if user %}
+                    {% if user.role == 'admin' %}
+                    <li><a href="/admin">관리자</a></li>
+                    {% endif %}
+                    <li><a href="/logout">로그아웃</a></li>
+                    {% else %}
+                    <li><a href="/login" class="login-link">로그인</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section class="pastoral-page">
+        <div class="container">
+            <div class="pastoral-header">
+                <h2>목양의 窓</h2>
+                <p>목사님의 이야기를 나눕니다</p>
+            </div>
+
+            {% if posts %}
+            <div class="pastoral-grid">
+                {% for post in posts %}
+                <a href="/pastoral/{{ post.id }}" class="pastoral-card">
+                    <div class="pastoral-card-image">
+                        {% if post.image_path %}
+                        <img src="{{ post.image_path }}" alt="{{ post.title }}">
+                        {% else %}
+                        <div class="no-image">&#9998;</div>
+                        {% endif %}
+                    </div>
+                    <div class="pastoral-card-body">
+                        <h3>{{ post.title }}</h3>
+                        <div class="pastoral-card-meta">
+                            <span>{{ post.created_at }}</span>
+                            <span>조회 {{ post.views }}</span>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="pastoral-empty">
+                <p>아직 게시글이 없습니다.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>더하는 교회</h4>
+                    <p>기독교 한국침례회</p>
+                    <p>교회대표: 김한기 목사</p>
+                </div>
+                <div class="footer-section">
+                    <h4>주소</h4>
+                    <p>대전시 유성구 학하동 755-6 1층</p>
+                    <p>Tel: 042-XXX-XXXX</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 더하는 교회. All rights reserved.</p>
+                <p>하나님의 사랑과 은혜가 함께 하시기를 기도합니다.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/script.js?v=7"></script>
+</body>
+</html>

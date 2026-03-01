@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ news.title }} - 더하는 교회</title>
+    <title>{{ post.title }} - 목양의 窓 - 더하는 교회</title>
     <link rel="stylesheet" href="/static/css/style.css?v=7">
     <style>
-        .news-detail-container {
+        .post-detail-container {
             max-width: 800px;
             margin: 80px auto;
             padding: 20px;
         }
 
-        .news-detail-header {
+        .post-detail-header {
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 1.5rem;
             margin-bottom: 2rem;
         }
 
-        .news-detail-title {
+        .post-detail-title {
             font-size: 2rem;
             color: var(--text-dark);
             margin-bottom: 1rem;
         }
 
-        .news-detail-meta {
+        .post-detail-meta {
             display: flex;
             gap: 1.5rem;
             color: var(--text-light);
@@ -32,19 +32,19 @@
             flex-wrap: wrap;
         }
 
-        .news-detail-content {
+        .post-detail-content {
             line-height: 1.8;
             font-size: 1.1rem;
             color: var(--text-dark);
             margin-bottom: 2rem;
         }
 
-        .news-detail-image {
+        .post-detail-image {
             margin: 2rem 0;
             text-align: center;
         }
 
-        .news-detail-image img {
+        .post-detail-image img {
             max-width: 100%;
             height: auto;
             border-radius: 12px;
@@ -72,15 +72,18 @@
             padding-top: 2rem;
             border-top: 2px solid var(--border-color);
         }
+
         .comments-title {
             font-size: 1.3rem;
             color: var(--text-dark);
             margin-bottom: 1.5rem;
         }
+
         .comment-item {
             padding: 1rem;
             border-bottom: 1px solid #eee;
         }
+
         .comment-header {
             display: flex;
             align-items: center;
@@ -88,17 +91,21 @@
             margin-bottom: 0.5rem;
             font-size: 0.9rem;
         }
+
         .comment-author {
             font-weight: 600;
             color: var(--primary-color);
         }
+
         .comment-date {
             color: var(--text-light);
         }
+
         .comment-content {
             line-height: 1.6;
             color: var(--text-dark);
         }
+
         .comment-delete-btn {
             background: none;
             border: none;
@@ -108,12 +115,15 @@
             padding: 2px 8px;
             margin-left: auto;
         }
+
         .comment-delete-btn:hover {
             text-decoration: underline;
         }
+
         .comment-form {
             margin-top: 1.5rem;
         }
+
         .comment-form textarea {
             width: 100%;
             padding: 12px;
@@ -125,10 +135,12 @@
             margin-bottom: 1rem;
             box-sizing: border-box;
         }
+
         .comment-form textarea:focus {
             outline: none;
             border-color: var(--primary-color);
         }
+
         .comment-submit-btn {
             padding: 10px 24px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -140,10 +152,12 @@
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
         }
+
         .comment-submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
+
         .comment-login-prompt {
             text-align: center;
             padding: 1.5rem;
@@ -151,14 +165,17 @@
             border-radius: 8px;
             margin-top: 1.5rem;
         }
+
         .comment-login-prompt a {
             color: var(--primary-color);
             font-weight: 600;
             text-decoration: none;
         }
+
         .comment-login-prompt a:hover {
             text-decoration: underline;
         }
+
         .no-comments {
             text-align: center;
             color: var(--text-light);
@@ -166,11 +183,10 @@
         }
 
         @media (max-width: 768px) {
-            .news-detail-title {
+            .post-detail-title {
                 font-size: 1.5rem;
             }
-
-            .news-detail-content {
+            .post-detail-content {
                 font-size: 1rem;
             }
         }
@@ -182,7 +198,7 @@
         <nav class="navbar">
             <div class="container">
                 <div class="logo">
-                    <h1><a href="/#home" style="color: inherit; text-decoration: none;">✟ 더하는 교회</a></h1>
+                    <h1><a href="/#home" style="color: inherit; text-decoration: none;">&#10015; 더하는 교회</a></h1>
                 </div>
                 <button class="mobile-menu-toggle" aria-label="메뉴">
                     <span></span>
@@ -210,11 +226,14 @@
                             <li><a href="/#videos?tab=qty">오늘의 QT</a></li>
                         </ul>
                     </li>
-                    <li><a href="/pastoral">목양의 窓</a></li>
+                    <li><a href="/pastoral" class="active">목양의 窓</a></li>
                     <li><a href="/#schedule-news">예배안내</a></li>
-                    <li><a href="/#schedule-news" class="active">교회소식</a></li>
+                    <li><a href="/#schedule-news">교회소식</a></li>
                     <li><a href="/#contact">찾아오시는 길</a></li>
                     {% if user %}
+                    {% if user.role == 'admin' %}
+                    <li><a href="/admin">관리자</a></li>
+                    {% endif %}
                     <li><a href="/logout">로그아웃</a></li>
                     {% else %}
                     <li><a href="/login" class="login-link">로그인</a></li>
@@ -224,28 +243,28 @@
         </nav>
     </header>
 
-    <div class="news-detail-container">
-        <div class="news-detail-header">
-            <h1 class="news-detail-title">{{ news.title }}</h1>
-            <div class="news-detail-meta">
-                <span>📝 작성자: {{ news.author or '관리자' }}</span>
-                <span>📅 작성일: {{ news.date }}</span>
-                <span>👁️ 조회수: {{ news.views }}</span>
+    <div class="post-detail-container">
+        <div class="post-detail-header">
+            <h1 class="post-detail-title">{{ post.title }}</h1>
+            <div class="post-detail-meta">
+                <span>&#128221; 작성자: {{ post.author or '관리자' }}</span>
+                <span>&#128197; 작성일: {{ post.created_at }}</span>
+                <span>&#128065; 조회수: {{ post.views }}</span>
             </div>
         </div>
 
-        {% if news.image_path %}
-        <div class="news-detail-image">
-            <img src="{{ news.image_path }}" alt="{{ news.title }}">
+        {% if post.image_path %}
+        <div class="post-detail-image">
+            <img src="{{ post.image_path }}" alt="{{ post.title }}">
         </div>
         {% endif %}
 
-        <div class="news-detail-content">
-            {{ news.content | replace('\n', '<br>') | safe }}
+        <div class="post-detail-content">
+            {{ post.content | replace('\n', '<br>') | safe }}
         </div>
 
         <div>
-            <a href="/#news" class="back-button">&larr; 목록으로 돌아가기</a>
+            <a href="/pastoral" class="back-button">&larr; 목록으로 돌아가기</a>
         </div>
 
         <!-- Comments Section -->
@@ -260,7 +279,7 @@
                         <span class="comment-author">{{ comment.name or comment.username }}</span>
                         <span class="comment-date">{{ comment.created_at[:16].replace('T', ' ') }}</span>
                         {% if user and (user.id == comment.user_id or user.role == 'admin') %}
-                        <form method="POST" action="/comment/{{ comment.id }}/delete?redirect=/news/{{ news.id }}"
+                        <form method="POST" action="/comment/{{ comment.id }}/delete?redirect=/pastoral/{{ post.id }}"
                             style="display: inline; margin-left: auto;">
                             <button type="submit" class="comment-delete-btn"
                                 onclick="return confirm('댓글을 삭제하시겠습니까?')">삭제</button>
@@ -276,7 +295,7 @@
             {% endif %}
 
             {% if user %}
-            <form method="POST" action="/news/{{ news.id }}/comment" class="comment-form">
+            <form method="POST" action="/pastoral/{{ post.id }}/comment" class="comment-form">
                 <textarea name="content" rows="3" placeholder="댓글을 입력하세요..." required></textarea>
                 <button type="submit" class="comment-submit-btn">댓글 작성</button>
             </form>
@@ -299,7 +318,7 @@
                 <div class="footer-section">
                     <h4>주소</h4>
                     <p>대전시 유성구 학하동 755-6 1층</p>
-                    <p>Tel: 042-626-0291</p>
+                    <p>Tel: 042-XXX-XXXX</p>
                 </div>
             </div>
             <div class="footer-bottom">

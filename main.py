@@ -7,8 +7,10 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 import hashlib
+import bcrypt
 import secrets
 import shutil
+import re
 from typing import Optional
 
 app = FastAPI(title="더하는 교회")
@@ -28,8 +30,23 @@ security = HTTPBasic()
 sessions = {}
 
 def hash_password(password: str) -> str:
-    """Hash password using SHA-256"""
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash password using bcrypt"""
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def verify_password(password: str, hashed: str) -> bool:
+    """Verify password against bcrypt hash"""
+    try:
+        return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+    except (ValueError, TypeError):
+        return False
+
+def is_sha256_hash(hashed: str) -> bool:
+    """Check if a hash is legacy SHA-256 format (64 hex chars)"""
+    return len(hashed) == 64 and all(c in '0123456789abcdef' for c in hashed)
+
+def verify_sha256(password: str, hashed: str) -> bool:
+    """Verify password against legacy SHA-256 hash"""
+    return hashlib.sha256(password.encode()).hexdigest() == hashed
 
 def extract_youtube_id(url: str) -> Optional[str]:
     """Extract YouTube video ID from URL (including Shorts and Live)"""
@@ -134,6 +151,19 @@ def init_db():
         )
     """)
 
+    # 목양의 窓 (Pastoral Window) board
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS pastoral_posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            image_path TEXT,
+            author TEXT,
+            views INTEGER DEFAULT 0,
+            created_at TEXT NOT NULL
+        )
+    """)
+
     # Church About table for vision and missions
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS church_about (
@@ -155,6 +185,28 @@ def init_db():
     
     try:
         cursor.execute("ALTER TABLE church_about ADD COLUMN serving_people TEXT NOT NULL DEFAULT ''")
+    except sqlite3.OperationalError:
+        pass
+
+    # Comments table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            post_type TEXT NOT NULL,
+            post_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            content TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )
+    """)
+
+    # Migration: Add name and email columns to users table
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN name TEXT NOT NULL DEFAULT ''")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN email TEXT DEFAULT ''")
     except sqlite3.OperationalError:
         pass
 
@@ -411,24 +463,160 @@ async def people_page(request: Request):
         "content": content
     })
 
+@app.get("/pastoral", response_class=HTMLResponse)
+async def pastoral_list(request: Request):
+    """목양의 窓 board list"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM pastoral_posts ORDER BY created_at DESC")
+    posts = [{"id": row[0], "title": row[1], "content": row[2], "image_path": row[3],
+              "author": row[4], "views": row[5], "created_at": row[6]}
+             for row in cursor.fetchall()]
+    conn.close()
+
+    user = get_current_user(request)
+    return templates.TemplateResponse("pastoral_list.html", {
+        "request": request, "posts": posts, "user": user
+    })
+
+@app.get("/pastoral/{post_id}", response_class=HTMLResponse)
+async def pastoral_detail(request: Request, post_id: int):
+    """목양의 窓 post detail"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE pastoral_posts SET views = views + 1 WHERE id=?", (post_id,))
+    conn.commit()
+
+    cursor.execute("SELECT * FROM pastoral_posts WHERE id=?", (post_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="게시글을 찾을 수 없습니다.")
+
+    post = {"id": row[0], "title": row[1], "content": row[2], "image_path": row[3],
+            "author": row[4], "views": row[5], "created_at": row[6]}
+
+    # Get comments for this post
+    cursor.execute("""
+        SELECT c.id, c.content, c.created_at, u.username, u.name, c.user_id
+        FROM comments c JOIN users u ON c.user_id = u.id
+        WHERE c.post_type='pastoral' AND c.post_id=?
+        ORDER BY c.created_at ASC
+    """, (post_id,))
+    comments = [{"id": r[0], "content": r[1], "created_at": r[2],
+                 "username": r[3], "name": r[4], "user_id": r[5]}
+                for r in cursor.fetchall()]
+
+    conn.close()
+    user = get_current_user(request)
+
+    return templates.TemplateResponse("pastoral_detail.html", {
+        "request": request, "post": post, "comments": comments, "user": user
+    })
+
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     """Login page"""
     return templates.TemplateResponse("login.html", {"request": request})
 
-@app.post("/login")
-async def login(request: Request, username: str = Form(...), password: str = Form(...)):
-    """Handle login"""
+@app.get("/register", response_class=HTMLResponse)
+async def register_page(request: Request):
+    """Registration page"""
+    return templates.TemplateResponse("register.html", {"request": request})
+
+@app.post("/register")
+async def register(
+    request: Request,
+    name: str = Form(...),
+    email: str = Form(...),
+    username: str = Form(...),
+    password: str = Form(...),
+    password_confirm: str = Form(...)
+):
+    """Handle user registration"""
+    errors = []
+
+    if len(name.strip()) < 2:
+        errors.append("이름은 2자 이상이어야 합니다.")
+    if len(username.strip()) < 3:
+        errors.append("아이디는 3자 이상이어야 합니다.")
+    if len(password) < 6:
+        errors.append("비밀번호는 6자 이상이어야 합니다.")
+    if password != password_confirm:
+        errors.append("비밀번호가 일치하지 않습니다.")
+    if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+        errors.append("올바른 이메일 주소를 입력하세요.")
+
+    if errors:
+        return templates.TemplateResponse("register.html", {
+            "request": request, "errors": errors,
+            "name": name, "email": email, "username": username
+        })
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    hashed_password = hash_password(password)
-    cursor.execute("SELECT id, username, role FROM users WHERE username=? AND password=?",
-                   (username, hashed_password))
-    user = cursor.fetchone()
+    cursor.execute("SELECT id FROM users WHERE username=?", (username,))
+    if cursor.fetchone():
+        conn.close()
+        return templates.TemplateResponse("register.html", {
+            "request": request, "errors": ["이미 사용 중인 아이디입니다."],
+            "name": name, "email": email, "username": username
+        })
+
+    cursor.execute("SELECT id FROM users WHERE email=?", (email,))
+    if cursor.fetchone():
+        conn.close()
+        return templates.TemplateResponse("register.html", {
+            "request": request, "errors": ["이미 사용 중인 이메일입니다."],
+            "name": name, "email": email, "username": username
+        })
+
+    hashed = hash_password(password)
+    cursor.execute("""
+        INSERT INTO users (username, password, role, created_at, name, email)
+        VALUES (?, ?, 'user', ?, ?, ?)
+    """, (username, hashed, datetime.now().isoformat(), name.strip(), email))
+    conn.commit()
     conn.close()
 
+    return templates.TemplateResponse("login.html", {
+        "request": request,
+        "success": "회원가입이 완료되었습니다. 로그인해 주세요."
+    })
+
+@app.post("/login")
+async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    """Handle login with bcrypt (auto-migrates legacy SHA-256 hashes)"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, username, password, role FROM users WHERE username=?", (username,))
+    user = cursor.fetchone()
+
     if not user:
+        conn.close()
+        return templates.TemplateResponse("login.html", {
+            "request": request,
+            "error": "아이디 또는 비밀번호가 올바르지 않습니다."
+        })
+
+    stored_hash = user[2]
+    password_valid = False
+
+    # Try bcrypt first (new format)
+    if stored_hash.startswith('$2b$') or stored_hash.startswith('$2a$'):
+        password_valid = verify_password(password, stored_hash)
+    # Fallback: legacy SHA-256 (auto-migrate to bcrypt)
+    elif is_sha256_hash(stored_hash) and verify_sha256(password, stored_hash):
+        password_valid = True
+        new_hash = hash_password(password)
+        cursor.execute("UPDATE users SET password=? WHERE id=?", (new_hash, user[0]))
+        conn.commit()
+
+    if not password_valid:
+        conn.close()
         return templates.TemplateResponse("login.html", {
             "request": request,
             "error": "아이디 또는 비밀번호가 올바르지 않습니다."
@@ -439,10 +627,11 @@ async def login(request: Request, username: str = Form(...), password: str = For
     sessions[session_token] = {
         "id": user[0],
         "username": user[1],
-        "role": user[2]
+        "role": user[3]
     }
 
-    response = RedirectResponse(url="/admin" if user[2] == "admin" else "/", status_code=303)
+    conn.close()
+    response = RedirectResponse(url="/admin" if user[3] == "admin" else "/", status_code=303)
     response.set_cookie(key="session_token", value=session_token, httponly=True)
     return response
 
@@ -541,6 +730,12 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
         "serving_people": about_row[5] if about_row else ""
     }
 
+    # Get all pastoral posts (목양의 窓)
+    cursor.execute("SELECT * FROM pastoral_posts ORDER BY created_at DESC")
+    pastoral_posts = [{"id": row[0], "title": row[1], "content": row[2], "image_path": row[3],
+                       "author": row[4], "views": row[5], "created_at": row[6]}
+                      for row in cursor.fetchall()]
+
     conn.close()
 
     return templates.TemplateResponse("admin.html", {
@@ -552,7 +747,8 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
         "qtys": qtys,
         "news_list": news_list,
         "church_intro": church_intro,
-        "about": about
+        "about": about,
+        "pastoral_posts": pastoral_posts
     })
 
 @app.post("/admin/news/create")
@@ -822,9 +1018,50 @@ async def update_qty(
 
     return RedirectResponse(url="/admin", status_code=303)
 
+@app.post("/admin/pastoral/create")
+async def create_pastoral(
+    request: Request,
+    title: str = Form(...),
+    content: str = Form(...),
+    image: Optional[UploadFile] = File(None),
+    user: dict = Depends(require_admin)
+):
+    """Create new pastoral post"""
+    image_path = None
+    if image and image.filename:
+        file_extension = Path(image.filename).suffix
+        filename = f"pastoral_{datetime.now().timestamp()}{file_extension}"
+        file_path = UPLOAD_DIR / filename
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+        image_path = f"/uploads/{filename}"
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO pastoral_posts (title, content, image_path, author, views, created_at)
+        VALUES (?, ?, ?, ?, 0, ?)
+    """, (title, content, image_path, user['username'], datetime.now().strftime("%Y-%m-%d")))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/pastoral/delete/{post_id}")
+async def delete_pastoral(post_id: int, user: dict = Depends(require_admin)):
+    """Delete a pastoral post"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM pastoral_posts WHERE id = ?", (post_id,))
+    cursor.execute("DELETE FROM comments WHERE post_type='pastoral' AND post_id=?", (post_id,))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
 @app.get("/news/{news_id}", response_class=HTMLResponse)
 async def view_news(request: Request, news_id: int):
-    """View single news post"""
+    """View single news post with comments"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -841,15 +1078,90 @@ async def view_news(request: Request, news_id: int):
         raise HTTPException(status_code=404, detail="게시글을 찾을 수 없습니다.")
 
     news = {"id": row[0], "title": row[1], "content": row[2], "date": row[3], "views": row[4], "author": row[5], "image_path": row[6]}
-    conn.close()
 
+    # Get comments
+    cursor.execute("""
+        SELECT c.id, c.content, c.created_at, u.username, u.name, c.user_id
+        FROM comments c JOIN users u ON c.user_id = u.id
+        WHERE c.post_type='news' AND c.post_id=?
+        ORDER BY c.created_at ASC
+    """, (news_id,))
+    comments = [{"id": r[0], "content": r[1], "created_at": r[2],
+                 "username": r[3], "name": r[4], "user_id": r[5]}
+                for r in cursor.fetchall()]
+
+    conn.close()
     user = get_current_user(request)
 
     return templates.TemplateResponse("news_detail.html", {
-        "request": request,
-        "news": news,
-        "user": user
+        "request": request, "news": news, "comments": comments, "user": user
     })
+
+@app.post("/news/{news_id}/comment")
+async def create_news_comment(request: Request, news_id: int, content: str = Form(...)):
+    """Add comment to news article (logged-in users only)"""
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+    if not content.strip():
+        return RedirectResponse(url=f"/news/{news_id}", status_code=303)
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO comments (post_type, post_id, user_id, content, created_at)
+        VALUES ('news', ?, ?, ?, ?)
+    """, (news_id, user['id'], content.strip(), datetime.now().isoformat()))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url=f"/news/{news_id}", status_code=303)
+
+@app.post("/pastoral/{post_id}/comment")
+async def create_pastoral_comment(request: Request, post_id: int, content: str = Form(...)):
+    """Add comment to pastoral post (logged-in users only)"""
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+    if not content.strip():
+        return RedirectResponse(url=f"/pastoral/{post_id}", status_code=303)
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO comments (post_type, post_id, user_id, content, created_at)
+        VALUES ('pastoral', ?, ?, ?, ?)
+    """, (post_id, user['id'], content.strip(), datetime.now().isoformat()))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url=f"/pastoral/{post_id}", status_code=303)
+
+@app.post("/comment/{comment_id}/delete")
+async def delete_comment(request: Request, comment_id: int, redirect: str = "/"):
+    """Delete a comment (owner or admin only)"""
+    user = get_current_user(request)
+    if not user:
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT user_id FROM comments WHERE id=?", (comment_id,))
+    comment = cursor.fetchone()
+    if not comment:
+        conn.close()
+        raise HTTPException(status_code=404, detail="댓글을 찾을 수 없습니다.")
+
+    if comment[0] != user['id'] and user['role'] != 'admin':
+        conn.close()
+        raise HTTPException(status_code=403, detail="삭제 권한이 없습니다.")
+
+    cursor.execute("DELETE FROM comments WHERE id=?", (comment_id,))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url=redirect, status_code=303)
 
 if __name__ == "__main__":
     import uvicorn

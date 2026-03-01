@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지 - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=6">
-    <link rel="stylesheet" href="/static/css/admin.css?v=6">
+    <link rel="stylesheet" href="/static/css/style.css?v=7">
+    <link rel="stylesheet" href="/static/css/admin.css?v=7">
 </head>
 
 <body>
@@ -355,6 +355,70 @@
                     </div>
                 </section>
 
+                <!-- 목양의 窓 Management Section -->
+                <section class="admin-section">
+                    <h2 class="section-title">목양의 窓 관리</h2>
+
+                    <div class="admin-card">
+                        <h3>새 글 작성</h3>
+                        <form method="POST" action="/admin/pastoral/create" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="pastoral-title">제목</label>
+                                <input type="text" id="pastoral-title" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="pastoral-content">내용</label>
+                                <textarea id="pastoral-content" name="content" rows="8" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="pastoral-image">이미지 첨부 (선택)</label>
+                                <input type="file" id="pastoral-image" name="image" accept="image/*">
+                                <small class="form-hint">JPG, PNG 등의 이미지 파일을 첨부할 수 있습니다.</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">글 등록</button>
+                        </form>
+                    </div>
+
+                    <div class="admin-card">
+                        <h3>등록된 글 목록</h3>
+                        {% if pastoral_posts %}
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>제목</th>
+                                    <th>작성자</th>
+                                    <th>날짜</th>
+                                    <th>조회</th>
+                                    <th>이미지</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for post in pastoral_posts %}
+                                <tr>
+                                    <td>{{ post.id }}</td>
+                                    <td><a href="/pastoral/{{ post.id }}" target="_blank">{{ post.title }}</a></td>
+                                    <td>{{ post.author }}</td>
+                                    <td>{{ post.created_at }}</td>
+                                    <td>{{ post.views }}</td>
+                                    <td>{{ '✅' if post.image_path else '❌' }}</td>
+                                    <td>
+                                        <form method="POST" action="/admin/pastoral/delete/{{ post.id }}" style="display: inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p class="empty-message">등록된 글이 없습니다.</p>
+                        {% endif %}
+                    </div>
+                </section>
+
                 <!-- News Management Section -->
                 <section class="admin-section">
                     <h2 class="section-title">교회소식 관리</h2>
@@ -472,7 +536,7 @@
             </div>
         </div>
     </div>
-    <script src="/static/js/admin.js?v=6"></script>
+    <script src="/static/js/admin.js?v=7"></script>
 </body>
 
 </html>
