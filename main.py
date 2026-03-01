@@ -188,6 +188,18 @@ def init_db():
     except sqlite3.OperationalError:
         pass
 
+    # Members table (섬기는 분들)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS members (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            role TEXT NOT NULL,
+            bio TEXT NOT NULL DEFAULT '',
+            photo_path TEXT,
+            display_order INTEGER DEFAULT 0
+        )
+    """)
+
     # Comments table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS comments (
@@ -414,16 +426,16 @@ async def about_page(request: Request):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM church_about WHERE id=1")
+    cursor.execute("SELECT vision_title, vision_content, mission_content, pastoral_direction, serving_people FROM church_about WHERE id=1")
     row = cursor.fetchone()
     conn.close()
 
     about = {
-        "vision_title": row[1] if row else "더하는교회의 비전",
-        "vision_content": row[2] if row else "",
-        "mission_content": row[3] if row else "",
-        "pastoral_direction": row[4] if len(row) > 4 else "",
-        "serving_people": row[5] if len(row) > 5 else ""
+        "vision_title": row[0] if row else "더하는교회의 비전",
+        "vision_content": row[1] if row else "",
+        "mission_content": row[2] if row else "",
+        "pastoral_direction": row[3] if row else "",
+        "serving_people": row[4] if row else ""
     }
 
     return templates.TemplateResponse("about.html", {
@@ -452,15 +464,24 @@ async def people_page(request: Request):
     """Serving People page"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+
+    # Get members list
+    cursor.execute("SELECT * FROM members ORDER BY display_order ASC, id ASC")
+    members = [{"id": row[0], "name": row[1], "role": row[2], "bio": row[3],
+                "photo_path": row[4], "display_order": row[5]}
+               for row in cursor.fetchall()]
+
+    # Get intro text
     cursor.execute("SELECT serving_people FROM church_about WHERE id=1")
     row = cursor.fetchone()
-    conn.close()
+    intro = row[0] if row and row[0] else ""
 
-    content = row[0] if row and row[0] else "준비 중입니다."
+    conn.close()
 
     return templates.TemplateResponse("people.html", {
         "request": request,
-        "content": content
+        "members": members,
+        "intro": intro
     })
 
 @app.get("/pastoral", response_class=HTMLResponse)
@@ -720,14 +741,14 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
     church_intro = result[0] if result else ""
 
     # Get church about content
-    cursor.execute("SELECT * FROM church_about WHERE id=1")
+    cursor.execute("SELECT vision_title, vision_content, mission_content, pastoral_direction, serving_people FROM church_about WHERE id=1")
     about_row = cursor.fetchone()
     about = {
-        "vision_title": about_row[1] if about_row else "",
-        "vision_content": about_row[2] if about_row else "",
-        "mission_content": about_row[3] if about_row else "",
-        "pastoral_direction": about_row[4] if about_row else "",
-        "serving_people": about_row[5] if about_row else ""
+        "vision_title": about_row[0] if about_row else "",
+        "vision_content": about_row[1] if about_row else "",
+        "mission_content": about_row[2] if about_row else "",
+        "pastoral_direction": about_row[3] if about_row else "",
+        "serving_people": about_row[4] if about_row else ""
     }
 
     # Get all pastoral posts (목양의 窓)
@@ -735,6 +756,12 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
     pastoral_posts = [{"id": row[0], "title": row[1], "content": row[2], "image_path": row[3],
                        "author": row[4], "views": row[5], "created_at": row[6]}
                       for row in cursor.fetchall()]
+
+    # Get all members (섬기는 분들)
+    cursor.execute("SELECT * FROM members ORDER BY display_order ASC, id ASC")
+    members = [{"id": row[0], "name": row[1], "role": row[2], "bio": row[3],
+                "photo_path": row[4], "display_order": row[5]}
+               for row in cursor.fetchall()]
 
     conn.close()
 
@@ -748,7 +775,8 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
         "news_list": news_list,
         "church_intro": church_intro,
         "about": about,
-        "pastoral_posts": pastoral_posts
+        "pastoral_posts": pastoral_posts,
+        "members": members
     })
 
 @app.post("/admin/news/create")
@@ -892,6 +920,48 @@ async def update_sermon(
         WHERE id=?
     """, (title, pastor, date, description, youtube_url, sermon_id))
 
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/member/create")
+async def create_member(
+    request: Request,
+    name: str = Form(...),
+    role: str = Form(...),
+    bio: str = Form(''),
+    display_order: int = Form(0),
+    photo: Optional[UploadFile] = File(None),
+    user: dict = Depends(require_admin)
+):
+    """Create new member"""
+    photo_path = None
+    if photo and photo.filename:
+        file_extension = Path(photo.filename).suffix
+        filename = f"member_{datetime.now().timestamp()}{file_extension}"
+        file_path = UPLOAD_DIR / filename
+        with file_path.open("wb") as buffer:
+            shutil.copyfileobj(photo.file, buffer)
+        photo_path = f"/uploads/{filename}"
+
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO members (name, role, bio, photo_path, display_order)
+        VALUES (?, ?, ?, ?, ?)
+    """, (name, role, bio, photo_path, display_order))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/member/delete/{member_id}")
+async def delete_member(member_id: int, user: dict = Depends(require_admin)):
+    """Delete a member"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM members WHERE id = ?", (member_id,))
     conn.commit()
     conn.close()
 

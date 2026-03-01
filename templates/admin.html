@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지 - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=7">
-    <link rel="stylesheet" href="/static/css/admin.css?v=7">
+    <link rel="stylesheet" href="/static/css/style.css?v=8">
+    <link rel="stylesheet" href="/static/css/admin.css?v=8">
 </head>
 
 <body>
@@ -524,19 +524,94 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="serving-people">섬기는 분들 내용</label>
+                                <label for="serving-people">섬기는 분들 소개글 (상단 문구)</label>
                                 <textarea id="serving-people" name="serving_people"
-                                    rows="6">{{ about.serving_people }}</textarea>
+                                    rows="3">{{ about.serving_people }}</textarea>
                             </div>
 
                             <button type="submit" class="btn btn-primary">저장</button>
                         </form>
                     </div>
                 </section>
+
+                <!-- Members Management Section (섬기는 분들) -->
+                <section class="admin-section">
+                    <h2 class="section-title">섬기는 분들 관리</h2>
+
+                    <div class="admin-card">
+                        <h3>새 멤버 등록</h3>
+                        <form method="POST" action="/admin/member/create" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="member-name">이름</label>
+                                <input type="text" id="member-name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="member-role">직분/역할</label>
+                                <input type="text" id="member-role" name="role" required placeholder="예: 담임목사, 부목사, 전도사, 권사 ...">
+                            </div>
+                            <div class="form-group">
+                                <label for="member-bio">소개글</label>
+                                <textarea id="member-bio" name="bio" rows="4" placeholder="간단한 소개를 입력하세요"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="member-photo">사진</label>
+                                <input type="file" id="member-photo" name="photo" accept="image/*">
+                                <small class="form-hint">정사각형 비율 권장 (원형으로 표시됩니다)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="member-order">표시 순서</label>
+                                <input type="number" id="member-order" name="display_order" value="0" min="0">
+                                <small class="form-hint">숫자가 작을수록 먼저 표시됩니다</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">멤버 등록</button>
+                        </form>
+                    </div>
+
+                    <div class="admin-card">
+                        <h3>등록된 멤버 목록</h3>
+                        {% if members %}
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>순서</th>
+                                    <th>사진</th>
+                                    <th>이름</th>
+                                    <th>직분</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in members %}
+                                <tr>
+                                    <td>{{ member.display_order }}</td>
+                                    <td>
+                                        {% if member.photo_path %}
+                                        <img src="{{ member.photo_path }}" alt="{{ member.name }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ member.name }}</td>
+                                    <td>{{ member.role }}</td>
+                                    <td>
+                                        <form method="POST" action="/admin/member/delete/{{ member.id }}" style="display: inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p class="empty-message">등록된 멤버가 없습니다.</p>
+                        {% endif %}
+                    </div>
+                </section>
             </div>
         </div>
     </div>
-    <script src="/static/js/admin.js?v=7"></script>
+    <script src="/static/js/admin.js?v=8"></script>
 </body>
 
 </html>

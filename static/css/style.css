@@ -1987,7 +1987,6 @@ html {
     font-size: 1.1rem;
     line-height: 1.8;
     color: var(--text-dark);
-    white-space: pre-line;
 }
 
 .mission-section {
@@ -2006,9 +2005,8 @@ html {
 
 .mission-text {
     font-size: 1.1rem;
-    line-height: 2;
+    line-height: 1.8;
     color: var(--text-dark);
-    white-space: pre-line;
 }
 
 @media (max-width: 768px) {
