@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="{{ t.lang }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>교회소개 - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=12">
+    <title>{{ t.about_title }} - {{ t.church_name }}</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=13">
 </head>
 
 <body>
@@ -14,38 +14,39 @@
         <nav class="navbar">
             <div class="container">
                 <div class="logo">
-                    <h1><a href="/#home" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png" alt="로고" style="height: 36px; width: 36px; border-radius: 50%; object-fit: cover;"> 더하는 교회</a></h1>
+                    <h1><a href="{{ lp }}/#home" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png" alt="logo" style="height: 36px; width: 36px; border-radius: 50%; object-fit: cover;"> {{ t.church_name }}</a></h1>
                 </div>
-                <button class="mobile-menu-toggle" aria-label="메뉴">
+                <button class="mobile-menu-toggle" aria-label="menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <ul class="nav-menu">
-                    <li><a href="/#home">홈</a></li>
+                    <li><a href="{{ lp }}/#home">{{ t.nav_home }}</a></li>
                     <li class="nav-item dropdown">
-                        <a href="/about" class="dropbtn active">교회소개</a>
+                        <a href="{{ lp }}/about" class="dropbtn active">{{ t.nav_about }}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="/direction">목회방향</a></li>
-                            <li><a href="/about">비전과 가치</a></li>
-                            <li><a href="/#schedule-news">예배시간 안내</a></li>
-                            <li><a href="/#contact">찾아오시는 길</a></li>
-                            <li><a href="/people">섬기는 분들</a></li>
+                            <li><a href="{{ lp }}/direction">{{ t.nav_direction }}</a></li>
+                            <li><a href="{{ lp }}/about">{{ t.nav_vision }}</a></li>
+                            <li><a href="{{ lp }}/#schedule-news">{{ t.nav_schedule }}</a></li>
+                            <li><a href="{{ lp }}/#contact">{{ t.nav_location }}</a></li>
+                            <li><a href="{{ lp }}/people">{{ t.nav_people }}</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="/#videos" class="dropbtn">영상</a>
+                        <a href="{{ lp }}/#videos" class="dropbtn">{{ t.nav_videos }}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="/#videos?tab=vision">교회 비전</a></li>
-                            <li><a href="/#videos?tab=sermons">최근설교</a></li>
-                            <li><a href="/#videos?tab=shorts">숏츠</a></li>
-                            <li><a href="/#videos?tab=qty">오늘의 QT</a></li>
+                            <li><a href="{{ lp }}/#videos?tab=vision">{{ t.nav_church_vision }}</a></li>
+                            <li><a href="{{ lp }}/#videos?tab=sermons">{{ t.nav_sermons }}</a></li>
+                            <li><a href="{{ lp }}/#videos?tab=shorts">{{ t.nav_shorts }}</a></li>
+                            <li><a href="{{ lp }}/#videos?tab=qty">{{ t.nav_qt }}</a></li>
                         </ul>
                     </li>
-                    <li><a href="/pastoral">목양의 窓</a></li>
-                    <li><a href="/#schedule-news">예배안내</a></li>
-                    <li><a href="/#schedule-news">교회소식</a></li>
-                    <li><a href="/#contact">찾아오시는 길</a></li>
+                    <li><a href="{{ lp }}/pastoral">{{ t.nav_pastoral }}</a></li>
+                    <li><a href="{{ lp }}/#schedule-news">{{ t.nav_worship }}</a></li>
+                    <li><a href="{{ lp }}/#schedule-news">{{ t.nav_news }}</a></li>
+                    <li><a href="{{ lp }}/#contact">{{ t.nav_location }}</a></li>
+                    <li class="lang-switch"><a href="{% if t.lang == 'ko' %}/en/about{% else %}/about{% endif %}">{{ t.other_lang_name }}</a></li>
                 </ul>
             </div>
         </nav>
@@ -67,7 +68,7 @@
                 </div>
 
                 <div class="mission-section">
-                    <h2>교회의 5대 사명</h2>
+                    <h2>{{ t.mission_5_title }}</h2>
                     <div class="mission-text">
                         {{ about.mission_content | replace('\n', '<br>') | safe }}
                     </div>
@@ -81,24 +82,24 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4>더하는 교회</h4>
-                    <p>기독교 한국침례회</p>
-                    <p>교회 대표: 김한기 목사</p>
+                    <h4>{{ t.church_name }}</h4>
+                    <p>{{ t.denomination }}</p>
+                    <p>{{ t.senior_pastor }}</p>
                 </div>
                 <div class="footer-section">
-                    <h4>주소</h4>
-                    <p>대전시 유성구 학하동 755-6 1층</p>
-                    <p>Tel: 042-626-0291</p>
+                    <h4>{{ t.footer_address_label }}</h4>
+                    <p>{{ t.footer_address }}</p>
+                    <p>{{ t.footer_tel }}</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 더하는 교회. All rights reserved.</p>
-                <p>하나님의 사랑과 은혜가 함께 하시기를 기도합니다.</p>
+                <p>{{ t.footer_copyright | safe }}</p>
+                <p>{{ t.footer_blessing }}</p>
             </div>
         </div>
     </footer>
 
-    <script src="/static/js/script.js?v=12"></script>
+    <script src="/static/js/script.js?v=13"></script>
 </body>
 
 </html>

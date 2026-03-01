@@ -607,6 +607,29 @@ section {
     background-color: #e76f51 !important;
 }
 
+/* Language Switcher */
+.lang-switch a {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 12px !important;
+    border-radius: 4px;
+    font-size: 0.85rem !important;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: background 0.3s;
+}
+
+.lang-switch a:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+@media (max-width: 768px) {
+    .lang-switch {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 8px;
+        margin-top: 4px;
+    }
+}
+
 /* Unified Video Section Layout */
 .video-section {
     padding: 60px 0;

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="{{ t.lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>목양의 窓 - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=12">
+    <title>{{ t.pastoral_title }} - {{ t.church_name }}</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=13">
     <style>
         .pastoral-page {
             padding: 100px 0 60px 0;
@@ -299,46 +299,47 @@
         <nav class="navbar">
             <div class="container">
                 <div class="logo">
-                    <h1><a href="/#home" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png" alt="로고" style="height: 36px; width: 36px; border-radius: 50%; object-fit: cover;"> 더하는 교회</a></h1>
+                    <h1><a href="{{ lp }}/#home" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png" alt="logo" style="height: 36px; width: 36px; border-radius: 50%; object-fit: cover;"> {{ t.church_name }}</a></h1>
                 </div>
-                <button class="mobile-menu-toggle" aria-label="메뉴">
+                <button class="mobile-menu-toggle" aria-label="menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <ul class="nav-menu">
-                    <li><a href="/#home">홈</a></li>
+                    <li><a href="{{ lp }}/#home">{{ t.nav_home }}</a></li>
                     <li class="nav-item dropdown">
-                        <a href="/about" class="dropbtn">교회소개</a>
+                        <a href="{{ lp }}/about" class="dropbtn">{{ t.nav_about }}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="/direction">목회방향</a></li>
-                            <li><a href="/about">비전과 가치</a></li>
-                            <li><a href="/#schedule-news">예배시간 안내</a></li>
-                            <li><a href="/#contact">찾아오시는 길</a></li>
-                            <li><a href="/people">섬기는 분들</a></li>
+                            <li><a href="{{ lp }}/direction">{{ t.nav_direction }}</a></li>
+                            <li><a href="{{ lp }}/about">{{ t.nav_vision }}</a></li>
+                            <li><a href="{{ lp }}/#schedule-news">{{ t.nav_schedule }}</a></li>
+                            <li><a href="{{ lp }}/#contact">{{ t.nav_location }}</a></li>
+                            <li><a href="{{ lp }}/people">{{ t.nav_people }}</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="/#videos" class="dropbtn">영상</a>
+                        <a href="{{ lp }}/#videos" class="dropbtn">{{ t.nav_videos }}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="/#videos?tab=vision">교회 비전</a></li>
-                            <li><a href="/#videos?tab=sermons">최근설교</a></li>
-                            <li><a href="/#videos?tab=shorts">숏츠</a></li>
-                            <li><a href="/#videos?tab=qty">오늘의 QT</a></li>
+                            <li><a href="{{ lp }}/#videos?tab=vision">{{ t.nav_church_vision }}</a></li>
+                            <li><a href="{{ lp }}/#videos?tab=sermons">{{ t.nav_sermons }}</a></li>
+                            <li><a href="{{ lp }}/#videos?tab=shorts">{{ t.nav_shorts }}</a></li>
+                            <li><a href="{{ lp }}/#videos?tab=qty">{{ t.nav_qt }}</a></li>
                         </ul>
                     </li>
-                    <li><a href="/pastoral" class="active">목양의 窓</a></li>
-                    <li><a href="/#schedule-news">예배안내</a></li>
-                    <li><a href="/#schedule-news">교회소식</a></li>
-                    <li><a href="/#contact">찾아오시는 길</a></li>
+                    <li><a href="{{ lp }}/pastoral" class="active">{{ t.nav_pastoral }}</a></li>
+                    <li><a href="{{ lp }}/#schedule-news">{{ t.nav_worship }}</a></li>
+                    <li><a href="{{ lp }}/#schedule-news">{{ t.nav_news }}</a></li>
+                    <li><a href="{{ lp }}/#contact">{{ t.nav_location }}</a></li>
                     {% if user %}
                     {% if user.role == 'admin' %}
-                    <li><a href="/admin">관리자</a></li>
+                    <li><a href="/admin">{{ t.nav_admin }}</a></li>
                     {% endif %}
-                    <li><a href="/logout">로그아웃</a></li>
+                    <li><a href="/logout">{{ t.nav_logout }}</a></li>
                     {% else %}
-                    <li><a href="/login" class="login-link">로그인</a></li>
+                    <li><a href="{{ lp }}/login" class="login-link">{{ t.nav_login }}</a></li>
                     {% endif %}
+                    <li class="lang-switch"><a href="{% if t.lang == 'ko' %}/en/pastoral{% else %}/pastoral{% endif %}{% if q %}?q={{ q }}{% endif %}">{{ t.other_lang_name }}</a></li>
                 </ul>
             </div>
         </nav>
@@ -347,19 +348,19 @@
     <section class="pastoral-page">
         <div class="container">
             <div class="pastoral-header">
-                <h2>목양의 窓</h2>
-                <p>말씀 나눔과 성도 간 교제의 장입니다</p>
+                <h2>{{ t.pastoral_title }}</h2>
+                <p>{{ t.pastoral_subtitle }}</p>
             </div>
 
             <!-- Search Bar -->
-            <form class="search-bar" method="GET" action="/pastoral">
-                <input type="text" name="q" value="{{ q }}" placeholder="제목 또는 내용으로 검색...">
-                <button type="submit">검색</button>
+            <form class="search-bar" method="GET" action="{{ lp }}/pastoral">
+                <input type="text" name="q" value="{{ q }}" placeholder="{{ t.pastoral_search_placeholder }}">
+                <button type="submit">{{ t.pastoral_search_btn }}</button>
             </form>
 
             {% if q %}
             <div class="search-info">
-                "{{ q }}" 검색 결과: {{ total }}건 &nbsp;|&nbsp; <a href="/pastoral">전체 목록</a>
+                "{{ q }}" {{ t.pastoral_search_result }}: {{ total }}{% if t.lang == 'ko' %}건{% endif %} &nbsp;|&nbsp; <a href="{{ lp }}/pastoral">{{ t.pastoral_all_list }}</a>
             </div>
             {% endif %}
 
@@ -368,24 +369,24 @@
                 <!-- List Header (desktop) -->
                 <div class="post-list-header">
                     <div class="col-thumb"></div>
-                    <div class="col-title">제목</div>
-                    <div class="col-date">날짜</div>
-                    <div class="col-author">작성자</div>
-                    <div class="col-views">조회</div>
+                    <div class="col-title">{{ t.pastoral_col_title }}</div>
+                    <div class="col-date">{{ t.pastoral_col_date }}</div>
+                    <div class="col-author">{{ t.pastoral_col_author }}</div>
+                    <div class="col-views">{{ t.pastoral_col_views }}</div>
                 </div>
 
                 <!-- List Items -->
                 {% for post in posts %}
-                <a href="/pastoral/{{ post.id }}" class="post-list-item">
+                <a href="{{ lp }}/pastoral/{{ post.id }}" class="post-list-item">
                     <div class="post-thumb">
                         <img src="{{ post.image_path or '/static/images/logo.png' }}" alt="{{ post.title }}">
                     </div>
-                    <div class="post-title-col" data-meta="{{ post.created_at }} | {{ post.author or '관리자' }} | 조회 {{ post.views }}">
+                    <div class="post-title-col" data-meta="{{ post.created_at }} | {{ post.author or t.pastoral_default_author }} | {{ t.pastoral_col_views }} {{ post.views }}">
                         <h4>{{ post.title }}</h4>
                         <div class="post-excerpt">{{ post.content|striptags|truncate(80, True, '...') }}</div>
                     </div>
                     <div class="post-date-col">{{ post.created_at }}</div>
-                    <div class="post-author-col">{{ post.author or '관리자' }}</div>
+                    <div class="post-author-col">{{ post.author or t.pastoral_default_author }}</div>
                     <div class="post-views-col">{{ post.views }}</div>
                 </a>
                 {% endfor %}
@@ -395,16 +396,16 @@
             {% if total_pages > 1 %}
             <div class="pagination">
                 {% if page > 1 %}
-                <a href="/pastoral?page={{ page - 1 }}{% if q %}&q={{ q }}{% endif %}">&laquo; 이전</a>
+                <a href="{{ lp }}/pastoral?page={{ page - 1 }}{% if q %}&q={{ q }}{% endif %}">{{ t.pastoral_prev | safe }}</a>
                 {% else %}
-                <span class="disabled">&laquo; 이전</span>
+                <span class="disabled">{{ t.pastoral_prev | safe }}</span>
                 {% endif %}
 
                 {% for p in range(1, total_pages + 1) %}
                     {% if p == page %}
                     <span class="current">{{ p }}</span>
                     {% elif p <= 3 or p > total_pages - 2 or (p >= page - 1 and p <= page + 1) %}
-                    <a href="/pastoral?page={{ p }}{% if q %}&q={{ q }}{% endif %}">{{ p }}</a>
+                    <a href="{{ lp }}/pastoral?page={{ p }}{% if q %}&q={{ q }}{% endif %}">{{ p }}</a>
                     {% elif p == 4 and page > 5 %}
                     <span>...</span>
                     {% elif p == total_pages - 2 and page < total_pages - 4 %}
@@ -413,9 +414,9 @@
                 {% endfor %}
 
                 {% if page < total_pages %}
-                <a href="/pastoral?page={{ page + 1 }}{% if q %}&q={{ q }}{% endif %}">다음 &raquo;</a>
+                <a href="{{ lp }}/pastoral?page={{ page + 1 }}{% if q %}&q={{ q }}{% endif %}">{{ t.pastoral_next | safe }}</a>
                 {% else %}
-                <span class="disabled">다음 &raquo;</span>
+                <span class="disabled">{{ t.pastoral_next | safe }}</span>
                 {% endif %}
             </div>
             {% endif %}
@@ -423,9 +424,9 @@
             {% else %}
             <div class="pastoral-empty">
                 {% if q %}
-                <p>"{{ q }}"에 대한 검색 결과가 없습니다.</p>
+                <p>"{{ q }}" {{ t.pastoral_no_result }}</p>
                 {% else %}
-                <p>아직 게시글이 없습니다.</p>
+                <p>{{ t.pastoral_empty }}</p>
                 {% endif %}
             </div>
             {% endif %}
@@ -436,23 +437,23 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4>더하는 교회</h4>
-                    <p>기독교 한국침례회</p>
-                    <p>교회대표: 김한기 목사</p>
+                    <h4>{{ t.church_name }}</h4>
+                    <p>{{ t.denomination }}</p>
+                    <p>{{ t.senior_pastor }}</p>
                 </div>
                 <div class="footer-section">
-                    <h4>주소</h4>
-                    <p>대전시 유성구 학하동 755-6 1층</p>
-                    <p>Tel: 042-626-0291</p>
+                    <h4>{{ t.footer_address_label }}</h4>
+                    <p>{{ t.footer_address }}</p>
+                    <p>{{ t.footer_tel }}</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 더하는 교회. All rights reserved.</p>
-                <p>하나님의 사랑과 은혜가 함께 하시기를 기도합니다.</p>
+                <p>{{ t.footer_copyright | safe }}</p>
+                <p>{{ t.footer_blessing }}</p>
             </div>
         </div>
     </footer>
 
-    <script src="/static/js/script.js?v=12"></script>
+    <script src="/static/js/script.js?v=13"></script>
 </body>
 </html>

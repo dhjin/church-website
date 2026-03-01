@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="{{ t.lang }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>더하는 교회 - 기독교 한국침례회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=12">
+    <title>{{ t.church_name_full }}</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=13">
     <script type="text/javascript"
         src="//dapi.kakao.com/v2/maps/sdk.js?appkey=04a9be7cc4a029e900041f8a88463d27&autoload=false&libraries=services"></script>
 </head>
@@ -16,46 +16,47 @@
         <nav class="navbar">
             <div class="container">
                 <div class="logo">
-                    <h1><a href="#home" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png" alt="로고" style="height: 36px; width: 36px; border-radius: 50%; object-fit: cover;"> 더하는 교회</a></h1>
+                    <h1><a href="{{ lp }}/#home" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png" alt="logo" style="height: 36px; width: 36px; border-radius: 50%; object-fit: cover;"> {{ t.church_name }}</a></h1>
                 </div>
-                <button class="mobile-menu-toggle" aria-label="메뉴">
+                <button class="mobile-menu-toggle" aria-label="menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <ul class="nav-menu">
-                    <li><a href="#home" class="active">홈</a></li>
+                    <li><a href="#home" class="active">{{ t.nav_home }}</a></li>
                     <li class="nav-item dropdown">
-                        <a href="/about" class="dropbtn">교회소개</a>
+                        <a href="{{ lp }}/about" class="dropbtn">{{ t.nav_about }}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="/direction">목회방향</a></li>
-                            <li><a href="/about">비전과 가치</a></li>
-                            <li><a href="#schedule-news">예배시간 안내</a></li>
-                            <li><a href="#contact">찾아오시는 길</a></li>
-                            <li><a href="/people">섬기는 분들</a></li>
+                            <li><a href="{{ lp }}/direction">{{ t.nav_direction }}</a></li>
+                            <li><a href="{{ lp }}/about">{{ t.nav_vision }}</a></li>
+                            <li><a href="#schedule-news">{{ t.nav_schedule }}</a></li>
+                            <li><a href="#contact">{{ t.nav_location }}</a></li>
+                            <li><a href="{{ lp }}/people">{{ t.nav_people }}</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="#videos" class="dropbtn">영상</a>
+                        <a href="#videos" class="dropbtn">{{ t.nav_videos }}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('vision'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">교회 비전</a></li>
-                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('sermons'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">최근설교</a></li>
-                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('shorts'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">숏츠</a></li>
-                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('qty'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">오늘의 QT</a></li>
+                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('vision'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">{{ t.nav_church_vision }}</a></li>
+                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('sermons'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">{{ t.nav_sermons }}</a></li>
+                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('shorts'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">{{ t.nav_shorts }}</a></li>
+                            <li><a href="#videos" onclick="event.preventDefault(); switchVideoTab('qty'); document.getElementById('videos').scrollIntoView({behavior:'smooth'})">{{ t.nav_qt }}</a></li>
                         </ul>
                     </li>
-                    <li><a href="/pastoral">목양의 窓</a></li>
-                    <li><a href="#schedule-news">예배안내</a></li>
-                    <li><a href="#schedule-news">교회소식</a></li>
-                    <li><a href="#contact">찾아오시는 길</a></li>
+                    <li><a href="{{ lp }}/pastoral">{{ t.nav_pastoral }}</a></li>
+                    <li><a href="#schedule-news">{{ t.nav_worship }}</a></li>
+                    <li><a href="#schedule-news">{{ t.nav_news }}</a></li>
+                    <li><a href="#contact">{{ t.nav_location }}</a></li>
                     {% if user %}
                     {% if user.role == 'admin' %}
-                    <li><a href="/admin" class="admin-link">관리자</a></li>
+                    <li><a href="/admin" class="admin-link">{{ t.nav_admin }}</a></li>
                     {% endif %}
-                    <li><a href="/logout">로그아웃</a></li>
+                    <li><a href="/logout">{{ t.nav_logout }}</a></li>
                     {% else %}
-                    <li><a href="/login" class="login-link">로그인</a></li>
+                    <li><a href="{{ lp }}/login" class="login-link">{{ t.nav_login }}</a></li>
                     {% endif %}
+                    <li class="lang-switch"><a href="{% if t.lang == 'ko' %}/en/{% else %}/{% endif %}">{{ t.other_lang_name }}</a></li>
                 </ul>
             </div>
         </nav>
@@ -64,12 +65,12 @@
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-content">
-            <h2 class="hero-title">하나님 나라와 의를 구하는 교회</h2>
-            <p class="hero-subtitle">더하는 교회에 오신 것을 환영합니다</p>
-            <p class="hero-info">기독교 한국침례회 · 교회 대표 김한기 목사</p>
+            <h2 class="hero-title">{{ t.hero_title }}</h2>
+            <p class="hero-subtitle">{{ t.hero_subtitle }}</p>
+            <p class="hero-info">{{ t.hero_info }}</p>
             <div class="hero-buttons">
-                <a href="#schedule-news" class="btn btn-primary">예배 안내</a>
-                <a href="/about" class="btn btn-secondary">교회 소개</a>
+                <a href="#schedule-news" class="btn btn-primary">{{ t.hero_worship_btn }}</a>
+                <a href="{{ lp }}/about" class="btn btn-secondary">{{ t.hero_about_btn }}</a>
             </div>
         </div>
     </section>
@@ -78,7 +79,7 @@
     <section class="welcome">
         <div class="container">
             <div class="section-header">
-                <h2>환영합니다</h2>
+                <h2>{{ t.welcome_title }}</h2>
                 <div class="divider"></div>
             </div>
             <p class="welcome-text">
@@ -86,13 +87,13 @@
             </p>
             <div class="church-info-banner">
                 <div class="info-item">
-                    <strong>소속:</strong> 기독교 한국침례회
+                    <strong>{{ t.info_affiliation }}</strong> {{ t.denomination }}
                 </div>
                 <div class="info-item">
-                    <strong>교회대표:</strong> 김한기 목사
+                    <strong>{{ t.info_pastor }}</strong> {{ t.senior_pastor_short }}
                 </div>
                 <div class="info-item">
-                    <strong>위치:</strong> 대전시 유성구 학하동
+                    <strong>{{ t.info_location }}</strong> {{ t.info_location_val }}
                 </div>
             </div>
         </div>
@@ -103,16 +104,16 @@
         <div class="container">
             <div class="video-tabs">
                 <div class="tab-buttons">
-                    <button class="tab-btn active" onclick="switchVideoTab('vision')">교회 비전</button>
-                    <button class="tab-btn" onclick="switchVideoTab('sermons')">최근설교</button>
-                    <button class="tab-btn" onclick="switchVideoTab('shorts')">숏츠</button>
-                    <button class="tab-btn" onclick="switchVideoTab('qty')">오늘의 QT</button>
+                    <button class="tab-btn active" onclick="switchVideoTab('vision')">{{ t.tab_vision }}</button>
+                    <button class="tab-btn" onclick="switchVideoTab('sermons')">{{ t.tab_sermons }}</button>
+                    <button class="tab-btn" onclick="switchVideoTab('shorts')">{{ t.tab_shorts }}</button>
+                    <button class="tab-btn" onclick="switchVideoTab('qty')">{{ t.tab_qt }}</button>
                 </div>
 
                 <!-- Vision Tab Content -->
                 <div id="tab-vision" class="tab-content active">
                     <div class="carousel-container">
-                        <button class="carousel-nav prev" aria-label="이전영상"
+                        <button class="carousel-nav prev" aria-label="{{ t.prev_video }}"
                             onclick="scrollCarousel(this, -1)">❮</button>
                         <div class="video-grid carousel-track">
                             {% for vision in visions %}
@@ -137,14 +138,14 @@
                             </div>
                             {% endfor %}
                         </div>
-                        <button class="carousel-nav next" aria-label="다음영상" onclick="scrollCarousel(this, 1)">❯</button>
+                        <button class="carousel-nav next" aria-label="{{ t.next_video }}" onclick="scrollCarousel(this, 1)">❯</button>
                     </div>
                 </div>
 
                 <!-- Sermons Tab Content -->
                 <div id="tab-sermons" class="tab-content">
                     <div class="carousel-container">
-                        <button class="carousel-nav prev" aria-label="이전영상"
+                        <button class="carousel-nav prev" aria-label="{{ t.prev_video }}"
                             onclick="scrollCarousel(this, -1)">❮</button>
                         <div class="video-grid carousel-track">
                             {% for sermon in sermons %}
@@ -171,14 +172,14 @@
                             </div>
                             {% endfor %}
                         </div>
-                        <button class="carousel-nav next" aria-label="다음영상" onclick="scrollCarousel(this, 1)">❯</button>
+                        <button class="carousel-nav next" aria-label="{{ t.next_video }}" onclick="scrollCarousel(this, 1)">❯</button>
                     </div>
                 </div>
 
                 <!-- Shorts Tab Content -->
                 <div id="tab-shorts" class="tab-content">
                     <div class="carousel-container shorts-container">
-                        <button class="carousel-nav prev" aria-label="이전영상"
+                        <button class="carousel-nav prev" aria-label="{{ t.prev_video }}"
                             onclick="scrollCarousel(this, -1)">❮</button>
                         <div class="video-grid carousel-track shorts-track">
                             {% for short in shorts %}
@@ -198,14 +199,14 @@
                             </div>
                             {% endfor %}
                         </div>
-                        <button class="carousel-nav next" aria-label="다음영상" onclick="scrollCarousel(this, 1)">❯</button>
+                        <button class="carousel-nav next" aria-label="{{ t.next_video }}" onclick="scrollCarousel(this, 1)">❯</button>
                     </div>
                 </div>
 
                 <!-- QT Tab Content -->
                 <div id="tab-qty" class="tab-content">
                     <div class="carousel-container shorts-container">
-                        <button class="carousel-nav prev" aria-label="이전영상"
+                        <button class="carousel-nav prev" aria-label="{{ t.prev_video }}"
                             onclick="scrollCarousel(this, -1)">❮</button>
                         <div class="video-grid carousel-track shorts-track">
                             {% for qty in qtys %}
@@ -225,7 +226,7 @@
                             </div>
                             {% endfor %}
                         </div>
-                        <button class="carousel-nav next" aria-label="다음영상" onclick="scrollCarousel(this, 1)">❯</button>
+                        <button class="carousel-nav next" aria-label="{{ t.next_video }}" onclick="scrollCarousel(this, 1)">❯</button>
                     </div>
                 </div>
 
@@ -240,30 +241,30 @@
                 <!-- Left: Consolidated Worship Schedule -->
                 <div class="schedule-column">
                     <div class="section-header">
-                        <h2>예배 시간 안내</h2>
+                        <h2>{{ t.schedule_title }}</h2>
                         <div class="divider"></div>
                     </div>
                     <div class="consolidated-schedule">
                         <div class="schedule-list">
                             <div class="schedule-row">
-                                <span class="schedule-name">주일 예배</span>
-                                <span class="schedule-time">일요일 오전 10:40</span>
+                                <span class="schedule-name">{{ t.sunday_worship }}</span>
+                                <span class="schedule-time">{{ t.sunday_time }}</span>
                             </div>
                             <div class="schedule-row">
-                                <span class="schedule-name">주일 성경공부 및 목장 모임</span>
-                                <span class="schedule-time">일요일 오후 1:00</span>
+                                <span class="schedule-name">{{ t.sunday_study }}</span>
+                                <span class="schedule-time">{{ t.sunday_study_time }}</span>
                             </div>
                             <div class="schedule-row">
-                                <span class="schedule-name">수요 예배</span>
-                                <span class="schedule-time">수요일 오후 7:30 (Zoom)</span>
+                                <span class="schedule-name">{{ t.wed_worship }}</span>
+                                <span class="schedule-time">{{ t.wed_time }}</span>
                             </div>
                             <div class="schedule-row">
-                                <span class="schedule-name">금요 기도회</span>
-                                <span class="schedule-time">금요일 오후 7:30</span>
+                                <span class="schedule-name">{{ t.fri_prayer }}</span>
+                                <span class="schedule-time">{{ t.fri_time }}</span>
                             </div>
                             <div class="schedule-row">
-                                <span class="schedule-name">아침 예배</span>
-                                <span class="schedule-time">오전 7:00 (Zoom)</span>
+                                <span class="schedule-name">{{ t.morning_worship }}</span>
+                                <span class="schedule-time">{{ t.morning_time }}</span>
                             </div>
                         </div>
                     </div>
@@ -272,22 +273,22 @@
                 <!-- Right: Church News -->
                 <div class="news-column">
                     <div class="section-header">
-                        <h2>교회소식</h2>
+                        <h2>{{ t.news_title }}</h2>
                         <div class="divider"></div>
                     </div>
                     <div class="news-board">
                         <div class="news-container">
                             <!-- Header -->
                             <div class="news-header">
-                                <div class="news-cell news-num">번호</div>
-                                <div class="news-cell news-subject">제목</div>
-                                <div class="news-cell news-date">작성일</div>
-                                <div class="news-cell news-views">조회</div>
+                                <div class="news-cell news-num">{{ t.news_col_num }}</div>
+                                <div class="news-cell news-subject">{{ t.news_col_title }}</div>
+                                <div class="news-cell news-date">{{ t.news_col_date }}</div>
+                                <div class="news-cell news-views">{{ t.news_col_views }}</div>
                             </div>
                             <!-- Body -->
                             <div class="news-body">
                                 {% for news in news_list %}
-                                <div class="news-item" onclick="window.location='/news/{{ news.id }}'"
+                                <div class="news-item" onclick="window.location='{{ lp }}/news/{{ news.id }}'"
                                     style="cursor: pointer;">
                                     <div class="news-cell news-num">{{ news.id }}</div>
                                     <div class="news-cell news-subject">{{ news.title }}</div>
@@ -307,7 +308,7 @@
     <section id="contact" class="contact">
         <div class="container">
             <div class="section-header">
-                <h2>찾아오시는 길</h2>
+                <h2>{{ t.contact_title }}</h2>
                 <div class="divider"></div>
             </div>
 
@@ -319,11 +320,11 @@
                 <div class="map-buttons">
                     <a href="https://map.naver.com/p/search/대전시%20유성구%20학하동%20755-6" target="_blank"
                         class="btn btn-naver">
-                        네이버 지도로 길찾기
+                        {{ t.naver_map }}
                     </a>
                     <a href="https://map.kakao.com/link/search/대전시%20유성구%20학하동%20755-6" target="_blank"
                         class="btn btn-kakao">
-                        카카오맵으로 길찾기
+                        {{ t.kakao_map }}
                     </a>
                 </div>
             </div>
@@ -335,19 +336,19 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h4>더하는 교회</h4>
-                    <p>기독교 한국침례회</p>
-                    <p>교회 대표: 김한기 목사</p>
+                    <h4>{{ t.church_name }}</h4>
+                    <p>{{ t.denomination }}</p>
+                    <p>{{ t.senior_pastor }}</p>
                 </div>
                 <div class="footer-section">
-                    <h4>주소</h4>
-                    <p>대전시 유성구 학하동 755-6 1층</p>
-                    <p>Tel: 042-626-0291</p>
+                    <h4>{{ t.footer_address_label }}</h4>
+                    <p>{{ t.footer_address }}</p>
+                    <p>{{ t.footer_tel }}</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 더하는 교회. All rights reserved.</p>
-                <p>하나님의 사랑과 은혜가 함께 하시기를 기도합니다.</p>
+                <p>{{ t.footer_copyright | safe }}</p>
+                <p>{{ t.footer_blessing }}</p>
             </div>
         </div>
     </footer>
@@ -364,9 +365,8 @@
         </div>
     </div>
 
-    <script src="/static/js/script.js?v=12"></script>
+    <script src="/static/js/script.js?v=13"></script>
     <script>
-        // 카카오 지도 초기화
         try {
             if (typeof kakao !== 'undefined' && kakao.maps) {
                 kakao.maps.load(function () {
@@ -377,15 +377,13 @@
                         level: 4
                     };
                     var map = new kakao.maps.Map(container, options);
-
-                    // 주소로 좌표 검색
                     var geocoder = new kakao.maps.services.Geocoder();
                     geocoder.addressSearch('대전 유성구 학하동 755-6', function (result, status) {
                         if (status === kakao.maps.services.Status.OK) {
                             var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
                             var marker = new kakao.maps.Marker({ map: map, position: coords });
                             var infowindow = new kakao.maps.InfoWindow({
-                                content: '<div style="padding:8px 12px;font-size:13px;font-weight:600;color:#1a3a5c;white-space:nowrap;">📍 더하는 교회<br><span style="font-weight:400;font-size:12px;color:#666;">대전시 유성구 학하동 755-6 1층</span></div>'
+                                content: '<div style="padding:8px 12px;font-size:13px;font-weight:600;color:#1a3a5c;white-space:nowrap;">📍 {{ t.church_name }}<br><span style="font-weight:400;font-size:12px;color:#666;">{{ t.footer_address }}</span></div>'
                             });
                             infowindow.open(map, marker);
                             map.setCenter(coords);
@@ -393,18 +391,16 @@
                             var fallback = new kakao.maps.LatLng(36.3620, 127.3560);
                             var marker = new kakao.maps.Marker({ map: map, position: fallback });
                             var infowindow = new kakao.maps.InfoWindow({
-                                content: '<div style="padding:8px 12px;font-size:13px;font-weight:600;color:#1a3a5c;">📍 더하는 교회<br><span style="font-weight:400;font-size:12px;color:#666;">대전시 유성구 학하동 755-6 1층</span></div>'
+                                content: '<div style="padding:8px 12px;font-size:13px;font-weight:600;color:#1a3a5c;">📍 {{ t.church_name }}<br><span style="font-weight:400;font-size:12px;color:#666;">{{ t.footer_address }}</span></div>'
                             });
                             infowindow.open(map, marker);
                             map.setCenter(fallback);
                         }
                     });
                 });
-            } else {
-                console.warn('카카오 지도 SDK 로드 실패 - 사이트 도메인 등록을 확인하세요.');
             }
         } catch (e) {
-            console.warn('카카오 지도 초기화 오류:', e);
+            console.warn('Map init error:', e);
         }
     </script>
 </body>

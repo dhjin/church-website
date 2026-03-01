@@ -15,6 +15,326 @@ from typing import Optional
 
 app = FastAPI(title="더하는 교회")
 
+# ─── i18n translations ───────────────────────────────────────────────
+TRANSLATIONS = {
+    "ko": {
+        "lang": "ko",
+        "lang_name": "한국어",
+        "other_lang": "en",
+        "other_lang_name": "English",
+        "church_name": "더하는 교회",
+        "church_name_full": "더하는 교회 - 기독교 한국침례회",
+        "denomination": "기독교 한국침례회",
+        "senior_pastor": "교회대표: 김한기 목사",
+        "senior_pastor_short": "김한기 목사",
+        "pastor_label": "담임목사: 김한기",
+        # Navigation
+        "nav_home": "홈",
+        "nav_about": "교회소개",
+        "nav_direction": "목회방향",
+        "nav_vision": "비전과 가치",
+        "nav_schedule": "예배시간 안내",
+        "nav_location": "찾아오시는 길",
+        "nav_people": "섬기는 분들",
+        "nav_videos": "영상",
+        "nav_church_vision": "교회 비전",
+        "nav_sermons": "최근설교",
+        "nav_shorts": "숏츠",
+        "nav_qt": "오늘의 QT",
+        "nav_pastoral": "목양의 窓",
+        "nav_worship": "예배안내",
+        "nav_news": "교회소식",
+        "nav_admin": "관리자",
+        "nav_logout": "로그아웃",
+        "nav_login": "로그인",
+        # Hero
+        "hero_title": "하나님 나라와 의를 구하는 교회",
+        "hero_subtitle": "더하는 교회에 오신 것을 환영합니다",
+        "hero_info": "기독교 한국침례회 · 교회 대표 김한기 목사",
+        "hero_worship_btn": "예배 안내",
+        "hero_about_btn": "교회 소개",
+        # Welcome
+        "welcome_title": "환영합니다",
+        "info_affiliation": "소속:",
+        "info_pastor": "교회대표:",
+        "info_location": "위치:",
+        "info_location_val": "대전시 유성구 학하동",
+        # Videos
+        "tab_vision": "교회 비전",
+        "tab_sermons": "최근설교",
+        "tab_shorts": "숏츠",
+        "tab_qt": "오늘의 QT",
+        "prev_video": "이전영상",
+        "next_video": "다음영상",
+        # Schedule & News
+        "schedule_title": "예배 시간 안내",
+        "news_title": "교회소식",
+        "sunday_worship": "주일 예배",
+        "sunday_time": "일요일 오전 10:40",
+        "sunday_study": "주일 성경공부 및 목장 모임",
+        "sunday_study_time": "일요일 오후 1:00",
+        "wed_worship": "수요 예배",
+        "wed_time": "수요일 오후 7:30 (Zoom)",
+        "fri_prayer": "금요 기도회",
+        "fri_time": "금요일 오후 7:30",
+        "morning_worship": "아침 예배",
+        "morning_time": "오전 7:00 (Zoom)",
+        "news_col_num": "번호",
+        "news_col_title": "제목",
+        "news_col_date": "작성일",
+        "news_col_views": "조회",
+        # Contact
+        "contact_title": "찾아오시는 길",
+        "naver_map": "네이버 지도로 길찾기",
+        "kakao_map": "카카오맵으로 길찾기",
+        # Footer
+        "footer_address_label": "주소",
+        "footer_address": "대전시 유성구 학하동 755-6 1층",
+        "footer_tel": "Tel: 042-626-0291",
+        "footer_copyright": "&copy; 2026 더하는 교회. All rights reserved.",
+        "footer_blessing": "하나님의 사랑과 은혜가 함께 하시기를 기도합니다.",
+        "footer_email": "이메일: muhan52@hanmail.net",
+        "footer_phone": "전화: 042-626-0291",
+        # About page
+        "about_title": "교회소개",
+        "mission_5_title": "교회의 5대 사명",
+        # Direction page
+        "direction_title": "목회방향",
+        "direction_preparing": "준비 중입니다.",
+        # People page
+        "people_title": "섬기는 분들",
+        "people_preparing": "준비 중입니다.",
+        # Pastoral board
+        "pastoral_title": "목양의 窓",
+        "pastoral_subtitle": "말씀 나눔과 성도 간 교제의 장입니다",
+        "pastoral_search_placeholder": "제목 또는 내용으로 검색...",
+        "pastoral_search_btn": "검색",
+        "pastoral_search_result": "검색 결과",
+        "pastoral_all_list": "전체 목록",
+        "pastoral_col_title": "제목",
+        "pastoral_col_date": "날짜",
+        "pastoral_col_author": "작성자",
+        "pastoral_col_views": "조회",
+        "pastoral_empty": "아직 게시글이 없습니다.",
+        "pastoral_no_result": "에 대한 검색 결과가 없습니다.",
+        "pastoral_prev": "&laquo; 이전",
+        "pastoral_next": "다음 &raquo;",
+        "pastoral_back": "&larr; 목록으로 돌아가기",
+        "pastoral_author_label": "&#128221; 작성자:",
+        "pastoral_date_label": "&#128197; 작성일:",
+        "pastoral_views_label": "&#128065; 조회수:",
+        "pastoral_default_author": "관리자",
+        # Comments
+        "comments_title": "댓글",
+        "no_comments": "아직 댓글이 없습니다.",
+        "comment_placeholder": "댓글을 입력하세요...",
+        "comment_submit": "댓글 작성",
+        "comment_login_prompt": "댓글을 작성하려면",
+        "comment_login_link": "로그인",
+        "comment_login_suffix": "해 주세요.",
+        "comment_delete": "삭제",
+        "comment_delete_confirm": "댓글을 삭제하시겠습니까?",
+        # News detail
+        "news_author_label": "작성자:",
+        "news_date_label": "작성일:",
+        "news_views_label": "조회수:",
+        "news_back": "&larr; 목록으로 돌아가기",
+        "news_default_author": "관리자",
+        # Login
+        "login_title": "로그인",
+        "login_username": "아이디",
+        "login_password": "비밀번호",
+        "login_button": "로그인",
+        "login_no_account": "계정이 없으신가요?",
+        "login_register_link": "회원가입",
+        "login_back": "&larr; 메인 페이지로 돌아가기",
+        "login_error": "아이디 또는 비밀번호가 올바르지 않습니다.",
+        # Register
+        "register_title": "회원가입",
+        "register_name": "이름",
+        "register_email": "이메일",
+        "register_username": "아이디",
+        "register_password": "비밀번호",
+        "register_password_confirm": "비밀번호 확인",
+        "register_button": "회원가입",
+        "register_has_account": "이미 계정이 있으신가요?",
+        "register_login_link": "로그인",
+        "register_back": "&larr; 메인 페이지로 돌아가기",
+        "register_password_hint": "6자 이상",
+        "register_success": "회원가입이 완료되었습니다. 로그인해 주세요.",
+        # Validation errors
+        "err_name_short": "이름은 2자 이상이어야 합니다.",
+        "err_username_short": "아이디는 3자 이상이어야 합니다.",
+        "err_password_short": "비밀번호는 6자 이상이어야 합니다.",
+        "err_password_mismatch": "비밀번호가 일치하지 않습니다.",
+        "err_email_invalid": "올바른 이메일 주소를 입력하세요.",
+        "err_username_taken": "이미 사용 중인 아이디입니다.",
+        "err_email_taken": "이미 사용 중인 이메일입니다.",
+    },
+    "en": {
+        "lang": "en",
+        "lang_name": "English",
+        "other_lang": "ko",
+        "other_lang_name": "한국어",
+        "church_name": "Deohaneun Church",
+        "church_name_full": "Deohaneun Church - Korea Baptist Convention",
+        "denomination": "Korea Baptist Convention",
+        "senior_pastor": "Senior Pastor: Rev. Hangi Kim",
+        "senior_pastor_short": "Rev. Hangi Kim",
+        "pastor_label": "Senior Pastor: Hangi Kim",
+        # Navigation
+        "nav_home": "Home",
+        "nav_about": "About",
+        "nav_direction": "Pastoral Direction",
+        "nav_vision": "Vision & Values",
+        "nav_schedule": "Worship Schedule",
+        "nav_location": "Location",
+        "nav_people": "Our Staff",
+        "nav_videos": "Media",
+        "nav_church_vision": "Church Vision",
+        "nav_sermons": "Sermons",
+        "nav_shorts": "Shorts",
+        "nav_qt": "Daily QT",
+        "nav_pastoral": "Pastoral Window",
+        "nav_worship": "Worship Info",
+        "nav_news": "Church News",
+        "nav_admin": "Admin",
+        "nav_logout": "Logout",
+        "nav_login": "Login",
+        # Hero
+        "hero_title": "Seeking the Kingdom of God and His Righteousness",
+        "hero_subtitle": "Welcome to Deohaneun Church",
+        "hero_info": "Korea Baptist Convention · Senior Pastor Rev. Hangi Kim",
+        "hero_worship_btn": "Worship Info",
+        "hero_about_btn": "About Us",
+        # Welcome
+        "welcome_title": "Welcome",
+        "info_affiliation": "Affiliation:",
+        "info_pastor": "Senior Pastor:",
+        "info_location": "Location:",
+        "info_location_val": "Hakha-dong, Yuseong-gu, Daejeon",
+        # Videos
+        "tab_vision": "Church Vision",
+        "tab_sermons": "Sermons",
+        "tab_shorts": "Shorts",
+        "tab_qt": "Daily QT",
+        "prev_video": "Previous",
+        "next_video": "Next",
+        # Schedule & News
+        "schedule_title": "Worship Schedule",
+        "news_title": "Church News",
+        "sunday_worship": "Sunday Worship",
+        "sunday_time": "Sunday 10:40 AM",
+        "sunday_study": "Sunday Bible Study & Small Group",
+        "sunday_study_time": "Sunday 1:00 PM",
+        "wed_worship": "Wednesday Worship",
+        "wed_time": "Wednesday 7:30 PM (Zoom)",
+        "fri_prayer": "Friday Prayer Meeting",
+        "fri_time": "Friday 7:30 PM",
+        "morning_worship": "Morning Worship",
+        "morning_time": "7:00 AM (Zoom)",
+        "news_col_num": "No.",
+        "news_col_title": "Title",
+        "news_col_date": "Date",
+        "news_col_views": "Views",
+        # Contact
+        "contact_title": "Location & Directions",
+        "naver_map": "Get Directions (Naver Map)",
+        "kakao_map": "Get Directions (Kakao Map)",
+        # Footer
+        "footer_address_label": "Address",
+        "footer_address": "755-6, Hakha-dong, Yuseong-gu, Daejeon, 1F",
+        "footer_tel": "Tel: 042-626-0291",
+        "footer_copyright": "&copy; 2026 Deohaneun Church. All rights reserved.",
+        "footer_blessing": "May God's love and grace be with you.",
+        "footer_email": "Email: muhan52@hanmail.net",
+        "footer_phone": "Phone: 042-626-0291",
+        # About page
+        "about_title": "About Us",
+        "mission_5_title": "Five Missions of the Church",
+        # Direction page
+        "direction_title": "Pastoral Direction",
+        "direction_preparing": "Coming soon.",
+        # People page
+        "people_title": "Our Staff",
+        "people_preparing": "Coming soon.",
+        # Pastoral board
+        "pastoral_title": "Pastoral Window",
+        "pastoral_subtitle": "A place for sharing the Word and fellowship among believers",
+        "pastoral_search_placeholder": "Search by title or content...",
+        "pastoral_search_btn": "Search",
+        "pastoral_search_result": "search results",
+        "pastoral_all_list": "All Posts",
+        "pastoral_col_title": "Title",
+        "pastoral_col_date": "Date",
+        "pastoral_col_author": "Author",
+        "pastoral_col_views": "Views",
+        "pastoral_empty": "No posts yet.",
+        "pastoral_no_result": "No results found for",
+        "pastoral_prev": "&laquo; Prev",
+        "pastoral_next": "Next &raquo;",
+        "pastoral_back": "&larr; Back to List",
+        "pastoral_author_label": "&#128221; Author:",
+        "pastoral_date_label": "&#128197; Date:",
+        "pastoral_views_label": "&#128065; Views:",
+        "pastoral_default_author": "Admin",
+        # Comments
+        "comments_title": "Comments",
+        "no_comments": "No comments yet.",
+        "comment_placeholder": "Write a comment...",
+        "comment_submit": "Post Comment",
+        "comment_login_prompt": "Please",
+        "comment_login_link": "log in",
+        "comment_login_suffix": "to write a comment.",
+        "comment_delete": "Delete",
+        "comment_delete_confirm": "Are you sure you want to delete this comment?",
+        # News detail
+        "news_author_label": "Author:",
+        "news_date_label": "Date:",
+        "news_views_label": "Views:",
+        "news_back": "&larr; Back to List",
+        "news_default_author": "Admin",
+        # Login
+        "login_title": "Login",
+        "login_username": "Username",
+        "login_password": "Password",
+        "login_button": "Login",
+        "login_no_account": "Don't have an account?",
+        "login_register_link": "Sign Up",
+        "login_back": "&larr; Back to Home",
+        "login_error": "Invalid username or password.",
+        # Register
+        "register_title": "Sign Up",
+        "register_name": "Full Name",
+        "register_email": "Email",
+        "register_username": "Username",
+        "register_password": "Password",
+        "register_password_confirm": "Confirm Password",
+        "register_button": "Sign Up",
+        "register_has_account": "Already have an account?",
+        "register_login_link": "Login",
+        "register_back": "&larr; Back to Home",
+        "register_password_hint": "At least 6 characters",
+        "register_success": "Registration successful. Please log in.",
+        # Validation errors
+        "err_name_short": "Name must be at least 2 characters.",
+        "err_username_short": "Username must be at least 3 characters.",
+        "err_password_short": "Password must be at least 6 characters.",
+        "err_password_mismatch": "Passwords do not match.",
+        "err_email_invalid": "Please enter a valid email address.",
+        "err_username_taken": "This username is already taken.",
+        "err_email_taken": "This email is already in use.",
+    }
+}
+
+def get_t(lang: str = "ko") -> dict:
+    """Get translation dict for given language"""
+    return TRANSLATIONS.get(lang, TRANSLATIONS["ko"])
+
+def get_lang_prefix(lang: str) -> str:
+    """Get URL prefix for language"""
+    return "/en" if lang == "en" else ""
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 templates = Jinja2Templates(directory="templates")
@@ -328,108 +648,88 @@ def require_admin(request: Request):
 async def startup_event():
     init_db()
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    """Main homepage"""
+async def _home(request: Request, lang: str = "ko"):
+    """Main homepage (shared logic)"""
+    t = get_t(lang)
+    lp = get_lang_prefix(lang)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Get church info
     cursor.execute("SELECT content FROM church_info WHERE id=1")
     result = cursor.fetchone()
     church_intro = result[0] if result else "더하는 교회는 하나님의 사랑과 예수 그리스도의 복음을 전하는 믿음의 공동체입니다."
 
-    # Get latest visions
     cursor.execute("SELECT * FROM visions ORDER BY date DESC LIMIT 5")
     visions = []
     for row in cursor.fetchall():
         video_id = extract_youtube_id(row[2])
         visions.append({
-            "id": row[0],
-            "title": row[1],
-            "youtube_url": row[2],
-            "youtube_id": video_id,
+            "id": row[0], "title": row[1], "youtube_url": row[2], "youtube_id": video_id,
             "thumbnail": f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg" if video_id else None,
-            "date": row[3],
-            "author": row[4] if len(row) > 4 else None
+            "date": row[3], "author": row[4] if len(row) > 4 else None
         })
 
-    # Get latest sermons
     cursor.execute("SELECT * FROM sermons ORDER BY date DESC LIMIT 5")
     sermons = []
     for row in cursor.fetchall():
         video_id = extract_youtube_id(row[5]) if len(row) > 5 and row[5] else None
         sermons.append({
-            "id": row[0],
-            "title": row[1],
-            "pastor": row[2],
-            "date": row[3],
-            "description": row[4],
-            "youtube_url": row[5] if len(row) > 5 else None,
+            "id": row[0], "title": row[1], "pastor": row[2], "date": row[3],
+            "description": row[4], "youtube_url": row[5] if len(row) > 5 else None,
             "youtube_id": video_id,
             "thumbnail": f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg" if video_id else None
         })
 
-    # Get latest YouTube Shorts
     cursor.execute("SELECT * FROM shorts ORDER BY date DESC LIMIT 10")
     shorts = []
     for row in cursor.fetchall():
         video_id = extract_youtube_id(row[2])
         shorts.append({
-            "id": row[0],
-            "title": row[1],
-            "youtube_url": row[2],
-            "youtube_id": video_id,
+            "id": row[0], "title": row[1], "youtube_url": row[2], "youtube_id": video_id,
             "thumbnail": f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg" if video_id else None,
-            "date": row[3],
-            "author": row[4] if len(row) > 4 else None
+            "date": row[3], "author": row[4] if len(row) > 4 else None
         })
 
-    # Get latest QTY (오늘의 큐티)
     cursor.execute("SELECT * FROM qtys ORDER BY date DESC LIMIT 10")
     qtys = []
     for row in cursor.fetchall():
         video_id = extract_youtube_id(row[2])
         qtys.append({
-            "id": row[0],
-            "title": row[1],
-            "youtube_url": row[2],
-            "youtube_id": video_id,
+            "id": row[0], "title": row[1], "youtube_url": row[2], "youtube_id": video_id,
             "thumbnail": f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg" if video_id else None,
-            "date": row[3],
-            "author": row[4] if len(row) > 4 else None
+            "date": row[3], "author": row[4] if len(row) > 4 else None
         })
 
-    # Get latest news
     cursor.execute("SELECT * FROM news ORDER BY date DESC LIMIT 5")
     news_list = [{"id": row[0], "title": row[1], "content": row[2], "date": row[3], "views": row[4], "author": row[5], "image_path": row[6]}
                 for row in cursor.fetchall()]
 
     conn.close()
-
     user = get_current_user(request)
 
     return templates.TemplateResponse("index.html", {
-        "request": request,
-        "visions": visions,
-        "sermons": sermons,
-        "shorts": shorts,
-        "qtys": qtys,
-        "news_list": news_list,
-        "church_intro": church_intro,
-        "user": user
+        "request": request, "t": t, "lp": lp,
+        "visions": visions, "sermons": sermons, "shorts": shorts,
+        "qtys": qtys, "news_list": news_list,
+        "church_intro": church_intro, "user": user
     })
 
-@app.get("/about", response_class=HTMLResponse)
-async def about_page(request: Request):
-    """Display church about page"""
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return await _home(request, "ko")
+
+@app.get("/en/", response_class=HTMLResponse)
+async def home_en(request: Request):
+    return await _home(request, "en")
+
+async def _about_page(request: Request, lang: str = "ko"):
+    t = get_t(lang)
+    lp = get_lang_prefix(lang)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
     cursor.execute("SELECT vision_title, vision_content, mission_content, pastoral_direction, serving_people FROM church_about WHERE id=1")
     row = cursor.fetchone()
     conn.close()
-
     about = {
         "vision_title": row[0] if row else "더하는교회의 비전",
         "vision_content": row[1] if row else "",
@@ -437,107 +737,108 @@ async def about_page(request: Request):
         "pastoral_direction": row[3] if row else "",
         "serving_people": row[4] if row else ""
     }
+    return templates.TemplateResponse("about.html", {"request": request, "about": about, "t": t, "lp": lp})
 
-    return templates.TemplateResponse("about.html", {
-        "request": request,
-        "about": about
-    })
+@app.get("/about", response_class=HTMLResponse)
+async def about_page(request: Request):
+    return await _about_page(request, "ko")
 
-@app.get("/direction", response_class=HTMLResponse)
-async def direction_page(request: Request):
-    """Pastoral Direction page"""
+@app.get("/en/about", response_class=HTMLResponse)
+async def about_page_en(request: Request):
+    return await _about_page(request, "en")
+
+async def _direction_page(request: Request, lang: str = "ko"):
+    t = get_t(lang)
+    lp = get_lang_prefix(lang)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT pastoral_direction FROM church_about WHERE id=1")
     row = cursor.fetchone()
     conn.close()
+    content = row[0] if row and row[0] else t["direction_preparing"]
+    return templates.TemplateResponse("direction.html", {"request": request, "content": content, "t": t, "lp": lp})
 
-    content = row[0] if row and row[0] else "준비 중입니다."
+@app.get("/direction", response_class=HTMLResponse)
+async def direction_page(request: Request):
+    return await _direction_page(request, "ko")
 
-    return templates.TemplateResponse("direction.html", {
-        "request": request,
-        "content": content
-    })
+@app.get("/en/direction", response_class=HTMLResponse)
+async def direction_page_en(request: Request):
+    return await _direction_page(request, "en")
 
-@app.get("/people", response_class=HTMLResponse)
-async def people_page(request: Request):
-    """Serving People page"""
+async def _people_page(request: Request, lang: str = "ko"):
+    t = get_t(lang)
+    lp = get_lang_prefix(lang)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
-    # Get members list
     cursor.execute("SELECT * FROM members ORDER BY display_order ASC, id ASC")
     members = [{"id": row[0], "name": row[1], "role": row[2], "bio": row[3],
                 "photo_path": row[4], "display_order": row[5]}
                for row in cursor.fetchall()]
-
-    # Get intro text
     cursor.execute("SELECT serving_people FROM church_about WHERE id=1")
     row = cursor.fetchone()
     intro = row[0] if row and row[0] else ""
-
     conn.close()
+    return templates.TemplateResponse("people.html", {"request": request, "members": members, "intro": intro, "t": t, "lp": lp})
 
-    return templates.TemplateResponse("people.html", {
-        "request": request,
-        "members": members,
-        "intro": intro
-    })
+@app.get("/people", response_class=HTMLResponse)
+async def people_page(request: Request):
+    return await _people_page(request, "ko")
 
-@app.get("/pastoral", response_class=HTMLResponse)
-async def pastoral_list(request: Request, page: int = 1, q: str = ""):
-    """목양의 窓 board list with pagination and search"""
+@app.get("/en/people", response_class=HTMLResponse)
+async def people_page_en(request: Request):
+    return await _people_page(request, "en")
+
+async def _pastoral_list(request: Request, lang: str = "ko", page: int = 1, q: str = ""):
+    t = get_t(lang)
+    lp = get_lang_prefix(lang)
     per_page = 20
     offset = (page - 1) * per_page
-
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
     if q.strip():
         search = f"%{q.strip()}%"
         cursor.execute("SELECT COUNT(*) FROM pastoral_posts WHERE title LIKE ? OR content LIKE ?", (search, search))
         total = cursor.fetchone()[0]
-        cursor.execute("""
-            SELECT * FROM pastoral_posts
-            WHERE title LIKE ? OR content LIKE ?
-            ORDER BY created_at DESC LIMIT ? OFFSET ?
-        """, (search, search, per_page, offset))
+        cursor.execute("SELECT * FROM pastoral_posts WHERE title LIKE ? OR content LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                        (search, search, per_page, offset))
     else:
         cursor.execute("SELECT COUNT(*) FROM pastoral_posts")
         total = cursor.fetchone()[0]
         cursor.execute("SELECT * FROM pastoral_posts ORDER BY created_at DESC LIMIT ? OFFSET ?", (per_page, offset))
-
     posts = [{"id": row[0], "title": row[1], "content": row[2], "image_path": row[3],
               "author": row[4], "views": row[5], "created_at": row[6]}
              for row in cursor.fetchall()]
     conn.close()
-
     total_pages = max(1, (total + per_page - 1) // per_page)
     user = get_current_user(request)
     return templates.TemplateResponse("pastoral_list.html", {
-        "request": request, "posts": posts, "user": user,
+        "request": request, "posts": posts, "user": user, "t": t, "lp": lp,
         "page": page, "total_pages": total_pages, "total": total, "q": q
     })
 
-@app.get("/pastoral/{post_id}", response_class=HTMLResponse)
-async def pastoral_detail(request: Request, post_id: int):
-    """목양의 窓 post detail"""
+@app.get("/pastoral", response_class=HTMLResponse)
+async def pastoral_list(request: Request, page: int = 1, q: str = ""):
+    return await _pastoral_list(request, "ko", page, q)
+
+@app.get("/en/pastoral", response_class=HTMLResponse)
+async def pastoral_list_en(request: Request, page: int = 1, q: str = ""):
+    return await _pastoral_list(request, "en", page, q)
+
+async def _pastoral_detail(request: Request, post_id: int, lang: str = "ko"):
+    t = get_t(lang)
+    lp = get_lang_prefix(lang)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
     cursor.execute("UPDATE pastoral_posts SET views = views + 1 WHERE id=?", (post_id,))
     conn.commit()
-
     cursor.execute("SELECT * FROM pastoral_posts WHERE id=?", (post_id,))
     row = cursor.fetchone()
     if not row:
         conn.close()
-        raise HTTPException(status_code=404, detail="게시글을 찾을 수 없습니다.")
-
+        raise HTTPException(status_code=404, detail="Post not found")
     post = {"id": row[0], "title": row[1], "content": row[2], "image_path": row[3],
             "author": row[4], "views": row[5], "created_at": row[6]}
-
-    # Get comments for this post
     cursor.execute("""
         SELECT c.id, c.content, c.created_at, u.username, u.name, c.user_id
         FROM comments c JOIN users u ON c.user_id = u.id
@@ -547,72 +848,75 @@ async def pastoral_detail(request: Request, post_id: int):
     comments = [{"id": r[0], "content": r[1], "created_at": r[2],
                  "username": r[3], "name": r[4], "user_id": r[5]}
                 for r in cursor.fetchall()]
-
     conn.close()
     user = get_current_user(request)
-
     return templates.TemplateResponse("pastoral_detail.html", {
-        "request": request, "post": post, "comments": comments, "user": user
+        "request": request, "post": post, "comments": comments, "user": user, "t": t, "lp": lp
     })
+
+@app.get("/pastoral/{post_id}", response_class=HTMLResponse)
+async def pastoral_detail(request: Request, post_id: int):
+    return await _pastoral_detail(request, post_id, "ko")
+
+@app.get("/en/pastoral/{post_id}", response_class=HTMLResponse)
+async def pastoral_detail_en(request: Request, post_id: int):
+    return await _pastoral_detail(request, post_id, "en")
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
-    """Login page"""
-    return templates.TemplateResponse("login.html", {"request": request})
+    t = get_t("ko")
+    return templates.TemplateResponse("login.html", {"request": request, "t": t, "lp": ""})
+
+@app.get("/en/login", response_class=HTMLResponse)
+async def login_page_en(request: Request):
+    t = get_t("en")
+    return templates.TemplateResponse("login.html", {"request": request, "t": t, "lp": "/en"})
 
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
-    """Registration page"""
-    return templates.TemplateResponse("register.html", {"request": request})
+    t = get_t("ko")
+    return templates.TemplateResponse("register.html", {"request": request, "t": t, "lp": ""})
 
-@app.post("/register")
-async def register(
-    request: Request,
-    name: str = Form(...),
-    email: str = Form(...),
-    username: str = Form(...),
-    password: str = Form(...),
-    password_confirm: str = Form(...)
-):
-    """Handle user registration"""
+@app.get("/en/register", response_class=HTMLResponse)
+async def register_page_en(request: Request):
+    t = get_t("en")
+    return templates.TemplateResponse("register.html", {"request": request, "t": t, "lp": "/en"})
+
+async def _register_post(request: Request, lang: str, name: str, email: str, username: str, password: str, password_confirm: str):
+    t = get_t(lang)
+    lp = get_lang_prefix(lang)
     errors = []
-
     if len(name.strip()) < 2:
-        errors.append("이름은 2자 이상이어야 합니다.")
+        errors.append(t["err_name_short"])
     if len(username.strip()) < 3:
-        errors.append("아이디는 3자 이상이어야 합니다.")
+        errors.append(t["err_username_short"])
     if len(password) < 6:
-        errors.append("비밀번호는 6자 이상이어야 합니다.")
+        errors.append(t["err_password_short"])
     if password != password_confirm:
-        errors.append("비밀번호가 일치하지 않습니다.")
+        errors.append(t["err_password_mismatch"])
     if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-        errors.append("올바른 이메일 주소를 입력하세요.")
-
+        errors.append(t["err_email_invalid"])
     if errors:
         return templates.TemplateResponse("register.html", {
-            "request": request, "errors": errors,
+            "request": request, "errors": errors, "t": t, "lp": lp,
             "name": name, "email": email, "username": username
         })
-
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
     cursor.execute("SELECT id FROM users WHERE username=?", (username,))
     if cursor.fetchone():
         conn.close()
         return templates.TemplateResponse("register.html", {
-            "request": request, "errors": ["이미 사용 중인 아이디입니다."],
+            "request": request, "errors": [t["err_username_taken"]], "t": t, "lp": lp,
             "name": name, "email": email, "username": username
         })
-
     cursor.execute("SELECT id FROM users WHERE email=?", (email,))
     if cursor.fetchone():
         conn.close()
         return templates.TemplateResponse("register.html", {
-            "request": request, "errors": ["이미 사용 중인 이메일입니다."],
+            "request": request, "errors": [t["err_email_taken"]], "t": t, "lp": lp,
             "name": name, "email": email, "username": username
         })
-
     hashed = hash_password(password)
     cursor.execute("""
         INSERT INTO users (username, password, role, created_at, name, email)
@@ -620,60 +924,57 @@ async def register(
     """, (username, hashed, datetime.now().isoformat(), name.strip(), email))
     conn.commit()
     conn.close()
-
     return templates.TemplateResponse("login.html", {
-        "request": request,
-        "success": "회원가입이 완료되었습니다. 로그인해 주세요."
+        "request": request, "t": t, "lp": lp,
+        "success": t["register_success"]
     })
 
-@app.post("/login")
-async def login(request: Request, username: str = Form(...), password: str = Form(...)):
-    """Handle login with bcrypt (auto-migrates legacy SHA-256 hashes)"""
+@app.post("/register")
+async def register(request: Request, name: str = Form(...), email: str = Form(...),
+                   username: str = Form(...), password: str = Form(...), password_confirm: str = Form(...)):
+    return await _register_post(request, "ko", name, email, username, password, password_confirm)
+
+@app.post("/en/register")
+async def register_en(request: Request, name: str = Form(...), email: str = Form(...),
+                      username: str = Form(...), password: str = Form(...), password_confirm: str = Form(...)):
+    return await _register_post(request, "en", name, email, username, password, password_confirm)
+
+async def _login_post(request: Request, lang: str, username: str, password: str):
+    t = get_t(lang)
+    lp = get_lang_prefix(lang)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
     cursor.execute("SELECT id, username, password, role FROM users WHERE username=?", (username,))
     user = cursor.fetchone()
-
     if not user:
         conn.close()
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "error": "아이디 또는 비밀번호가 올바르지 않습니다."
-        })
-
+        return templates.TemplateResponse("login.html", {"request": request, "error": t["login_error"], "t": t, "lp": lp})
     stored_hash = user[2]
     password_valid = False
-
-    # Try bcrypt first (new format)
     if stored_hash.startswith('$2b$') or stored_hash.startswith('$2a$'):
         password_valid = verify_password(password, stored_hash)
-    # Fallback: legacy SHA-256 (auto-migrate to bcrypt)
     elif is_sha256_hash(stored_hash) and verify_sha256(password, stored_hash):
         password_valid = True
         new_hash = hash_password(password)
         cursor.execute("UPDATE users SET password=? WHERE id=?", (new_hash, user[0]))
         conn.commit()
-
     if not password_valid:
         conn.close()
-        return templates.TemplateResponse("login.html", {
-            "request": request,
-            "error": "아이디 또는 비밀번호가 올바르지 않습니다."
-        })
-
-    # Create session
+        return templates.TemplateResponse("login.html", {"request": request, "error": t["login_error"], "t": t, "lp": lp})
     session_token = secrets.token_urlsafe(32)
-    sessions[session_token] = {
-        "id": user[0],
-        "username": user[1],
-        "role": user[3]
-    }
-
+    sessions[session_token] = {"id": user[0], "username": user[1], "role": user[3]}
     conn.close()
-    response = RedirectResponse(url="/admin" if user[3] == "admin" else "/", status_code=303)
+    response = RedirectResponse(url="/admin" if user[3] == "admin" else f"{lp}/", status_code=303)
     response.set_cookie(key="session_token", value=session_token, httponly=True)
     return response
+
+@app.post("/login")
+async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    return await _login_post(request, "ko", username, password)
+
+@app.post("/en/login")
+async def login_en(request: Request, username: str = Form(...), password: str = Form(...)):
+    return await _login_post(request, "en", username, password)
 
 @app.get("/logout")
 async def logout(request: Request):
@@ -784,8 +1085,9 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
 
     conn.close()
 
+    t = get_t("ko")
     return templates.TemplateResponse("admin.html", {
-        "request": request,
+        "request": request, "t": t, "lp": "",
         "user": user,
         "visions": visions,
         "sermons": sermons,
@@ -1221,27 +1523,19 @@ async def delete_pastoral(post_id: int, user: dict = Depends(require_admin)):
 
     return RedirectResponse(url="/admin", status_code=303)
 
-@app.get("/news/{news_id}", response_class=HTMLResponse)
-async def view_news(request: Request, news_id: int):
-    """View single news post with comments"""
+async def _view_news(request: Request, news_id: int, lang: str = "ko"):
+    t = get_t(lang)
+    lp = get_lang_prefix(lang)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
-    # Increment views
     cursor.execute("UPDATE news SET views = views + 1 WHERE id=?", (news_id,))
     conn.commit()
-
-    # Get news
     cursor.execute("SELECT * FROM news WHERE id=?", (news_id,))
     row = cursor.fetchone()
-
     if not row:
         conn.close()
-        raise HTTPException(status_code=404, detail="게시글을 찾을 수 없습니다.")
-
+        raise HTTPException(status_code=404, detail="Post not found")
     news = {"id": row[0], "title": row[1], "content": row[2], "date": row[3], "views": row[4], "author": row[5], "image_path": row[6]}
-
-    # Get comments
     cursor.execute("""
         SELECT c.id, c.content, c.created_at, u.username, u.name, c.user_id
         FROM comments c JOIN users u ON c.user_id = u.id
@@ -1251,13 +1545,19 @@ async def view_news(request: Request, news_id: int):
     comments = [{"id": r[0], "content": r[1], "created_at": r[2],
                  "username": r[3], "name": r[4], "user_id": r[5]}
                 for r in cursor.fetchall()]
-
     conn.close()
     user = get_current_user(request)
-
     return templates.TemplateResponse("news_detail.html", {
-        "request": request, "news": news, "comments": comments, "user": user
+        "request": request, "news": news, "comments": comments, "user": user, "t": t, "lp": lp
     })
+
+@app.get("/news/{news_id}", response_class=HTMLResponse)
+async def view_news(request: Request, news_id: int):
+    return await _view_news(request, news_id, "ko")
+
+@app.get("/en/news/{news_id}", response_class=HTMLResponse)
+async def view_news_en(request: Request, news_id: int):
+    return await _view_news(request, news_id, "en")
 
 @app.post("/news/{news_id}/comment")
 async def create_news_comment(request: Request, news_id: int, content: str = Form(...)):
