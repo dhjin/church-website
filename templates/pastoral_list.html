@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>목양의 窓 - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=11">
+    <link rel="stylesheet" href="/static/css/style.css?v=12">
     <style>
         .pastoral-page {
             padding: 100px 0 60px 0;
@@ -382,7 +382,7 @@
                     </div>
                     <div class="post-title-col" data-meta="{{ post.created_at }} | {{ post.author or '관리자' }} | 조회 {{ post.views }}">
                         <h4>{{ post.title }}</h4>
-                        <div class="post-excerpt">{{ post.content[:80] }}{% if post.content|length > 80 %}...{% endif %}</div>
+                        <div class="post-excerpt">{{ post.content|striptags|truncate(80, True, '...') }}</div>
                     </div>
                     <div class="post-date-col">{{ post.created_at }}</div>
                     <div class="post-author-col">{{ post.author or '관리자' }}</div>
@@ -453,6 +453,6 @@
         </div>
     </footer>
 
-    <script src="/static/js/script.js?v=11"></script>
+    <script src="/static/js/script.js?v=12"></script>
 </body>
 </html>
