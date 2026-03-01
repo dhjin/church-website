@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>목양의 窓 - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=8">
+    <link rel="stylesheet" href="/static/css/style.css?v=9">
     <style>
         .pastoral-page {
             padding: 100px 0 60px 0;
@@ -13,7 +13,7 @@
 
         .pastoral-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 1.5rem;
         }
 
         .pastoral-header h2 {
@@ -27,70 +27,213 @@
             font-size: 1.1rem;
         }
 
-        .pastoral-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
+        /* Search */
+        .search-bar {
+            max-width: 500px;
+            margin: 0 auto 2rem auto;
+            display: flex;
+            gap: 8px;
         }
 
-        .pastoral-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s, box-shadow 0.3s;
+        .search-bar input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .search-bar button {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .search-bar button:hover {
+            background: var(--secondary-color);
+        }
+
+        .search-info {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .search-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* List */
+        .post-list {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .post-list-header {
+            display: flex;
+            padding: 12px 16px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .post-list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
             text-decoration: none;
             color: inherit;
-            display: block;
+            transition: background 0.2s;
         }
 
-        .pastoral-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
+        .post-list-item:hover {
+            background-color: var(--bg-light);
         }
 
-        .pastoral-card-image {
-            width: 100%;
-            height: 200px;
+        .post-thumb {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
             overflow: hidden;
             background-color: var(--bg-light);
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-right: 16px;
         }
 
-        .pastoral-card-image img {
+        .post-thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .pastoral-card-image .no-image {
-            font-size: 3rem;
+        .post-thumb .no-thumb {
+            font-size: 1.5rem;
             color: var(--text-light);
             opacity: 0.3;
         }
 
-        .pastoral-card-body {
-            padding: 1.2rem;
+        .post-title-col {
+            flex: 1;
+            min-width: 0;
         }
 
-        .pastoral-card-body h3 {
-            font-size: 1.1rem;
+        .post-title-col h4 {
+            font-size: 1rem;
             color: var(--text-dark);
-            margin-bottom: 0.5rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
+            margin: 0 0 4px 0;
+            white-space: nowrap;
             overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .pastoral-card-meta {
-            display: flex;
-            justify-content: space-between;
+        .post-title-col .post-excerpt {
             font-size: 0.85rem;
             color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 500px;
+        }
+
+        .post-date-col {
+            flex-shrink: 0;
+            width: 100px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .post-author-col {
+            flex-shrink: 0;
+            width: 80px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .post-views-col {
+            flex-shrink: 0;
+            width: 60px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .col-thumb { width: 76px; flex-shrink: 0; }
+        .col-title { flex: 1; }
+        .col-date { width: 100px; text-align: center; flex-shrink: 0; }
+        .col-author { width: 80px; text-align: center; flex-shrink: 0; }
+        .col-views { width: 60px; text-align: center; flex-shrink: 0; }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination a, .pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .pagination a {
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+            background: white;
+        }
+
+        .pagination a:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination .current {
+            background: var(--primary-color);
+            color: white;
+            border: 1px solid var(--primary-color);
+            font-weight: 700;
+        }
+
+        .pagination .disabled {
+            color: #ccc;
+            border: 1px solid #eee;
+            cursor: default;
+            pointer-events: none;
         }
 
         .pastoral-empty {
@@ -103,19 +246,49 @@
             font-size: 1.2rem;
         }
 
-        @media (max-width: 1024px) {
-            .pastoral-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .pastoral-grid {
-                grid-template-columns: 1fr;
-            }
-
+        @media (max-width: 768px) {
             .pastoral-header h2 {
                 font-size: 1.6rem;
+            }
+
+            .post-list-header {
+                display: none;
+            }
+
+            .post-list-item {
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .post-thumb {
+                width: 50px;
+                height: 50px;
+                margin-right: 12px;
+            }
+
+            .post-title-col {
+                flex: 1;
+                min-width: calc(100% - 74px);
+            }
+
+            .post-title-col .post-excerpt {
+                display: none;
+            }
+
+            .post-date-col, .post-author-col, .post-views-col {
+                display: none;
+            }
+
+            .post-title-col h4 {
+                font-size: 0.95rem;
+            }
+
+            .post-title-col::after {
+                content: attr(data-meta);
+                display: block;
+                font-size: 0.8rem;
+                color: var(--text-light);
+                margin-top: 2px;
             }
         }
     </style>
@@ -175,33 +348,89 @@
         <div class="container">
             <div class="pastoral-header">
                 <h2>목양의 窓</h2>
-                <p>목사님의 이야기를 나눕니다</p>
+                <p>말씀 나눔과 성도 간 교제의 장입니다</p>
             </div>
 
+            <!-- Search Bar -->
+            <form class="search-bar" method="GET" action="/pastoral">
+                <input type="text" name="q" value="{{ q }}" placeholder="제목 또는 내용으로 검색...">
+                <button type="submit">검색</button>
+            </form>
+
+            {% if q %}
+            <div class="search-info">
+                "{{ q }}" 검색 결과: {{ total }}건 &nbsp;|&nbsp; <a href="/pastoral">전체 목록</a>
+            </div>
+            {% endif %}
+
             {% if posts %}
-            <div class="pastoral-grid">
+            <div class="post-list">
+                <!-- List Header (desktop) -->
+                <div class="post-list-header">
+                    <div class="col-thumb"></div>
+                    <div class="col-title">제목</div>
+                    <div class="col-date">날짜</div>
+                    <div class="col-author">작성자</div>
+                    <div class="col-views">조회</div>
+                </div>
+
+                <!-- List Items -->
                 {% for post in posts %}
-                <a href="/pastoral/{{ post.id }}" class="pastoral-card">
-                    <div class="pastoral-card-image">
+                <a href="/pastoral/{{ post.id }}" class="post-list-item">
+                    <div class="post-thumb">
                         {% if post.image_path %}
                         <img src="{{ post.image_path }}" alt="{{ post.title }}">
                         {% else %}
-                        <div class="no-image">&#9998;</div>
+                        <div class="no-thumb">&#128221;</div>
                         {% endif %}
                     </div>
-                    <div class="pastoral-card-body">
-                        <h3>{{ post.title }}</h3>
-                        <div class="pastoral-card-meta">
-                            <span>{{ post.created_at }}</span>
-                            <span>조회 {{ post.views }}</span>
-                        </div>
+                    <div class="post-title-col" data-meta="{{ post.created_at }} | {{ post.author or '관리자' }} | 조회 {{ post.views }}">
+                        <h4>{{ post.title }}</h4>
+                        <div class="post-excerpt">{{ post.content[:80] }}{% if post.content|length > 80 %}...{% endif %}</div>
                     </div>
+                    <div class="post-date-col">{{ post.created_at }}</div>
+                    <div class="post-author-col">{{ post.author or '관리자' }}</div>
+                    <div class="post-views-col">{{ post.views }}</div>
                 </a>
                 {% endfor %}
             </div>
+
+            <!-- Pagination -->
+            {% if total_pages > 1 %}
+            <div class="pagination">
+                {% if page > 1 %}
+                <a href="/pastoral?page={{ page - 1 }}{% if q %}&q={{ q }}{% endif %}">&laquo; 이전</a>
+                {% else %}
+                <span class="disabled">&laquo; 이전</span>
+                {% endif %}
+
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == page %}
+                    <span class="current">{{ p }}</span>
+                    {% elif p <= 3 or p > total_pages - 2 or (p >= page - 1 and p <= page + 1) %}
+                    <a href="/pastoral?page={{ p }}{% if q %}&q={{ q }}{% endif %}">{{ p }}</a>
+                    {% elif p == 4 and page > 5 %}
+                    <span>...</span>
+                    {% elif p == total_pages - 2 and page < total_pages - 4 %}
+                    <span>...</span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page < total_pages %}
+                <a href="/pastoral?page={{ page + 1 }}{% if q %}&q={{ q }}{% endif %}">다음 &raquo;</a>
+                {% else %}
+                <span class="disabled">다음 &raquo;</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
             {% else %}
             <div class="pastoral-empty">
+                {% if q %}
+                <p>"{{ q }}"에 대한 검색 결과가 없습니다.</p>
+                {% else %}
                 <p>아직 게시글이 없습니다.</p>
+                {% endif %}
             </div>
             {% endif %}
         </div>
@@ -218,7 +447,7 @@
                 <div class="footer-section">
                     <h4>주소</h4>
                     <p>대전시 유성구 학하동 755-6 1층</p>
-                    <p>Tel: 042-XXX-XXXX</p>
+                    <p>Tel: 042-626-0291</p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -228,6 +457,6 @@
         </div>
     </footer>
 
-    <script src="/static/js/script.js?v=8"></script>
+    <script src="/static/js/script.js?v=9"></script>
 </body>
 </html>

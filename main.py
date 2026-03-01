@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Depends, HTTPException, Form, UploadFile, File, status
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import sqlite3
 from datetime import datetime
@@ -485,19 +485,38 @@ async def people_page(request: Request):
     })
 
 @app.get("/pastoral", response_class=HTMLResponse)
-async def pastoral_list(request: Request):
-    """목양의 窓 board list"""
+async def pastoral_list(request: Request, page: int = 1, q: str = ""):
+    """목양의 窓 board list with pagination and search"""
+    per_page = 20
+    offset = (page - 1) * per_page
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM pastoral_posts ORDER BY created_at DESC")
+
+    if q.strip():
+        search = f"%{q.strip()}%"
+        cursor.execute("SELECT COUNT(*) FROM pastoral_posts WHERE title LIKE ? OR content LIKE ?", (search, search))
+        total = cursor.fetchone()[0]
+        cursor.execute("""
+            SELECT * FROM pastoral_posts
+            WHERE title LIKE ? OR content LIKE ?
+            ORDER BY created_at DESC LIMIT ? OFFSET ?
+        """, (search, search, per_page, offset))
+    else:
+        cursor.execute("SELECT COUNT(*) FROM pastoral_posts")
+        total = cursor.fetchone()[0]
+        cursor.execute("SELECT * FROM pastoral_posts ORDER BY created_at DESC LIMIT ? OFFSET ?", (per_page, offset))
+
     posts = [{"id": row[0], "title": row[1], "content": row[2], "image_path": row[3],
               "author": row[4], "views": row[5], "created_at": row[6]}
              for row in cursor.fetchall()]
     conn.close()
 
+    total_pages = max(1, (total + per_page - 1) // per_page)
     user = get_current_user(request)
     return templates.TemplateResponse("pastoral_list.html", {
-        "request": request, "posts": posts, "user": user
+        "request": request, "posts": posts, "user": user,
+        "page": page, "total_pages": total_pages, "total": total, "q": q
     })
 
 @app.get("/pastoral/{post_id}", response_class=HTMLResponse)
@@ -1087,6 +1106,27 @@ async def update_qty(
     conn.close()
 
     return RedirectResponse(url="/admin", status_code=303)
+
+@app.post("/admin/upload-image")
+async def upload_image(
+    request: Request,
+    image: UploadFile = File(...),
+    user: dict = Depends(require_admin)
+):
+    """Upload image and return URL (for rich editor)"""
+    if not image.filename:
+        return JSONResponse({"error": "No file"}, status_code=400)
+
+    file_extension = Path(image.filename).suffix.lower()
+    if file_extension not in ('.jpg', '.jpeg', '.png', '.gif', '.webp'):
+        return JSONResponse({"error": "지원하지 않는 파일 형식입니다."}, status_code=400)
+
+    filename = f"content_{datetime.now().timestamp()}{file_extension}"
+    file_path = UPLOAD_DIR / filename
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+
+    return JSONResponse({"url": f"/uploads/{filename}"})
 
 @app.post("/admin/pastoral/create")
 async def create_pastoral(
