@@ -41,13 +41,13 @@
     --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.18);
 
     /* Spacing System (8px base) */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 1rem;
-    --spacing-md: 1.5rem;
-    --spacing-lg: 2rem;
-    --spacing-xl: 3rem;
-    --spacing-2xl: 4rem;
-    --spacing-3xl: 6rem;
+    --spacing-xs: 0.35rem;
+    --spacing-sm: 0.7rem;
+    --spacing-md: 1.05rem;
+    --spacing-lg: 1.4rem;
+    --spacing-xl: 2.1rem;
+    --spacing-2xl: 2.8rem;
+    --spacing-3xl: 4.2rem;
 
     /* Transitions */
     --transition-fast: 0.2s ease;
@@ -276,7 +276,7 @@ h3 {
 .hero {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 50%, var(--primary-lighter) 100%);
     color: white;
-    padding: 120px 20px;
+    padding: 84px 14px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -372,7 +372,7 @@ h3 {
 
 /* Section Styles */
 section {
-    padding: 80px 20px;
+    padding: 56px 14px;
 }
 
 .section-header {
@@ -417,7 +417,7 @@ section {
     gap: 2rem;
     flex-wrap: wrap;
     margin-top: 2rem;
-    padding: 1.5rem;
+    padding: 1.05rem;
     background-color: var(--bg-white);
     border-radius: 12px;
     box-shadow: var(--shadow);
@@ -479,7 +479,7 @@ section {
 .card-header {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 50%, var(--primary-lighter) 100%);
     color: white;
-    padding: 2rem 1.5rem;
+    padding: 1.4rem 1.05rem;
 }
 
 .card-header h3 {
@@ -488,7 +488,7 @@ section {
 }
 
 .card-body {
-    padding: 1.5rem;
+    padding: 1.05rem;
 }
 
 .meta {
@@ -870,7 +870,7 @@ section {
 /* Schedule and News 2-Column Layout */
 .schedule-news-section {
     background-color: var(--bg-light);
-    padding: 80px 20px;
+    padding: 56px 14px;
 }
 
 .schedule-news-grid {
@@ -889,7 +889,7 @@ section {
 /* Consolidated Schedule Card */
 .consolidated-schedule {
     background: linear-gradient(to bottom right, var(--bg-white) 0%, var(--bg-lighter) 100%);
-    padding: 2rem;
+    padding: 1.4rem;
     border-radius: 16px;
     box-shadow: var(--shadow-md);
     border-left: 5px solid var(--primary-color);
@@ -905,7 +905,7 @@ section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.25rem 1.5rem;
+    padding: 0.875rem 1.05rem;
     background-color: white;
     border-radius: 10px;
     border: 1px solid var(--border-light);
@@ -961,11 +961,11 @@ section {
 
 @media (max-width: 768px) {
     .schedule-news-section {
-        padding: 50px 15px;
+        padding: 35px 11px;
     }
 
     .consolidated-schedule {
-        padding: 1.5rem;
+        padding: 1.05rem;
     }
 
     .schedule-row {
@@ -991,7 +991,7 @@ section {
 
 .announcement-item {
     background-color: var(--bg-light);
-    padding: 2rem;
+    padding: 1.4rem;
     border-radius: 12px;
     margin-bottom: 1.5rem;
     border-left: 4px solid var(--primary-color);
@@ -1036,7 +1036,7 @@ section {
 
 .about-item {
     text-align: center;
-    padding: 2rem;
+    padding: 1.4rem;
     background-color: var(--bg-white);
     border-radius: 12px;
     box-shadow: var(--shadow);
@@ -1083,7 +1083,7 @@ section {
 
 .detail-item {
     text-align: center;
-    padding: 2rem;
+    padding: 1.4rem;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     border-radius: 12px;
@@ -1115,7 +1115,7 @@ section {
 
 .contact-item {
     text-align: center;
-    padding: 2rem;
+    padding: 1.4rem;
     background-color: var(--bg-light);
     border-radius: 12px;
     transition: all 0.3s ease;
@@ -1307,7 +1307,7 @@ section {
 
     /* Hero Section */
     .hero {
-        padding: 60px 20px;
+        padding: 42px 14px;
     }
 
     .hero-title {
@@ -1336,7 +1336,7 @@ section {
 
     /* Sections */
     section {
-        padding: var(--spacing-xl) 15px;
+        padding: var(--spacing-xl) 11px;
     }
 
     .section-header h2 {
@@ -1370,7 +1370,7 @@ section {
     }
 
     .card-body {
-        padding: 1rem;
+        padding: 0.7rem;
     }
 
     /* About Section */
@@ -1387,7 +1387,7 @@ section {
 
     .detail-item,
     .contact-item {
-        padding: 1.5rem;
+        padding: 1.05rem;
     }
 
     /* Map */
@@ -1413,7 +1413,7 @@ section {
     }
 
     .footer {
-        padding: 2rem 15px 1.5rem 15px;
+        padding: 1.4rem 11px 1.05rem 11px;
     }
 }
 
@@ -1467,7 +1467,7 @@ section {
     }
 
     .card-header {
-        padding: 1rem;
+        padding: 0.7rem;
     }
 
     .card-header h3 {
@@ -1531,7 +1531,7 @@ html {
 /* Vision and Sermons Dual Section */
 .vision-sermons-section {
     background-color: var(--bg-light);
-    padding: 80px 20px;
+    padding: 56px 14px;
 }
 
 .dual-section {
@@ -1697,7 +1697,7 @@ html {
 }
 
 .vision-card .card-body {
-    padding: 1.5rem;
+    padding: 1.05rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -1789,13 +1789,13 @@ html {
 
 .shorts-section {
     background-color: var(--bg-white);
-    padding: 80px 20px;
+    padding: 56px 14px;
 }
 
 /* QT Section */
 .qty-section {
     background-color: var(--bg-light);
-    padding: 80px 20px;
+    padding: 56px 14px;
 }
 
 .qty-badge {
@@ -1883,7 +1883,7 @@ html {
 }
 
 .shorts-title {
-    padding: 1rem;
+    padding: 0.7rem;
     background-color: var(--bg-white);
 }
 
@@ -1934,7 +1934,7 @@ html {
     }
 
     .schedule-item {
-        padding: 1.5rem;
+        padding: 1.05rem;
     }
 
     .shorts-grid {
@@ -1943,7 +1943,7 @@ html {
     }
 
     .shorts-section {
-        padding: 50px 15px;
+        padding: 35px 11px;
     }
 
     .slider-container {
@@ -1969,7 +1969,7 @@ html {
 
 /* About Page Styles */
 .about-page {
-    padding: 100px 20px 80px;
+    padding: 70px 14px 56px;
     background-color: var(--bg-light);
     min-height: 60vh;
 }
@@ -1992,7 +1992,7 @@ html {
 
 .mission-section {
     background-color: var(--bg-white);
-    padding: 3rem;
+    padding: 2.1rem;
     border-radius: 12px;
     box-shadow: var(--shadow);
 }
@@ -2013,12 +2013,12 @@ html {
 
 @media (max-width: 768px) {
     .about-page {
-        padding: 80px 15px 60px;
+        padding: 56px 11px 42px;
     }
 
     .vision-section,
     .mission-section {
-        padding: 2rem 1.5rem;
+        padding: 1.4rem 1.05rem;
     }
 
     .vision-text,
@@ -2033,7 +2033,7 @@ html {
 
 @media (max-width: 480px) {
     section {
-        padding: var(--spacing-xl) 15px;
+        padding: var(--spacing-xl) 11px;
     }
 
     .hero-title {
