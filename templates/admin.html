@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지 - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=9">
-    <link rel="stylesheet" href="/static/css/admin.css?v=9">
+    <link rel="stylesheet" href="/static/css/style.css?v=10">
+    <link rel="stylesheet" href="/static/css/admin.css?v=10">
 </head>
 
 <body>
@@ -15,7 +15,7 @@
         <header class="admin-header">
             <div class="container">
                 <div class="admin-nav">
-                    <h1>✟ 더하는 교회 관리자</h1>
+                    <h1 style="display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png" alt="로고" style="height: 36px; width: 36px; border-radius: 50%; object-fit: cover;"> 더하는 교회 관리자</h1>
                     <div class="admin-user-info">
                         <span>👤 {{ user.username }}</span>
                         <a href="/logout" class="btn-logout">로그아웃</a>
@@ -674,7 +674,7 @@
             </div>
         </div>
     </div>
-    <script src="/static/js/admin.js?v=9"></script>
+    <script src="/static/js/admin.js?v=10"></script>
 </body>
 
 </html>

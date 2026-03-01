@@ -1128,6 +1128,11 @@ async def upload_image(
 
     return JSONResponse({"url": f"/uploads/{filename}"})
 
+def extract_first_image_from_content(content: str) -> Optional[str]:
+    """Extract first <img> src from HTML content"""
+    match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', content)
+    return match.group(1) if match else None
+
 @app.post("/admin/pastoral/create")
 async def create_pastoral(
     request: Request,
@@ -1145,6 +1150,14 @@ async def create_pastoral(
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(image.file, buffer)
         image_path = f"/uploads/{filename}"
+
+    # Auto-extract thumbnail from content if no image uploaded
+    if not image_path:
+        first_img = extract_first_image_from_content(content)
+        if first_img:
+            image_path = first_img
+        else:
+            image_path = "/static/images/logo.png"
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
