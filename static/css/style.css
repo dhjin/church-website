@@ -63,6 +63,8 @@ body {
     background-color: var(--bg-white);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 h1 {
@@ -2149,5 +2151,62 @@ html {
     .video-modal.shorts-mode .video-modal-close {
         top: -35px;
         right: 5px;
+    }
+}
+
+/* Mobile: 텍스트 좌측 정렬 */
+@media (max-width: 1024px) {
+    .hero {
+        text-align: left;
+    }
+
+    .hero-buttons {
+        justify-content: flex-start;
+    }
+
+    .section-header {
+        text-align: left;
+    }
+
+    .divider {
+        margin: 0;
+    }
+
+    .welcome-text {
+        text-align: left;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .about-item {
+        text-align: left;
+    }
+
+    .detail-item {
+        text-align: left;
+    }
+
+    .contact-item {
+        text-align: left;
+    }
+
+    .map-title {
+        text-align: left;
+    }
+
+    .map-buttons {
+        justify-content: flex-start;
+    }
+
+    .footer-content {
+        text-align: left;
+    }
+
+    .footer-bottom {
+        text-align: left;
+    }
+
+    .mission-section h2 {
+        text-align: left;
     }
 }
