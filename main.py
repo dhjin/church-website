@@ -106,7 +106,7 @@ TRANSLATIONS = {
         "people_preparing": "준비 중입니다.",
         # Pastoral board
         "pastoral_title": "목양의 窓",
-        "pastoral_subtitle": "말씀 나눔의 장입니다",
+        "pastoral_subtitle": "말씀을 삶으로 살아가며 나누는 목양의 기록입니다.",
         "pastoral_search_placeholder": "제목 또는 내용으로 검색...",
         "pastoral_search_btn": "검색",
         "pastoral_search_result": "검색 결과",
