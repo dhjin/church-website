@@ -438,6 +438,94 @@ section {
     margin-right: 0.5rem;
 }
 
+/* =============================================
+   Home Top Section: Vision (left) + Welcome (right)
+   ============================================= */
+.home-top-section {
+    background-color: var(--bg-light);
+    padding: 56px 0;
+}
+
+.home-top-grid {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+/* Left column: church vision */
+.vision-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.vision-label-btn {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 28px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.vision-featured-card {
+    width: 100%;
+}
+
+/* Right column: welcome/intro */
+.welcome-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    background: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    min-height: 200px;
+}
+
+.welcome-col .section-header {
+    margin-bottom: 1.5rem;
+}
+
+.welcome-col .welcome-text {
+    max-width: 100%;
+    margin: 0 0 1.5rem 0;
+    text-align: center;
+}
+
+.welcome-col .church-info-banner {
+    max-width: 100%;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 900px) {
+    .home-top-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .vision-col {
+        align-items: center;
+    }
+
+    .vision-featured-card {
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .welcome-col {
+        padding: 1.5rem 1.2rem;
+    }
+}
+
 /* Grid Layout */
 .grid {
     display: grid;
@@ -868,17 +956,18 @@ section {
         padding: 0 4px;
     }
 
-    /* 모바일 탭 버튼 2x2 */
+    /* 모바일 탭 버튼: 3개 한 줄 */
     .tab-buttons {
         flex-wrap: wrap;
         gap: 8px;
+        justify-content: center;
     }
 
     .tab-btn {
         padding: 8px 16px;
-        font-size: 0.9rem;
-        min-width: calc(50% - 8px);
-        flex: 1 1 calc(50% - 8px);
+        font-size: 0.88rem;
+        min-width: 0;
+        flex: 1 1 auto;
     }
 }
 
