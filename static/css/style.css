@@ -775,6 +775,10 @@ section {
     /* Grid is explicitly added inline via HTML/JS or via sub-class */
 }
 
+.video-tabs.show-all .tab-content {
+    display: block;
+}
+
 .video-grid {
     display: grid;
     /* Web Layout: 4 columns */

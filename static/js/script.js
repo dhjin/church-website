@@ -130,6 +130,12 @@ console.log('Church website loaded successfully!');
 
 // Unified Video Tabs Functionality
 function switchVideoTab(tabId) {
+    // Exit "show all" mode
+    const videoTabs = document.querySelector('.video-tabs');
+    if (videoTabs) {
+        videoTabs.classList.remove('show-all');
+    }
+
     // Update tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
