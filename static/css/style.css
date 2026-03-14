@@ -450,7 +450,7 @@ section {
     display: grid;
     grid-template-columns: 5fr 7fr;
     gap: 3rem;
-    align-items: start;
+    align-items: stretch;
 }
 
 /* Left column: church vision */
