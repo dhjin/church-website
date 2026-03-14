@@ -2101,10 +2101,27 @@ html {
     margin-bottom: 3rem;
 }
 
+.vision-with-image {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
 .vision-text {
+    flex: 1;
     font-size: 1.1rem;
     line-height: 1.8;
     color: var(--text-dark);
+}
+
+.vision-image {
+    flex: 0 0 320px;
+}
+
+.vision-image img {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
 }
 
 .mission-section {
@@ -2121,10 +2138,27 @@ html {
     text-align: center;
 }
 
+.mission-with-image {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
 .mission-text {
+    flex: 1;
     font-size: 1.1rem;
     line-height: 1.8;
     color: var(--text-dark);
+}
+
+.mission-image {
+    flex: 0 0 320px;
+}
+
+.mission-image img {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
 }
 
 @media (max-width: 768px) {
@@ -2135,6 +2169,17 @@ html {
     .vision-section,
     .mission-section {
         padding: 1.4rem 1.05rem;
+    }
+
+    .vision-with-image,
+    .mission-with-image {
+        flex-direction: column;
+    }
+
+    .vision-image,
+    .mission-image {
+        flex: none;
+        width: 100%;
     }
 
     .vision-text,

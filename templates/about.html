@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ t.about_title }} - {{ t.church_name }}</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=15">
+    <link rel="stylesheet" href="/static/css/style.css?v=16">
 </head>
 
 <body>
@@ -62,15 +62,25 @@
 
             <div class="about-content-main">
                 <div class="vision-section">
-                    <div class="vision-text">
-                        {{ about.vision_content | replace('\n', '<br>') | safe }}
+                    <div class="vision-with-image">
+                        <div class="vision-text">
+                            {{ about.vision_content | replace('\n', '<br>') | safe }}
+                        </div>
+                        <div class="vision-image">
+                            <img src="/static/images/our-vision.png" alt="our vision">
+                        </div>
                     </div>
                 </div>
 
                 <div class="mission-section">
                     <h2>{{ t.mission_5_title }}</h2>
-                    <div class="mission-text">
-                        {{ about.mission_content | replace('\n', '<br>') | safe }}
+                    <div class="mission-with-image">
+                        <div class="mission-text">
+                            {{ about.mission_content | replace('\n', '<br>') | safe }}
+                        </div>
+                        <div class="mission-image">
+                            <img src="/static/images/our-values.png" alt="our values">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -99,7 +109,7 @@
         </div>
     </footer>
 
-    <script src="/static/js/script.js?v=15"></script>
+    <script src="/static/js/script.js?v=16"></script>
 </body>
 
 </html>
