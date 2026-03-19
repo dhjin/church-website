@@ -11,7 +11,7 @@ import bcrypt
 import secrets
 import shutil
 import re
-from typing import Optional
+from typing import Optional, List
 
 app = FastAPI(title="더하는 교회")
 
@@ -435,6 +435,16 @@ def init_db():
             views INTEGER DEFAULT 0,
             author TEXT,
             image_path TEXT
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS news_images (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            news_id INTEGER NOT NULL,
+            image_path TEXT NOT NULL,
+            sort_order INTEGER DEFAULT 0,
+            FOREIGN KEY (news_id) REFERENCES news(id)
         )
     """)
 
@@ -1105,29 +1115,31 @@ async def create_news(
     request: Request,
     title: str = Form(...),
     content: str = Form(...),
-    image: Optional[UploadFile] = File(None),
+    images: List[UploadFile] = File(default=[]),
     user: dict = Depends(require_admin)
 ):
-    """Create new news post"""
-    image_path = None
-
-    if image and image.filename:
-        # Save uploaded image
-        file_extension = Path(image.filename).suffix
-        filename = f"{datetime.now().timestamp()}{file_extension}"
-        file_path = UPLOAD_DIR / filename
-
-        with file_path.open("wb") as buffer:
-            shutil.copyfileobj(image.file, buffer)
-
-        image_path = f"/uploads/{filename}"
-
+    """Create new news post with multiple images"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO news (title, content, date, views, author, image_path)
         VALUES (?, ?, ?, 0, ?, ?)
-    """, (title, content, datetime.now().strftime("%Y-%m-%d"), user['username'], image_path))
+    """, (title, content, datetime.now().strftime("%Y-%m-%d"), user['username'], None))
+    news_id = cursor.lastrowid
+
+    for sort_order, image in enumerate(images):
+        if image and image.filename:
+            file_extension = Path(image.filename).suffix.lower()
+            filename = f"news_{datetime.now().timestamp()}_{sort_order}{file_extension}"
+            file_path = UPLOAD_DIR / filename
+            with file_path.open("wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            image_path = f"/uploads/{filename}"
+            cursor.execute("""
+                INSERT INTO news_images (news_id, image_path, sort_order)
+                VALUES (?, ?, ?)
+            """, (news_id, image_path, sort_order))
+
     conn.commit()
     conn.close()
 
@@ -1135,9 +1147,10 @@ async def create_news(
 
 @app.post("/admin/news/delete/{news_id}")
 async def delete_news(news_id: int, user: dict = Depends(require_admin)):
-    """Delete news post"""
+    """Delete news post and associated images"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+    cursor.execute("DELETE FROM news_images WHERE news_id=?", (news_id,))
     cursor.execute("DELETE FROM news WHERE id=?", (news_id,))
     conn.commit()
     conn.close()
@@ -1537,6 +1550,14 @@ async def _view_news(request: Request, news_id: int, lang: str = "ko"):
         raise HTTPException(status_code=404, detail="Post not found")
     news = {"id": row[0], "title": row[1], "content": row[2], "date": row[3], "views": row[4], "author": row[5], "image_path": row[6]}
     cursor.execute("""
+        SELECT image_path FROM news_images
+        WHERE news_id=? ORDER BY sort_order ASC
+    """, (news_id,))
+    news_images = [r[0] for r in cursor.fetchall()]
+    # Fallback: legacy single image_path
+    if not news_images and news["image_path"]:
+        news_images = [news["image_path"]]
+    cursor.execute("""
         SELECT c.id, c.content, c.created_at, u.username, u.name, c.user_id
         FROM comments c JOIN users u ON c.user_id = u.id
         WHERE c.post_type='news' AND c.post_id=?
@@ -1548,7 +1569,8 @@ async def _view_news(request: Request, news_id: int, lang: str = "ko"):
     conn.close()
     user = get_current_user(request)
     return templates.TemplateResponse("news_detail.html", {
-        "request": request, "news": news, "comments": comments, "user": user, "t": t, "lp": lp
+        "request": request, "news": news, "news_images": news_images,
+        "comments": comments, "user": user, "t": t, "lp": lp
     })
 
 @app.get("/news/{news_id}", response_class=HTMLResponse)

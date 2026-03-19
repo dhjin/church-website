@@ -578,9 +578,10 @@
                                 <textarea id="content" name="content" rows="6" required></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="image">이미지 첨부 (선택)</label>
-                                <input type="file" id="image" name="image" accept="image/*">
-                                <small class="form-hint">JPG, PNG 등의 이미지 파일을 첨부할 수 있습니다.</small>
+                                <label for="news-images">이미지 첨부 (선택, 여러 장 가능)</label>
+                                <input type="file" id="news-images" name="images" accept="image/*" multiple onchange="previewNewsImages(this)">
+                                <small class="form-hint">JPG, PNG 등 이미지를 여러 장 선택할 수 있습니다. 선택 순서대로 표시됩니다.</small>
+                                <div id="news-image-preview" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
                             </div>
                             <button type="submit" class="btn btn-primary">소식 등록</button>
                         </form>
@@ -754,6 +755,30 @@
         </div>
     </div>
     <script src="/static/js/admin.js?v=12"></script>
+    <script>
+    function previewNewsImages(input) {
+        const preview = document.getElementById('news-image-preview');
+        preview.innerHTML = '';
+        if (!input.files || input.files.length === 0) return;
+        Array.from(input.files).forEach(function(file, idx) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const wrap = document.createElement('div');
+                wrap.style.cssText = 'position:relative; display:inline-block;';
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cssText = 'width:100px; height:80px; object-fit:cover; border-radius:6px; border:1px solid #ddd;';
+                const label = document.createElement('div');
+                label.textContent = (idx + 1) + '번째';
+                label.style.cssText = 'text-align:center; font-size:11px; color:#666; margin-top:3px;';
+                wrap.appendChild(img);
+                wrap.appendChild(label);
+                preview.appendChild(wrap);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    </script>
 </body>
 
 </html>

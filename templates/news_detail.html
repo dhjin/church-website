@@ -39,16 +39,27 @@
             margin-bottom: 2rem;
         }
 
-        .news-detail-image {
+        .news-detail-images {
             margin: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .news-detail-image-wrap {
+            width: 100%;
             text-align: center;
         }
 
-        .news-detail-image img {
+        .news-detail-image-wrap img {
             max-width: 100%;
+            max-height: 600px;
+            width: auto;
             height: auto;
             border-radius: 12px;
             box-shadow: var(--shadow);
+            display: inline-block;
         }
 
         .back-button {
@@ -235,9 +246,13 @@
             </div>
         </div>
 
-        {% if news.image_path %}
-        <div class="news-detail-image">
-            <img src="{{ news.image_path }}" alt="{{ news.title }}">
+        {% if news_images %}
+        <div class="news-detail-images">
+            {% for img_src in news_images %}
+            <div class="news-detail-image-wrap">
+                <img src="{{ img_src }}" alt="{{ news.title }} 이미지 {{ loop.index }}">
+            </div>
+            {% endfor %}
         </div>
         {% endif %}
 
