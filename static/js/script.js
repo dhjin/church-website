@@ -178,7 +178,15 @@ function applyVideoTabFromHash() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', applyVideoTabFromHash);
+document.addEventListener('DOMContentLoaded', () => {
+    // If no hash-based tab, default to sermons
+    const hash = window.location.hash;
+    if (!hash || !hash.includes('#videos')) {
+        switchVideoTab('sermons');
+    } else {
+        applyVideoTabFromHash();
+    }
+});
 window.addEventListener('hashchange', applyVideoTabFromHash);
 
 // Intercept navbar dropdown video tab links on the same page (/#videos?tab=...)
