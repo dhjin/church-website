@@ -779,6 +779,46 @@ section {
     display: block;
 }
 
+/* Desktop: show all 3 tabs side-by-side in 3 columns */
+@media (min-width: 1024px) {
+    .video-tabs.show-all {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px 24px;
+    }
+
+    .video-tabs.show-all .tab-buttons {
+        grid-column: 1 / -1;
+        margin-bottom: 0;
+    }
+
+    .video-tabs.show-all .tab-content {
+        min-width: 0; /* prevent grid blowout */
+    }
+
+    /* 2 sermon/QT cards visible per column */
+    .video-tabs.show-all .carousel-track:not(.shorts-track) {
+        grid-auto-columns: 50%;
+        padding-left: 36px;
+        padding-right: 36px;
+    }
+
+    /* 2 shorts visible per column */
+    .video-tabs.show-all .shorts-track {
+        grid-auto-columns: 50%;
+        padding-left: 36px;
+        padding-right: 36px;
+    }
+
+    .video-tabs.show-all .carousel-nav.prev {
+        left: 2px;
+    }
+
+    .video-tabs.show-all .carousel-nav.next {
+        right: 2px;
+    }
+}
+
 .video-grid {
     display: grid;
     /* Web Layout: 4 columns */
