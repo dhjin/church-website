@@ -380,9 +380,9 @@
                                 <small class="form-hint">본문 중간에 이미지를 삽입할 수 있습니다. HTML 태그를 사용할 수 있습니다.</small>
                             </div>
                             <div class="form-group">
-                                <label for="pastoral-image">대표 이미지 (목록 썸네일)</label>
-                                <input type="file" id="pastoral-image" name="image" accept="image/*">
-                                <small class="form-hint">목록에서 썸네일로 표시됩니다. 미첨부 시 기본 아이콘이 표시됩니다.</small>
+                                <label for="pastoral-image">이미지 (여러 장 선택 가능)</label>
+                                <input type="file" id="pastoral-image" name="images" accept="image/*" multiple>
+                                <small class="form-hint">첫 번째 이미지가 썸네일로 사용됩니다. 미첨부 시 기본 아이콘이 표시됩니다.</small>
                             </div>
                             <button type="submit" class="btn btn-primary">글 등록</button>
                         </form>
@@ -541,9 +541,9 @@
                                                 <textarea id="pastoral-edit-content-{{ post.id }}" name="content" rows="12" required style="font-family: monospace; font-size: 0.95rem; width: 100%;">{{ post.content }}</textarea>
                                             </div>
                                             <div class="form-group">
-                                                <label>대표 이미지 변경 (선택)</label>
-                                                <input type="file" name="image" accept="image/*">
-                                                <small class="form-hint">변경하지 않으려면 비워두세요.</small>
+                                                <label>이미지 변경 (여러 장, 선택)</label>
+                                                <input type="file" name="images" accept="image/*" multiple>
+                                                <small class="form-hint">새 이미지를 선택하면 기존 이미지가 교체됩니다. 비워두면 유지됩니다.</small>
                                             </div>
                                             <div class="form-actions">
                                                 <button type="submit" class="btn btn-primary">저장</button>

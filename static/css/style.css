@@ -822,6 +822,17 @@ section {
 /* Uniform fixed card size in show-all mode — text must never expand the card */
 .video-tabs.show-all .sermon-card {
     height: 240px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Fix sermon thumbnail height — override padding-top:56.25% trick */
+.video-tabs.show-all .sermon-card .video-thumbnail {
+    padding-top: 0 !important;
+    height: 140px;
+    flex-shrink: 0;
+    overflow: hidden;
 }
 
 .video-tabs.show-all .shorts-card {
@@ -847,6 +858,69 @@ section {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* ===== Single-tab mode: all cards same height, count adjusted per width ===== */
+.video-tabs:not(.show-all) .sermon-card {
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Fix sermon thumbnail height — override padding-top:56.25% trick */
+.video-tabs:not(.show-all) .sermon-card .video-thumbnail {
+    padding-top: 0 !important;
+    height: 160px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.video-tabs:not(.show-all) .shorts-card {
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Override portrait padding-top trick — use fixed height instead */
+.video-tabs:not(.show-all) .shorts-thumbnail {
+    padding-top: 0 !important;
+    height: 210px;
+    flex-shrink: 0;
+}
+
+.video-tabs:not(.show-all) .shorts-title {
+    flex: 1;
+    overflow: hidden;
+}
+
+.video-tabs:not(.show-all) .shorts-title h4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Desktop: wider landscape cards → fewer per view; narrower portrait → more per view */
+@media (min-width: 1024px) {
+    .video-tabs:not(.show-all) #tab-sermons .carousel-track {
+        grid-auto-columns: calc(33.33% - 15px) !important;
+    }
+    .video-tabs:not(.show-all) #tab-shorts .carousel-track,
+    .video-tabs:not(.show-all) #tab-qty .carousel-track {
+        grid-auto-columns: calc(25% - 15px) !important;
+    }
+}
+
+/* Mobile: 1 sermon, 2 shorts/QT per view */
+@media (max-width: 1023px) {
+    .video-tabs:not(.show-all) #tab-sermons .carousel-track {
+        grid-auto-columns: 80% !important;
+    }
+    .video-tabs:not(.show-all) #tab-shorts .carousel-track,
+    .video-tabs:not(.show-all) #tab-qty .carousel-track {
+        grid-auto-columns: 40% !important;
+    }
 }
 
 .video-grid {

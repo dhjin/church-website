@@ -448,6 +448,16 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS pastoral_images (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            pastoral_id INTEGER NOT NULL,
+            image_path TEXT NOT NULL,
+            sort_order INTEGER DEFAULT 0,
+            FOREIGN KEY (pastoral_id) REFERENCES pastoral_posts(id)
+        )
+    """)
+
     # Vision table for YouTube videos
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS visions (
@@ -850,6 +860,13 @@ async def _pastoral_detail(request: Request, post_id: int, lang: str = "ko"):
     post = {"id": row[0], "title": row[1], "content": row[2], "image_path": row[3],
             "author": row[4], "views": row[5], "created_at": row[6]}
     cursor.execute("""
+        SELECT image_path FROM pastoral_images
+        WHERE pastoral_id=? ORDER BY sort_order ASC
+    """, (post_id,))
+    pastoral_images = [r[0] for r in cursor.fetchall()]
+    if not pastoral_images and post["image_path"]:
+        pastoral_images = [post["image_path"]]
+    cursor.execute("""
         SELECT c.id, c.content, c.created_at, u.username, u.name, c.user_id
         FROM comments c JOIN users u ON c.user_id = u.id
         WHERE c.post_type='pastoral' AND c.post_id=?
@@ -861,7 +878,8 @@ async def _pastoral_detail(request: Request, post_id: int, lang: str = "ko"):
     conn.close()
     user = get_current_user(request)
     return templates.TemplateResponse("pastoral_detail.html", {
-        "request": request, "post": post, "comments": comments, "user": user, "t": t, "lp": lp
+        "request": request, "post": post, "pastoral_images": pastoral_images,
+        "comments": comments, "user": user, "t": t, "lp": lp
     })
 
 @app.get("/pastoral/{post_id}", response_class=HTMLResponse)
@@ -1453,24 +1471,22 @@ async def create_pastoral(
     request: Request,
     title: str = Form(...),
     content: str = Form(...),
-    image: Optional[UploadFile] = File(None),
+    images: List[UploadFile] = File(default=[]),
     user: dict = Depends(require_admin)
 ):
-    """Create new pastoral post"""
-    image_path = None
-    if image and image.filename:
-        file_extension = Path(image.filename).suffix
-        filename = f"pastoral_{datetime.now().timestamp()}{file_extension}"
-        file_path = UPLOAD_DIR / filename
-        with file_path.open("wb") as buffer:
-            shutil.copyfileobj(image.file, buffer)
-        image_path = f"/uploads/{filename}"
+    """Create new pastoral post with multiple images"""
+    # Use first uploaded image as thumbnail, or fallback to content image
+    first_img = None
+    for img in images:
+        if img and img.filename:
+            first_img = img
+            break
 
-    # Auto-extract thumbnail from content if no image uploaded
+    image_path = None
     if not image_path:
-        first_img = extract_first_image_from_content(content)
-        if first_img:
-            image_path = first_img
+        extracted = extract_first_image_from_content(content)
+        if extracted:
+            image_path = extracted
         else:
             image_path = "/static/images/logo.png"
 
@@ -1480,6 +1496,23 @@ async def create_pastoral(
         INSERT INTO pastoral_posts (title, content, image_path, author, views, created_at)
         VALUES (?, ?, ?, ?, 0, ?)
     """, (title, content, image_path, user['username'], datetime.now().strftime("%Y-%m-%d")))
+    pastoral_id = cursor.lastrowid
+
+    for sort_order, image in enumerate(images):
+        if image and image.filename:
+            file_extension = Path(image.filename).suffix.lower()
+            filename = f"pastoral_{datetime.now().timestamp()}_{sort_order}{file_extension}"
+            file_path = UPLOAD_DIR / filename
+            with file_path.open("wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            img_url = f"/uploads/{filename}"
+            cursor.execute("""
+                INSERT INTO pastoral_images (pastoral_id, image_path, sort_order)
+                VALUES (?, ?, ?)
+            """, (pastoral_id, img_url, sort_order))
+            if sort_order == 0:
+                cursor.execute("UPDATE pastoral_posts SET image_path=? WHERE id=?", (img_url, pastoral_id))
+
     conn.commit()
     conn.close()
 
@@ -1491,27 +1524,35 @@ async def update_pastoral(
     post_id: int,
     title: str = Form(...),
     content: str = Form(...),
-    image: Optional[UploadFile] = File(None),
+    images: List[UploadFile] = File(default=[]),
     user: dict = Depends(require_admin)
 ):
-    """Update existing pastoral post"""
-    image_path = None
-    if image and image.filename:
-        file_extension = Path(image.filename).suffix
-        filename = f"pastoral_{datetime.now().timestamp()}{file_extension}"
-        file_path = UPLOAD_DIR / filename
-        with file_path.open("wb") as buffer:
-            shutil.copyfileobj(image.file, buffer)
-        image_path = f"/uploads/{filename}"
-
+    """Update existing pastoral post with multiple images"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    if image_path:
+    has_new_images = any(img and img.filename for img in images)
+
+    if has_new_images:
+        cursor.execute("DELETE FROM pastoral_images WHERE pastoral_id=?", (post_id,))
+        first_url = None
+        for sort_order, image in enumerate(images):
+            if image and image.filename:
+                file_extension = Path(image.filename).suffix.lower()
+                filename = f"pastoral_{datetime.now().timestamp()}_{sort_order}{file_extension}"
+                file_path = UPLOAD_DIR / filename
+                with file_path.open("wb") as buffer:
+                    shutil.copyfileobj(image.file, buffer)
+                img_url = f"/uploads/{filename}"
+                cursor.execute("""
+                    INSERT INTO pastoral_images (pastoral_id, image_path, sort_order)
+                    VALUES (?, ?, ?)
+                """, (post_id, img_url, sort_order))
+                if first_url is None:
+                    first_url = img_url
         cursor.execute("UPDATE pastoral_posts SET title=?, content=?, image_path=? WHERE id=?",
-                        (title, content, image_path, post_id))
+                        (title, content, first_url, post_id))
     else:
-        # Auto-extract thumbnail from content
         first_img = extract_first_image_from_content(content)
         if first_img:
             cursor.execute("UPDATE pastoral_posts SET title=?, content=?, image_path=? WHERE id=?",
@@ -1529,6 +1570,7 @@ async def delete_pastoral(post_id: int, user: dict = Depends(require_admin)):
     """Delete a pastoral post"""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+    cursor.execute("DELETE FROM pastoral_images WHERE pastoral_id=?", (post_id,))
     cursor.execute("DELETE FROM pastoral_posts WHERE id = ?", (post_id,))
     cursor.execute("DELETE FROM comments WHERE post_type='pastoral' AND post_id=?", (post_id,))
     conn.commit()

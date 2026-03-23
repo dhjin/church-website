@@ -254,9 +254,13 @@
             </div>
         </div>
 
-        {% if post.image_path %}
-        <div class="post-detail-image">
-            <img src="{{ post.image_path }}" alt="{{ post.title }}">
+        {% if pastoral_images %}
+        <div class="post-detail-images">
+            {% for img_src in pastoral_images %}
+            <div class="post-detail-image">
+                <img src="{{ img_src }}" alt="{{ post.title }} 이미지 {{ loop.index }}">
+            </div>
+            {% endfor %}
         </div>
         {% endif %}
 
