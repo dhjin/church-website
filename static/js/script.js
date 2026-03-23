@@ -179,13 +179,11 @@ function applyVideoTabFromHash() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // If no hash-based tab, default to sermons
     const hash = window.location.hash;
-    if (!hash || !hash.includes('#videos')) {
-        switchVideoTab('sermons');
-    } else {
+    if (hash && hash.includes('#videos')) {
         applyVideoTabFromHash();
     }
+    // Default: show-all mode with no tab selected (class set in HTML)
 });
 window.addEventListener('hashchange', applyVideoTabFromHash);
 

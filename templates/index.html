@@ -126,15 +126,15 @@
     <!-- Videos Section (3 tabs: 최근설교, 오늘의 QT, 숏츠) -->
     <section id="videos" class="video-section">
         <div class="container">
-            <div class="video-tabs">
+            <div class="video-tabs show-all">
                 <div class="tab-buttons">
-                    <button class="tab-btn active" onclick="switchVideoTab('sermons')">{{ t.tab_sermons }}</button>
+                    <button class="tab-btn" onclick="switchVideoTab('sermons')">{{ t.tab_sermons }}</button>
                     <button class="tab-btn" onclick="switchVideoTab('qty')">{{ t.tab_qt }}</button>
                     <button class="tab-btn" onclick="switchVideoTab('shorts')">{{ t.tab_shorts }}</button>
                 </div>
 
                 <!-- Sermons Tab Content -->
-                <div id="tab-sermons" class="tab-content active">
+                <div id="tab-sermons" class="tab-content">
                     <div class="carousel-container">
                         <button class="carousel-nav prev" aria-label="{{ t.prev_video }}"
                             onclick="scrollCarousel(this, -1)">❮</button>
