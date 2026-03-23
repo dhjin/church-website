@@ -796,16 +796,16 @@ section {
         min-width: 0; /* prevent grid blowout */
     }
 
-    /* 2 sermon/QT cards visible per column */
+    /* 1 sermon/QT card visible per column */
     .video-tabs.show-all .carousel-track:not(.shorts-track) {
-        grid-auto-columns: 50%;
+        grid-auto-columns: 100%;
         padding-left: 36px;
         padding-right: 36px;
     }
 
-    /* 2 shorts visible per column */
+    /* 1 short visible per column */
     .video-tabs.show-all .shorts-track {
-        grid-auto-columns: 50%;
+        grid-auto-columns: 100%;
         padding-left: 36px;
         padding-right: 36px;
     }
@@ -1888,7 +1888,7 @@ html {
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: all 0.3s;
-    height: 320px;
+    height: 240px;
     display: flex;
     flex-direction: column;
 }
