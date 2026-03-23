@@ -859,12 +859,12 @@ section {
    So we will enforce a strict column setup and horizontal sliding across *all* breakpoints. */
 
 .carousel-track {
-    grid-template-columns: repeat(auto-fill, minmax(calc(25% - 15px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(calc(50% - 15px), 1fr));
     /* Fallback */
     grid-auto-flow: column;
     /* Force single row */
-    grid-auto-columns: calc(25% - 15px);
-    /* On Web, 4 exact landscape columns */
+    grid-auto-columns: calc(50% - 15px);
+    /* On Web, 2 landscape columns */
 }
 
 .shorts-track {
@@ -1888,11 +1888,9 @@ html {
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: all 0.3s;
-}
-
-.sermon-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
+    height: 320px;
+    display: flex;
+    flex-direction: column;
 }
 
 .sermon-card .card-body {
@@ -1900,6 +1898,26 @@ html {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow: hidden;
+}
+
+.sermon-card .card-body h3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sermon-card .description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sermon-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
 }
 
 .sermon-card.clickable-card {
