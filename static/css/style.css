@@ -2277,14 +2277,18 @@ html {
     color: var(--text-dark);
 }
 
-.vision-image {
-    flex: 0 0 320px;
+.vision-images-stack {
+    flex: 0 0 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .vision-image img {
     width: 100%;
     border-radius: 10px;
     object-fit: cover;
+    box-shadow: var(--shadow-sm);
 }
 
 .mission-section {
@@ -2339,7 +2343,7 @@ html {
         flex-direction: column;
     }
 
-    .vision-image,
+    .vision-images-stack,
     .mission-image {
         flex: none;
         width: 100%;
