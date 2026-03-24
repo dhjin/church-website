@@ -796,16 +796,16 @@ section {
         min-width: 0; /* prevent grid blowout */
     }
 
-    /* 2 cards visible per column */
+    /* 1 card visible per column in preview mode */
     .video-tabs.show-all .carousel-track:not(.shorts-track) {
-        grid-auto-columns: calc(50% - 8px);
+        grid-auto-columns: 100%;
         padding-left: 36px;
         padding-right: 36px;
     }
 
-    /* 2 shorts visible per column */
+    /* 1 shorts visible per column in preview mode */
     .video-tabs.show-all .shorts-track {
-        grid-auto-columns: calc(50% - 8px);
+        grid-auto-columns: 100%;
         padding-left: 36px;
         padding-right: 36px;
     }
@@ -819,9 +819,9 @@ section {
     }
 }
 
-/* Uniform fixed card size in show-all mode — text must never expand the card */
+/* Uniform fixed card size in show-all mode — matches single-tab mode height */
 .video-tabs.show-all .sermon-card {
-    height: 240px;
+    height: 280px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -830,13 +830,13 @@ section {
 /* Fix sermon thumbnail height — override padding-top:56.25% trick */
 .video-tabs.show-all .sermon-card .video-thumbnail {
     padding-top: 0 !important;
-    height: 140px;
+    height: 160px;
     flex-shrink: 0;
     overflow: hidden;
 }
 
 .video-tabs.show-all .shorts-card {
-    height: 240px;
+    height: 280px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -844,7 +844,7 @@ section {
 
 .video-tabs.show-all .shorts-thumbnail {
     padding-top: 0;
-    height: 180px;
+    height: 210px;
     flex-shrink: 0;
 }
 
@@ -1071,6 +1071,15 @@ section {
         grid-auto-flow: column !important;
         grid-auto-columns: 42% !important;
         gap: 8px !important;
+    }
+
+    /* show-all preview mode: 1 card per section on mobile too */
+    .video-tabs.show-all .carousel-track:not(.shorts-track) {
+        grid-auto-columns: 100%;
+    }
+
+    .video-tabs.show-all .shorts-track {
+        grid-auto-columns: 100% !important;
     }
 
     .shorts-track .shorts-card {
