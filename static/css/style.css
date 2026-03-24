@@ -877,6 +877,10 @@ section {
     overflow: hidden;
 }
 
+.video-tabs:not(.show-all) .sermon-card .card-body h3 {
+    font-size: 0.82rem;
+}
+
 .video-tabs:not(.show-all) .shorts-title {
     flex: 1;
     overflow: hidden;
