@@ -854,9 +854,10 @@ section {
     overflow: hidden;
 }
 
-/* ===== Single-tab mode: uniform 16:9 thumbnail height for all card types ===== */
+/* ===== Single-tab mode: compact square-ish cards, more items per row ===== */
 .video-tabs:not(.show-all) .sermon-card,
 .video-tabs:not(.show-all) .shorts-card {
+    height: auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -864,15 +865,14 @@ section {
 
 .video-tabs:not(.show-all) .sermon-card .video-thumbnail {
     padding-top: 0 !important;
-    height: 160px;
+    height: 105px;
     flex-shrink: 0;
     overflow: hidden;
 }
 
-/* Override portrait padding-top trick — 16:9 height to match sermon cards */
 .video-tabs:not(.show-all) .shorts-thumbnail {
     padding-top: 0 !important;
-    height: 160px;
+    height: 105px;
     flex-shrink: 0;
     overflow: hidden;
 }
@@ -889,25 +889,21 @@ section {
     overflow: hidden;
 }
 
-/* Desktop: wider landscape cards → fewer per view; narrower portrait → more per view */
+/* Desktop: 6 compact cards per view, width ≈ height */
 @media (min-width: 1024px) {
-    .video-tabs:not(.show-all) #tab-sermons .carousel-track {
-        grid-auto-columns: calc(33.33% - 15px) !important;
-    }
+    .video-tabs:not(.show-all) #tab-sermons .carousel-track,
     .video-tabs:not(.show-all) #tab-shorts .carousel-track,
     .video-tabs:not(.show-all) #tab-qty .carousel-track {
-        grid-auto-columns: calc(25% - 15px) !important;
+        grid-auto-columns: calc(16.66% - 14px) !important;
     }
 }
 
-/* Mobile: 1 sermon, 2 shorts/QT per view */
+/* Mobile: 2 cards per view for all types */
 @media (max-width: 1023px) {
-    .video-tabs:not(.show-all) #tab-sermons .carousel-track {
-        grid-auto-columns: 80% !important;
-    }
+    .video-tabs:not(.show-all) #tab-sermons .carousel-track,
     .video-tabs:not(.show-all) #tab-shorts .carousel-track,
     .video-tabs:not(.show-all) #tab-qty .carousel-track {
-        grid-auto-columns: 40% !important;
+        grid-auto-columns: calc(48% - 8px) !important;
     }
 }
 
