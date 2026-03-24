@@ -2278,7 +2278,7 @@ html {
 }
 
 .vision-images-stack {
-    flex: 0 0 380px;
+    flex: 0 0 260px;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -2319,7 +2319,7 @@ html {
 }
 
 .mission-image {
-    flex: 0 0 320px;
+    flex: 0 0 260px;
 }
 
 .mission-image img {
