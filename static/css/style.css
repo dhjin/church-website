@@ -819,15 +819,15 @@ section {
     }
 }
 
-/* Uniform fixed card size in show-all mode — matches single-tab mode height */
-.video-tabs.show-all .sermon-card {
-    height: 280px;
+/* show-all preview: uniform cards, height driven by thumbnail + title */
+.video-tabs.show-all .sermon-card,
+.video-tabs.show-all .shorts-card {
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-/* Fix sermon thumbnail height — override padding-top:56.25% trick */
+/* All thumbnails same height → identical 16:9-equivalent ratio per column width */
 .video-tabs.show-all .sermon-card .video-thumbnail {
     padding-top: 0 !important;
     height: 160px;
@@ -835,17 +835,11 @@ section {
     overflow: hidden;
 }
 
-.video-tabs.show-all .shorts-card {
-    height: 280px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
 .video-tabs.show-all .shorts-thumbnail {
-    padding-top: 0;
-    height: 210px;
+    padding-top: 0 !important;
+    height: 160px;
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .video-tabs.show-all .shorts-title {
@@ -860,15 +854,14 @@ section {
     overflow: hidden;
 }
 
-/* ===== Single-tab mode: all cards same height, count adjusted per width ===== */
-.video-tabs:not(.show-all) .sermon-card {
-    height: 280px;
+/* ===== Single-tab mode: uniform 16:9 thumbnail height for all card types ===== */
+.video-tabs:not(.show-all) .sermon-card,
+.video-tabs:not(.show-all) .shorts-card {
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-/* Fix sermon thumbnail height — override padding-top:56.25% trick */
 .video-tabs:not(.show-all) .sermon-card .video-thumbnail {
     padding-top: 0 !important;
     height: 160px;
@@ -876,17 +869,12 @@ section {
     overflow: hidden;
 }
 
-.video-tabs:not(.show-all) .shorts-card {
-    height: 280px;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Override portrait padding-top trick — use fixed height instead */
+/* Override portrait padding-top trick — 16:9 height to match sermon cards */
 .video-tabs:not(.show-all) .shorts-thumbnail {
     padding-top: 0 !important;
-    height: 210px;
+    height: 160px;
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .video-tabs:not(.show-all) .shorts-title {
