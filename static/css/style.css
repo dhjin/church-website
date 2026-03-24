@@ -889,11 +889,14 @@ section {
     overflow: hidden;
 }
 
-/* Desktop: 6 compact cards per view, width ≈ height */
+/* Desktop: 6 compact cards per view, width ≈ height
+   grid-template-columns: none removes the .video-grid repeat(4,1fr) explicit columns
+   so all items consistently use grid-auto-columns instead of mixing sizes */
 @media (min-width: 1024px) {
     .video-tabs:not(.show-all) #tab-sermons .carousel-track,
     .video-tabs:not(.show-all) #tab-shorts .carousel-track,
     .video-tabs:not(.show-all) #tab-qty .carousel-track {
+        grid-template-columns: none !important;
         grid-auto-columns: calc(16.66% - 14px) !important;
     }
 }
@@ -903,6 +906,7 @@ section {
     .video-tabs:not(.show-all) #tab-sermons .carousel-track,
     .video-tabs:not(.show-all) #tab-shorts .carousel-track,
     .video-tabs:not(.show-all) #tab-qty .carousel-track {
+        grid-template-columns: none !important;
         grid-auto-columns: calc(48% - 8px) !important;
     }
 }
