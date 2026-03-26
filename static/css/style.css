@@ -735,7 +735,7 @@ section {
 .tab-buttons {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 24px;
     margin-bottom: 20px;
 }
 
@@ -798,16 +798,14 @@ section {
 
     /* 1 card visible per column in preview mode */
     .video-tabs.show-all .carousel-track:not(.shorts-track) {
+        grid-template-columns: none !important;
         grid-auto-columns: 100%;
-        padding-left: 36px;
-        padding-right: 36px;
     }
 
     /* 1 shorts visible per column in preview mode */
     .video-tabs.show-all .shorts-track {
+        grid-template-columns: none !important;
         grid-auto-columns: 100%;
-        padding-left: 36px;
-        padding-right: 36px;
     }
 
     .video-tabs.show-all .carousel-nav.prev {
@@ -817,6 +815,12 @@ section {
     .video-tabs.show-all .carousel-nav.next {
         right: 2px;
     }
+}
+
+/* Global: show-all mode — exactly 1 card per section at ALL screen sizes */
+.video-tabs.show-all .carousel-track {
+    grid-template-columns: none !important;
+    grid-auto-columns: 100% !important;
 }
 
 /* show-all preview: uniform cards, height driven by thumbnail + title */
@@ -1108,7 +1112,7 @@ section {
     /* 모바일 탭 버튼: 3개 한 줄 */
     .tab-buttons {
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 12px;
         justify-content: center;
     }
 
