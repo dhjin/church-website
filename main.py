@@ -142,7 +142,7 @@ TRANSLATIONS = {
         "news_default_author": "관리자",
         # Login
         "login_title": "로그인",
-        "login_username": "아이디",
+        "login_username": "이메일",
         "login_password": "비밀번호",
         "login_button": "로그인",
         "login_no_account": "계정이 없으신가요?",
@@ -296,7 +296,7 @@ TRANSLATIONS = {
         "news_default_author": "Admin",
         # Login
         "login_title": "Login",
-        "login_username": "Username",
+        "login_username": "Email",
         "login_password": "Password",
         "login_button": "Login",
         "login_no_account": "Don't have an account?",
@@ -910,62 +910,53 @@ async def register_page_en(request: Request):
     t = get_t("en")
     return templates.TemplateResponse("register.html", {"request": request, "t": t, "lp": "/en"})
 
-async def _register_post(request: Request, lang: str, name: str, email: str, username: str, password: str, password_confirm: str):
+async def _register_post(request: Request, lang: str, name: str, email: str):
     t = get_t(lang)
     lp = get_lang_prefix(lang)
     errors = []
     if len(name.strip()) < 2:
         errors.append(t["err_name_short"])
-    if len(username.strip()) < 3:
-        errors.append(t["err_username_short"])
-    if len(password) < 6:
-        errors.append(t["err_password_short"])
-    if password != password_confirm:
-        errors.append(t["err_password_mismatch"])
     if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
         errors.append(t["err_email_invalid"])
     if errors:
         return templates.TemplateResponse("register.html", {
             "request": request, "errors": errors, "t": t, "lp": lp,
-            "name": name, "email": email, "username": username
+            "name": name, "email": email
         })
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE username=?", (username,))
-    if cursor.fetchone():
-        conn.close()
-        return templates.TemplateResponse("register.html", {
-            "request": request, "errors": [t["err_username_taken"]], "t": t, "lp": lp,
-            "name": name, "email": email, "username": username
-        })
     cursor.execute("SELECT id FROM users WHERE email=?", (email,))
     if cursor.fetchone():
         conn.close()
         return templates.TemplateResponse("register.html", {
             "request": request, "errors": [t["err_email_taken"]], "t": t, "lp": lp,
-            "name": name, "email": email, "username": username
+            "name": name, "email": email
         })
-    hashed = hash_password(password)
+    username = email
+    temp_password = secrets.token_urlsafe(8)
+    hashed = hash_password(temp_password)
     cursor.execute("""
         INSERT INTO users (username, password, role, created_at, name, email)
         VALUES (?, ?, 'user', ?, ?, ?)
     """, (username, hashed, datetime.now().isoformat(), name.strip(), email))
     conn.commit()
     conn.close()
+    if lang == "ko":
+        success_msg = f"가입이 완료되었습니다. 임시 비밀번호: <b>{temp_password}</b><br>로그인 후 비밀번호를 변경해 주세요."
+    else:
+        success_msg = f"Registration successful. Temporary password: <b>{temp_password}</b><br>Please change your password after logging in."
     return templates.TemplateResponse("login.html", {
         "request": request, "t": t, "lp": lp,
-        "success": t["register_success"]
+        "success": success_msg
     })
 
 @app.post("/register")
-async def register(request: Request, name: str = Form(...), email: str = Form(...),
-                   username: str = Form(...), password: str = Form(...), password_confirm: str = Form(...)):
-    return await _register_post(request, "ko", name, email, username, password, password_confirm)
+async def register(request: Request, name: str = Form(...), email: str = Form(...)):
+    return await _register_post(request, "ko", name, email)
 
 @app.post("/en/register")
-async def register_en(request: Request, name: str = Form(...), email: str = Form(...),
-                      username: str = Form(...), password: str = Form(...), password_confirm: str = Form(...)):
-    return await _register_post(request, "en", name, email, username, password, password_confirm)
+async def register_en(request: Request, name: str = Form(...), email: str = Form(...)):
+    return await _register_post(request, "en", name, email)
 
 async def _login_post(request: Request, lang: str, username: str, password: str):
     t = get_t(lang)
@@ -1162,6 +1153,54 @@ async def create_news(
     conn.close()
 
     return RedirectResponse(url="/admin", status_code=303)
+
+@app.get("/admin/news/edit/{news_id}", response_class=HTMLResponse)
+async def edit_news_form(request: Request, news_id: int, user: dict = Depends(require_admin)):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM news WHERE id=?", (news_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        raise HTTPException(status_code=404, detail="News not found")
+    news = {"id": row[0], "title": row[1], "content": row[2], "date": row[3]}
+    return templates.TemplateResponse("news_edit.html", {"request": request, "news": news, "user": user})
+
+@app.post("/admin/news/update/{news_id}")
+async def update_news(
+    request: Request,
+    news_id: int,
+    title: str = Form(...),
+    content: str = Form(...),
+    images: List[UploadFile] = File(default=[]),
+    user: dict = Depends(require_admin)
+):
+    """Update existing news post"""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    has_new_images = any(img and img.filename for img in images)
+
+    if has_new_images:
+        cursor.execute("DELETE FROM news_images WHERE news_id=?", (news_id,))
+        for sort_order, image in enumerate(images):
+            if image and image.filename:
+                file_extension = Path(image.filename).suffix.lower()
+                filename = f"news_{datetime.now().timestamp()}_{sort_order}{file_extension}"
+                file_path = UPLOAD_DIR / filename
+                with file_path.open("wb") as buffer:
+                    shutil.copyfileobj(image.file, buffer)
+                cursor.execute("""
+                    INSERT INTO news_images (news_id, image_path, sort_order)
+                    VALUES (?, ?, ?)
+                """, (news_id, f"/uploads/{filename}", sort_order))
+        cursor.execute("UPDATE news SET title=?, content=? WHERE id=?", (title, content, news_id))
+    else:
+        cursor.execute("UPDATE news SET title=?, content=? WHERE id=?", (title, content, news_id))
+
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url=f"/news/{news_id}", status_code=303)
 
 @app.post("/admin/news/delete/{news_id}")
 async def delete_news(news_id: int, user: dict = Depends(require_admin)):
@@ -1610,9 +1649,10 @@ async def _view_news(request: Request, news_id: int, lang: str = "ko"):
                 for r in cursor.fetchall()]
     conn.close()
     user = get_current_user(request)
+    is_admin = user is not None and user.get('role') == 'admin'
     return templates.TemplateResponse("news_detail.html", {
         "request": request, "news": news, "news_images": news_images,
-        "comments": comments, "user": user, "t": t, "lp": lp
+        "comments": comments, "user": user, "is_admin": is_admin, "t": t, "lp": lp
     })
 
 @app.get("/news/{news_id}", response_class=HTMLResponse)
