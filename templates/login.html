@@ -11,7 +11,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-lighter) 100%);
             padding: 20px;
         }
 
@@ -66,20 +66,26 @@
 
         .login-button {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            border-radius: 10px;
+            font-size: 1.15rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(244, 162, 97, 0.45);
+            letter-spacing: 0.03em;
         }
 
         .login-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 24px rgba(244, 162, 97, 0.55);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
         }
 
         .error-message {
