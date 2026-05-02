@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지 - 더하는 교회</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=24">
+    <link rel="stylesheet" href="/static/css/style.css?v=26">
     <link rel="stylesheet" href="/static/css/admin.css?v=15">
 </head>
 
@@ -15,7 +15,7 @@
         <header class="admin-header">
             <div class="container">
                 <div class="admin-nav">
-                    <h1 style="display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png" alt="로고" style="height: 36px; width: 36px; border-radius: 50%; object-fit: cover;"> 더하는 교회 관리자</h1>
+                    <h1 style="display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png?v=2" alt="로고" style="height: 36px; width: 36px; object-fit: contain;"> 더하는 교회 관리자</h1>
                     <div class="admin-user-info">
                         <span>👤 {{ user.username }}</span>
                         <a href="/logout" class="btn-logout">로그아웃</a>
@@ -620,6 +620,7 @@
                                             {% endif %}
                                         </td>
                                         <td>
+                                            <a href="/admin/news/edit/{{ news.id }}" class="btn-edit" style="margin-right:4px;">수정</a>
                                             <form method="POST" action="/admin/news/delete/{{ news.id }}"
                                                 style="display: inline;">
                                                 <button type="submit" class="btn-delete"
@@ -729,7 +730,7 @@
                                     <td>{{ member.display_order }}</td>
                                     <td>
                                         {% if member.photo_path %}
-                                        <img src="{{ member.photo_path }}" alt="{{ member.name }}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                        <img src="{{ member.photo_path }}" alt="{{ member.name }}" style="width: 40px; height: 40px; object-fit: contain;">
                                         {% else %}
                                         -
                                         {% endif %}

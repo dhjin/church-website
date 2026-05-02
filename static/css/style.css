@@ -796,16 +796,16 @@ section {
         min-width: 0; /* prevent grid blowout */
     }
 
-    /* 1 card visible per column in preview mode */
+    /* 1 card visible per column in preview mode (no partial cards) */
     .video-tabs.show-all .carousel-track:not(.shorts-track) {
         grid-template-columns: none !important;
-        grid-auto-columns: 100%;
+        grid-auto-columns: calc(100% - 104px);
     }
 
     /* 1 shorts visible per column in preview mode */
     .video-tabs.show-all .shorts-track {
         grid-template-columns: none !important;
-        grid-auto-columns: 100%;
+        grid-auto-columns: calc(100% - 104px);
     }
 
     .video-tabs.show-all .carousel-nav.prev {
@@ -818,9 +818,10 @@ section {
 }
 
 /* Global: show-all mode — exactly 1 card per section at ALL screen sizes */
+/* calc(100% - 104px) accounts for 52px nav-button padding on each side */
 .video-tabs.show-all .carousel-track {
     grid-template-columns: none !important;
-    grid-auto-columns: 100% !important;
+    grid-auto-columns: calc(100% - 104px) !important;
 }
 
 /* show-all preview: uniform cards, height driven by thumbnail + title */
@@ -856,6 +857,8 @@ section {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: 2.8em;
+    line-height: 1.4;
 }
 
 /* ===== Single-tab mode: compact square-ish cards, more items per row ===== */
@@ -895,27 +898,31 @@ section {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: 2.8em;
+    line-height: 1.4;
 }
 
 /* Desktop: 6 compact cards per view, width ≈ height
    grid-template-columns: none removes the .video-grid repeat(4,1fr) explicit columns
    so all items consistently use grid-auto-columns instead of mixing sizes */
+/* Desktop tab mode: 4 exact cards per view (no partial cards) */
+/* 4 cards + 3 gaps (20px) fit in (100% - 104px padding): W = calc(25% - 41px) */
 @media (min-width: 1024px) {
     .video-tabs:not(.show-all) #tab-sermons .carousel-track,
     .video-tabs:not(.show-all) #tab-shorts .carousel-track,
     .video-tabs:not(.show-all) #tab-qty .carousel-track {
         grid-template-columns: none !important;
-        grid-auto-columns: calc(16.66% - 14px) !important;
+        grid-auto-columns: calc(25% - 41px) !important;
     }
 }
 
-/* Mobile: 2 cards per view for all types */
+/* Mobile tab mode: 1 card per view (clean full-width display) */
 @media (max-width: 1023px) {
     .video-tabs:not(.show-all) #tab-sermons .carousel-track,
     .video-tabs:not(.show-all) #tab-shorts .carousel-track,
     .video-tabs:not(.show-all) #tab-qty .carousel-track {
         grid-template-columns: none !important;
-        grid-auto-columns: calc(48% - 8px) !important;
+        grid-auto-columns: calc(100% - 104px) !important;
     }
 }
 
@@ -943,6 +950,9 @@ section {
     /* IE and Edge */
     scrollbar-width: none;
     /* Firefox */
+    /* Snap to card boundaries — no partial/clipped cards */
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 52px;
 
     /* Ensure padding for box-shadows inside the scroll area */
     padding: 10px 5px;
@@ -959,17 +969,16 @@ section {
    So we will enforce a strict column setup and horizontal sliding across *all* breakpoints. */
 
 .carousel-track {
-    grid-template-columns: repeat(auto-fill, minmax(calc(50% - 15px), 1fr));
-    /* Fallback */
+    grid-template-columns: none;
     grid-auto-flow: column;
     /* Force single row */
-    grid-auto-columns: calc(50% - 15px);
-    /* On Web, 2 landscape columns */
+    /* Default: 2 full cards (accounting for 52px padding on each side) */
+    grid-auto-columns: calc(50% - 58px);
 }
 
 .shorts-track {
-    /* 2 shorts per landscape-card slot = 8 per view desktop */
-    grid-auto-columns: calc(12.5% - 10px);
+    /* 4 shorts per view desktop (exact fit) */
+    grid-auto-columns: calc(25% - 43px);
 }
 
 /* Base Thumbnail constraints to keep heights proportional */
@@ -1051,31 +1060,31 @@ section {
 
     /* --- Mobile Video Carousel Overrides --- */
     .carousel-track {
-        /* Standard 16:9 videos: 2 cards per visible row, scroll horizontally */
+        /* 1 full card per view on mobile — no partial/clipped adjacent cards */
         grid-template-rows: 1fr;
         grid-template-columns: none;
         grid-auto-flow: column;
-        grid-auto-columns: 85%;
+        grid-auto-columns: calc(100% - 104px);
         gap: 12px;
     }
 
     .shorts-track {
-        /* Shorts 9:16: 2 small cards side by side per scroll unit */
+        /* Shorts 9:16: 1 card per view on mobile (no clipping) */
         display: grid !important;
         grid-template-rows: 1fr !important;
         grid-template-columns: none !important;
         grid-auto-flow: column !important;
-        grid-auto-columns: 42% !important;
+        grid-auto-columns: calc(100% - 104px) !important;
         gap: 8px !important;
     }
 
     /* show-all preview mode: 1 card per section on mobile too */
     .video-tabs.show-all .carousel-track:not(.shorts-track) {
-        grid-auto-columns: 100%;
+        grid-auto-columns: calc(100% - 104px);
     }
 
     .video-tabs.show-all .shorts-track {
-        grid-auto-columns: 100% !important;
+        grid-auto-columns: calc(100% - 104px) !important;
     }
 
     .shorts-track .shorts-card {
@@ -2000,6 +2009,7 @@ html {
     height: 240px;
     display: flex;
     flex-direction: column;
+    scroll-snap-align: start;
 }
 
 .sermon-card .card-body {
@@ -2015,6 +2025,8 @@ html {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: 2.8em;
+    line-height: 1.4;
 }
 
 .sermon-card .description {
@@ -2102,6 +2114,7 @@ html {
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
     cursor: pointer;
+    scroll-snap-align: start;
 }
 
 .shorts-card:hover {
@@ -2170,6 +2183,10 @@ html {
 .shorts-title {
     padding: 0.7rem;
     background-color: var(--bg-white);
+    min-height: 3.8em;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
 }
 
 .shorts-title h4 {
@@ -2182,6 +2199,7 @@ html {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     line-height: 1.4;
+    min-height: 2.8em;
 }
 
 /* Responsive Design for Shorts */

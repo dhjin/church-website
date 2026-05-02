@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ news.title }} - {{ t.church_name }}</title>
-    <link rel="stylesheet" href="/static/css/style.css?v=24">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <meta name="description" content="{{ news.title }} - 더하는 교회 소식">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="더하는 교회">
+    <meta property="og:title" content="{{ news.title }} - {{ t.church_name }}">
+    <meta property="og:description" content="{{ news.title }} - 더하는 교회 소식">
+    <meta property="og:image" content="https://thechurch-plus.org/static/images/og-image.jpg">
+    <meta property="og:url" content="https://thechurch-plus.org/news/{{ news.id }}">
+    <link rel="stylesheet" href="/static/css/style.css?v=26">
     <style>
         .news-detail-container {
             max-width: 800px;
@@ -75,6 +83,66 @@
         .back-button:hover {
             background-color: var(--secondary-color);
             transform: translateY(-2px);
+        }
+
+        .edit-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+        .edit-button:hover { background-color: #5a6268; transform: translateY(-2px); }
+
+        .edit-form-container {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+        }
+        .edit-form-container.active { display: block; }
+        .edit-form-container h3 { margin-bottom: 1.5rem; color: var(--text-dark); }
+        .edit-form-container input[type="text"],
+        .edit-form-container textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+        .edit-form-container textarea { resize: vertical; min-height: 200px; }
+        .edit-save-btn {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .edit-save-btn:hover { transform: translateY(-2px); }
+        .edit-cancel-btn {
+            padding: 10px 24px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-left: 8px;
         }
 
         /* Comments */
@@ -193,7 +261,7 @@
         <nav class="navbar">
             <div class="container">
                 <div class="logo">
-                    <h1><a href="{{ lp }}/#home" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png" alt="logo" style="height: 36px; width: 36px; border-radius: 50%; object-fit: cover;"> {{ t.church_name }}</a></h1>
+                    <h1><a href="{{ lp }}/#home" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png?v=2" alt="logo" style="height: 36px; width: 36px; object-fit: contain;"> {{ t.church_name }}</a></h1>
                 </div>
                 <button class="mobile-menu-toggle" aria-label="menu">
                     <span></span>
@@ -262,7 +330,26 @@
 
         <div>
             <a href="{{ lp }}/#news" class="back-button">{{ t.news_back | safe }}</a>
+            {% if is_admin %}
+            <button class="edit-button" onclick="document.getElementById('editForm').classList.toggle('active')">✏️ 수정</button>
+            {% endif %}
         </div>
+
+        {% if is_admin %}
+        <div id="editForm" class="edit-form-container">
+            <h3>소식 수정</h3>
+            <form method="POST" action="/admin/news/update/{{ news.id }}" enctype="multipart/form-data">
+                <input type="text" name="title" value="{{ news.title }}" required>
+                <textarea name="content">{{ news.content }}</textarea>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 4px; font-size: 0.9rem; color: var(--text-light);">새 이미지 (선택, 기존 이미지 교체)</label>
+                    <input type="file" name="images" multiple accept="image/*">
+                </div>
+                <button type="submit" class="edit-save-btn">저장</button>
+                <button type="button" class="edit-cancel-btn" onclick="document.getElementById('editForm').classList.remove('active')">취소</button>
+            </form>
+        </div>
+        {% endif %}
 
         <!-- Comments Section -->
         <div class="comments-section">
