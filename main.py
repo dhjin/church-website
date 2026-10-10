@@ -3,8 +3,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.concurrency import run_in_threadpool
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import hashlib
 import bcrypt
@@ -552,6 +553,27 @@ def init_db():
         )
     """)
 
+    # Access logs table (접속 로그)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS access_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            created_at TEXT NOT NULL,
+            event TEXT NOT NULL,
+            user_id INTEGER,
+            username TEXT,
+            ip TEXT,
+            method TEXT,
+            path TEXT,
+            status INTEGER,
+            user_agent TEXT,
+            is_bot INTEGER NOT NULL DEFAULT 0
+        )
+    """)
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_access_logs_created_at ON access_logs(created_at)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_access_logs_user_id ON access_logs(user_id)")
+    cursor.execute("DELETE FROM access_logs WHERE created_at < ?",
+                   ((now_kst() - timedelta(days=ACCESS_LOG_RETENTION_DAYS)).strftime("%Y-%m-%d %H:%M:%S"),))
+
     # Migration: Add name and email columns to users table
     try:
         cursor.execute("ALTER TABLE users ADD COLUMN name TEXT NOT NULL DEFAULT ''")
@@ -663,6 +685,57 @@ def require_admin(request: Request):
     if not user or user['role'] != 'admin':
         raise HTTPException(status_code=403, detail="Admin access required")
     return user
+
+# ─── 접속 로그 ────────────────────────────────────────────────────────
+KST = timezone(timedelta(hours=9))
+ACCESS_LOG_RETENTION_DAYS = 90
+BOT_UA_RE = re.compile(r"bot|crawl|spider|slurp|facebookexternalhit|preview|monitor|curl|wget|python-requests|httpx|go-http", re.I)
+ACCESS_LOG_SKIP_PREFIXES = ("/static", "/uploads", "/favicon", "/robots.txt", "/sitemap", "/admin/access-logs", "/logout")
+
+def now_kst() -> datetime:
+    return datetime.now(KST)
+
+def get_client_ip(request: Request) -> str:
+    """Real client IP behind proxies (Cloudflare, nginx, k8s)"""
+    for header in ("cf-connecting-ip", "x-real-ip"):
+        value = request.headers.get(header)
+        if value:
+            return value.strip()
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else ""
+
+def log_access(request: Request, event: str, user: Optional[dict] = None,
+               status_code: Optional[int] = None, username: Optional[str] = None):
+    """Write one access log row. Never raises: logging must not break the site."""
+    try:
+        user_agent = request.headers.get("user-agent", "")[:300]
+        conn = sqlite3.connect(DB_PATH, timeout=2)
+        conn.execute("""
+            INSERT INTO access_logs (created_at, event, user_id, username, ip, method, path, status, user_agent, is_bot)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            now_kst().strftime("%Y-%m-%d %H:%M:%S"), event,
+            user["id"] if user else None,
+            username or (user["username"] if user else None),
+            get_client_ip(request), request.method,
+            (request.url.path + ("?" + request.url.query if request.url.query else ""))[:300],
+            status_code, user_agent,
+            1 if (not user_agent or BOT_UA_RE.search(user_agent)) else 0
+        ))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"access log error: {e}")
+
+@app.middleware("http")
+async def access_log_middleware(request: Request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if request.method == "GET" and not path.startswith(ACCESS_LOG_SKIP_PREFIXES):
+        await run_in_threadpool(log_access, request, "page", get_current_user(request), response.status_code)
+    return response
 
 @app.on_event("startup")
 async def startup_event():
@@ -967,6 +1040,7 @@ async def _login_post(request: Request, lang: str, username: str, password: str)
     user = cursor.fetchone()
     if not user:
         conn.close()
+        log_access(request, "login_fail", status_code=200, username=username[:100])
         return templates.TemplateResponse("login.html", {"request": request, "error": t["login_error"], "t": t, "lp": lp})
     stored_hash = user[2]
     password_valid = False
@@ -979,10 +1053,12 @@ async def _login_post(request: Request, lang: str, username: str, password: str)
         conn.commit()
     if not password_valid:
         conn.close()
+        log_access(request, "login_fail", status_code=200, username=username[:100])
         return templates.TemplateResponse("login.html", {"request": request, "error": t["login_error"], "t": t, "lp": lp})
     session_token = secrets.token_urlsafe(32)
     sessions[session_token] = {"id": user[0], "username": user[1], "role": user[3]}
     conn.close()
+    log_access(request, "login", sessions[session_token], 303)
     response = RedirectResponse(url="/admin" if user[3] == "admin" else f"{lp}/", status_code=303)
     response.set_cookie(key="session_token", value=session_token, httponly=True)
     return response
@@ -1000,6 +1076,7 @@ async def logout(request: Request):
     """Handle logout"""
     session_token = request.cookies.get("session_token")
     if session_token and session_token in sessions:
+        log_access(request, "logout", sessions[session_token], 303)
         del sessions[session_token]
 
     response = RedirectResponse(url="/", status_code=303)
@@ -1117,6 +1194,96 @@ async def admin_dashboard(request: Request, user: dict = Depends(require_admin))
         "about": about,
         "pastoral_posts": pastoral_posts,
         "members": members
+    })
+
+@app.get("/admin/access-logs", response_class=HTMLResponse)
+async def admin_access_logs(
+    request: Request,
+    user: dict = Depends(require_admin),
+    page: int = 1,
+    event: str = "",
+    q: str = "",
+    members_only: int = 0,
+    show_bots: int = 0,
+    date: str = "",
+):
+    """접속 로그 (관리자 전용)"""
+    per_page = 100
+    page = max(page, 1)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    today = now_kst().strftime("%Y-%m-%d")
+    cursor.execute("""
+        SELECT COUNT(*) AS views,
+               COUNT(DISTINCT ip) AS visitors,
+               COUNT(DISTINCT user_id) AS members
+        FROM access_logs
+        WHERE created_at >= ? AND is_bot = 0 AND event = 'page'
+    """, (today,))
+    summary = dict(cursor.fetchone())
+    cursor.execute("SELECT COUNT(*) FROM access_logs WHERE created_at >= ? AND event = 'login_fail'", (today,))
+    summary["login_fails"] = cursor.fetchone()[0]
+
+    # 회원별 마지막 접속 (안 들어오는 사람도 보이도록 전체 회원 기준)
+    cursor.execute("""
+        SELECT u.id, u.username, u.name, u.role, u.created_at,
+               MAX(l.created_at) AS last_seen,
+               SUM(CASE WHEN l.event = 'login' THEN 1 ELSE 0 END) AS login_count,
+               SUM(CASE WHEN l.event = 'page' THEN 1 ELSE 0 END) AS page_count
+        FROM users u
+        LEFT JOIN access_logs l ON l.user_id = u.id
+        GROUP BY u.id
+        ORDER BY last_seen IS NULL, last_seen DESC
+    """)
+    now_naive = now_kst().replace(tzinfo=None)
+    member_activity = []
+    for row in cursor.fetchall():
+        item = dict(row)
+        item["days_ago"] = None
+        if item["last_seen"]:
+            try:
+                item["days_ago"] = (now_naive - datetime.strptime(item["last_seen"], "%Y-%m-%d %H:%M:%S")).days
+            except ValueError:
+                pass
+        member_activity.append(item)
+
+    where, params = [], []
+    if event:
+        where.append("event = ?")
+        params.append(event)
+    if q.strip():
+        where.append("(username LIKE ? OR ip LIKE ? OR path LIKE ?)")
+        like = f"%{q.strip()}%"
+        params += [like, like, like]
+    if members_only:
+        where.append("user_id IS NOT NULL")
+    if not show_bots:
+        where.append("is_bot = 0")
+    if date:
+        where.append("substr(created_at, 1, 10) = ?")
+        params.append(date)
+    where_sql = ("WHERE " + " AND ".join(where)) if where else ""
+
+    cursor.execute(f"SELECT COUNT(*) FROM access_logs {where_sql}", params)
+    total = cursor.fetchone()[0]
+    total_pages = max((total + per_page - 1) // per_page, 1)
+    cursor.execute(f"""
+        SELECT * FROM access_logs {where_sql}
+        ORDER BY id DESC LIMIT ? OFFSET ?
+    """, params + [per_page, (page - 1) * per_page])
+    logs = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+
+    t = get_t("ko")
+    return templates.TemplateResponse("access_logs.html", {
+        "request": request, "t": t, "lp": "", "user": user,
+        "summary": summary, "member_activity": member_activity,
+        "logs": logs, "total": total, "page": page, "total_pages": total_pages,
+        "filters": {"event": event, "q": q, "members_only": members_only,
+                    "show_bots": show_bots, "date": date},
+        "retention_days": ACCESS_LOG_RETENTION_DAYS,
     })
 
 @app.post("/admin/news/create")

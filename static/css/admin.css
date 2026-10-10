@@ -51,7 +51,7 @@
 }
 
 .btn-home:hover {
-    background-color: var(--secondary-color);
+    background-color: var(--accent-color);
 }
 
 .admin-container {
@@ -127,7 +127,7 @@
 
 .btn-primary {
     padding: 12px 24px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: var(--primary-color);
     color: white;
     border: none;
     border-radius: 8px;
@@ -327,4 +327,85 @@
 
 .btn-secondary:hover {
     background-color: #5a6268;
+}
+
+/* ─── 접속 로그 ─── */
+.badge-warning {
+    background-color: #f0ad4e;
+    color: white;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.log-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.log-stat {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.log-stat-num {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.log-stat-label {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.log-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.log-filter select,
+.log-filter input[type="text"],
+.log-filter input[type="date"] {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.log-table td {
+    font-size: 0.9rem;
+    padding: 8px;
+}
+
+.log-table .nowrap {
+    white-space: nowrap;
+}
+
+.log-table .log-path {
+    word-break: break-all;
+    max-width: 260px;
+}
+
+.log-table .log-ua {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-light);
+}
+
+.log-pagination {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
 }

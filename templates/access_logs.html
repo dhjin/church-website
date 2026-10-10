@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>접속 로그 - 더하는 교회 관리자</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=26">
+    <link rel="stylesheet" href="/static/css/admin.css?v=16">
+</head>
+
+<body>
+    <div class="admin-wrapper">
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-nav">
+                    <h1 style="display: flex; align-items: center; gap: 8px;"><img src="/static/images/logo.png?v=2" alt="로고" style="height: 36px; width: 36px; object-fit: contain;"> 접속 로그</h1>
+                    <div class="admin-user-info">
+                        <span>👤 {{ user.username }}</span>
+                        <a href="/admin" class="btn-home">관리자 홈</a>
+                        <a href="/logout" class="btn-logout">로그아웃</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-container">
+            <div class="container">
+                <section class="admin-section">
+                    <h2 class="section-title">오늘 현황</h2>
+                    <div class="log-stats">
+                        <div class="log-stat"><div class="log-stat-num">{{ summary.visitors }}</div><div class="log-stat-label">방문자 (IP 기준)</div></div>
+                        <div class="log-stat"><div class="log-stat-num">{{ summary.members }}</div><div class="log-stat-label">접속한 회원</div></div>
+                        <div class="log-stat"><div class="log-stat-num">{{ summary.views }}</div><div class="log-stat-label">페이지 조회</div></div>
+                        <div class="log-stat"><div class="log-stat-num">{{ summary.login_fails }}</div><div class="log-stat-label">로그인 실패</div></div>
+                    </div>
+                </section>
+
+                <section class="admin-section">
+                    <h2 class="section-title">회원별 최근 접속</h2>
+                    <div class="admin-card">
+                        <p class="form-hint">가입한 모든 회원의 마지막 접속 시각입니다. 한 번도 접속 기록이 없는 회원은 아래쪽에 표시됩니다.</p>
+                        <div class="table-scroll">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>이름</th>
+                                        <th>아이디</th>
+                                        <th>마지막 접속</th>
+                                        <th>로그인 횟수</th>
+                                        <th>페이지 조회</th>
+                                        <th>가입일</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for m in member_activity %}
+                                    <tr>
+                                        <td>{{ m.name or '-' }}{% if m.role == 'admin' %} <span class="badge badge-secondary">관리자</span>{% endif %}</td>
+                                        <td><a href="?q={{ m.username | urlencode }}&members_only=1">{{ m.username }}</a></td>
+                                        <td>
+                                            {% if m.last_seen %}
+                                            {{ m.last_seen }}
+                                            {% if m.days_ago == 0 %}<span class="badge badge-success">오늘</span>
+                                            {% elif m.days_ago is not none %}<span class="badge {{ 'badge-warning' if m.days_ago >= 14 else 'badge-secondary' }}">{{ m.days_ago }}일 전</span>{% endif %}
+                                            {% else %}
+                                            <span class="badge badge-warning">기록 없음</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ m.login_count or 0 }}</td>
+                                        <td>{{ m.page_count or 0 }}</td>
+                                        <td>{{ (m.created_at or '')[:10] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-section">
+                    <h2 class="section-title">전체 접속 기록</h2>
+                    <div class="admin-card">
+                        <form method="GET" action="/admin/access-logs" class="log-filter">
+                            <select name="event">
+                                <option value="" {% if not filters.event %}selected{% endif %}>전체 종류</option>
+                                <option value="page" {% if filters.event == 'page' %}selected{% endif %}>페이지 조회</option>
+                                <option value="login" {% if filters.event == 'login' %}selected{% endif %}>로그인</option>
+                                <option value="login_fail" {% if filters.event == 'login_fail' %}selected{% endif %}>로그인 실패</option>
+                                <option value="logout" {% if filters.event == 'logout' %}selected{% endif %}>로그아웃</option>
+                            </select>
+                            <input type="date" name="date" value="{{ filters.date }}">
+                            <input type="text" name="q" value="{{ filters.q }}" placeholder="아이디, IP, 경로 검색">
+                            <label><input type="checkbox" name="members_only" value="1" {% if filters.members_only %}checked{% endif %}> 회원만</label>
+                            <label><input type="checkbox" name="show_bots" value="1" {% if filters.show_bots %}checked{% endif %}> 검색봇 포함</label>
+                            <button type="submit" class="btn btn-primary">조회</button>
+                            <a href="/admin/access-logs" class="btn-edit">초기화</a>
+                        </form>
+                        <p class="form-hint">총 {{ total }}건 · 기록은 {{ retention_days }}일간 보관됩니다. 시각은 한국시간 기준입니다.</p>
+
+                        {% if logs %}
+                        <div class="table-scroll">
+                            <table class="admin-table log-table">
+                                <thead>
+                                    <tr>
+                                        <th>시각</th>
+                                        <th>종류</th>
+                                        <th>사용자</th>
+                                        <th>IP</th>
+                                        <th>경로</th>
+                                        <th>기기</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in logs %}
+                                    <tr>
+                                        <td class="nowrap">{{ log.created_at }}</td>
+                                        <td class="nowrap">
+                                            {% if log.event == 'login' %}<span class="badge badge-success">로그인</span>
+                                            {% elif log.event == 'login_fail' %}<span class="badge badge-warning">로그인 실패</span>
+                                            {% elif log.event == 'logout' %}<span class="badge badge-secondary">로그아웃</span>
+                                            {% else %}조회{% endif %}
+                                        </td>
+                                        <td>{{ log.username or '비회원' }}</td>
+                                        <td class="nowrap"><a href="?q={{ log.ip | urlencode }}">{{ log.ip }}</a></td>
+                                        <td class="log-path">{{ log.path }}{% if log.status and log.status >= 400 %} <span class="badge badge-warning">{{ log.status }}</span>{% endif %}</td>
+                                        <td class="log-ua" title="{{ log.user_agent }}">{{ log.user_agent }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {% if total_pages > 1 %}
+                        {% set qs = filters | dictsort | selectattr(1) | list %}
+                        <div class="log-pagination">
+                            {% if page > 1 %}
+                            <a href="?{% for k, v in qs %}{{ k }}={{ v | urlencode }}&{% endfor %}page={{ page - 1 }}" class="btn-edit">이전</a>
+                            {% endif %}
+                            <span>{{ page }} / {{ total_pages }}</span>
+                            {% if page < total_pages %}
+                            <a href="?{% for k, v in qs %}{{ k }}={{ v | urlencode }}&{% endfor %}page={{ page + 1 }}" class="btn-edit">다음</a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <p class="empty-message">조건에 맞는 접속 기록이 없습니다.</p>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
